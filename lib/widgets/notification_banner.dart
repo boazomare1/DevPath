@@ -30,30 +30,25 @@ class _NotificationBannerState extends State<NotificationBanner>
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, -1),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-    
-    _opacityAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-    
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
+
     _animationController.forward();
-    
+
     // Auto dismiss after duration
     if (widget.duration != null) {
       Future.delayed(widget.duration!, () {
@@ -170,7 +165,7 @@ class _NotificationBannerState extends State<NotificationBanner>
 /// Notification banner manager for showing/hiding banners
 class NotificationBannerManager {
   static OverlayEntry? _currentBanner;
-  
+
   /// Show a notification banner
   static void show({
     required BuildContext context,
@@ -181,25 +176,26 @@ class NotificationBannerManager {
   }) {
     // Remove existing banner if any
     hide();
-    
+
     _currentBanner = OverlayEntry(
-      builder: (context) => Positioned(
-        top: 0,
-        left: 0,
-        right: 0,
-        child: NotificationBanner(
-          title: title,
-          message: message,
-          onTap: onTap,
-          duration: duration,
-          onDismiss: hide,
-        ),
-      ),
+      builder:
+          (context) => Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: NotificationBanner(
+              title: title,
+              message: message,
+              onTap: onTap,
+              duration: duration,
+              onDismiss: hide,
+            ),
+          ),
     );
-    
+
     Overlay.of(context).insert(_currentBanner!);
   }
-  
+
   /// Hide the current notification banner
   static void hide() {
     _currentBanner?.remove();

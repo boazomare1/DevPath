@@ -6,6 +6,7 @@ import 'skills_screen.dart';
 import 'github_auth_screen.dart';
 import 'repos_screen.dart';
 import 'settings_screen.dart';
+import 'insights_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -18,9 +19,10 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const DashboardScreen(), 
+    const DashboardScreen(),
     const SkillsScreen(),
     const ReposScreen(),
+    const InsightsScreen(),
     const GitHubAuthScreen(),
     const SettingsScreen(),
   ];
@@ -61,8 +63,13 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 _buildNavItem(index: 1, icon: Icons.list_alt, label: 'Skills'),
                 _buildNavItem(index: 2, icon: Icons.folder, label: 'Repos'),
-                _buildNavItem(index: 3, icon: Icons.code, label: 'GitHub'),
-                _buildNavItem(index: 4, icon: Icons.settings, label: 'Settings'),
+                _buildNavItem(index: 3, icon: Icons.analytics, label: 'Insights'),
+                _buildNavItem(index: 4, icon: Icons.code, label: 'GitHub'),
+                _buildNavItem(
+                  index: 5,
+                  icon: Icons.settings,
+                  label: 'Settings',
+                ),
               ],
             ),
           ),

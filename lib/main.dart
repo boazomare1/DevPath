@@ -16,7 +16,7 @@ void main() async {
 
   // Initialize Repo Status Service
   await RepoStatusService.init();
-  
+
   // Initialize Reminder Service
   await ReminderService.init();
 

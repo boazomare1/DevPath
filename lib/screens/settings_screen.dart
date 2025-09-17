@@ -26,8 +26,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadSettings() async {
     final frequency = await ReminderService.getReminderFrequency();
-    final notificationsEnabled = await ReminderService.areNotificationsEnabled();
-    
+    final notificationsEnabled =
+        await ReminderService.areNotificationsEnabled();
+
     setState(() {
       _selectedFrequency = frequency;
       _notificationsEnabled = notificationsEnabled;
@@ -38,9 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -69,13 +68,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     gradient: LinearGradient(
                       colors: [
                         Theme.of(context).colorScheme.surface.withOpacity(0.9),
-                        Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.9),
+                        Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest.withOpacity(0.9),
                       ],
                     ),
                   ),
                 ),
               ),
-              
+
               // Settings Content
               SliverPadding(
                 padding: const EdgeInsets.all(24),
@@ -94,9 +95,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _buildReminderInfo(context),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 32),
-                    
+
                     // Account Settings Section
                     _buildSettingsSection(
                       context,
@@ -108,17 +109,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _buildLogoutButton(context),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 32),
-                    
+
                     // App Info Section
                     _buildSettingsSection(
                       context,
                       'App Information',
                       Icons.info,
-                      [
-                        _buildAppInfo(context),
-                      ],
+                      [_buildAppInfo(context)],
                     ),
                   ]),
                 ),
@@ -163,11 +162,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  icon,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
+                child: Icon(icon, color: AppColors.primary, size: 20),
               ),
               const SizedBox(width: 12),
               Text(
@@ -204,7 +199,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Text(
                 'Receive reminders for inactive repositories',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
                 ),
               ),
             ],
@@ -226,7 +223,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildFrequencySelector(BuildContext context) {
     final frequencies = ReminderService.getAvailableFrequencies();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -248,41 +245,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: frequencies.map((frequency) {
-            final isSelected = _selectedFrequency == frequency.days;
-            return GestureDetector(
-              onTap: () async {
-                setState(() {
-                  _selectedFrequency = frequency.days;
-                });
-                await ReminderService.setReminderFrequency(frequency.days);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primary.withOpacity(0.2)
-                      : Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isSelected
-                        ? AppColors.primary
-                        : Theme.of(context).colorScheme.outline.withOpacity(0.3),
-                    width: isSelected ? 2 : 1,
+          children:
+              frequencies.map((frequency) {
+                final isSelected = _selectedFrequency == frequency.days;
+                return GestureDetector(
+                  onTap: () async {
+                    setState(() {
+                      _selectedFrequency = frequency.days;
+                    });
+                    await ReminderService.setReminderFrequency(frequency.days);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                          isSelected
+                              ? AppColors.primary.withOpacity(0.2)
+                              : Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color:
+                            isSelected
+                                ? AppColors.primary
+                                : Theme.of(
+                                  context,
+                                ).colorScheme.outline.withOpacity(0.3),
+                        width: isSelected ? 2 : 1,
+                      ),
+                    ),
+                    child: Text(
+                      frequency.label,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color:
+                            isSelected
+                                ? AppColors.primary
+                                : Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacity(0.7),
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w400,
+                      ),
+                    ),
                   ),
-                ),
-                child: Text(
-                  frequency.label,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: isSelected
-                        ? AppColors.primary
-                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
+                );
+              }).toList(),
         ),
       ],
     );
@@ -294,24 +303,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: AppColors.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppColors.primary.withOpacity(0.2),
-        ),
+        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.info_outline,
-            color: AppColors.primary,
-            size: 16,
-          ),
+          Icon(Icons.info_outline, color: AppColors.primary, size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               'Repositories marked "In Progress" that haven\'t been updated in $_selectedFrequency days will trigger a notification.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.primary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.primary),
             ),
           ),
         ],
@@ -321,7 +324,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildGitHubStatus(BuildContext context) {
     final authService = context.watch<GitHubAuthService>();
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -335,7 +338,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           Icon(
             Icons.code,
-            color: authService.isAuthenticated ? AppColors.success : AppColors.error,
+            color:
+                authService.isAuthenticated
+                    ? AppColors.success
+                    : AppColors.error,
             size: 24,
           ),
           const SizedBox(width: 12),
@@ -354,7 +360,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ? 'Connected to GitHub'
                       : 'Not connected',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
               ],
@@ -382,9 +390,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildLogoutButton(BuildContext context) {
     final authService = context.watch<GitHubAuthService>();
-    
+
     if (!authService.isAuthenticated) return const SizedBox.shrink();
-    
+
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(

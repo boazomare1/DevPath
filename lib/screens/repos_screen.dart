@@ -47,7 +47,7 @@ class _ReposScreenState extends State<ReposScreen> {
   Future<void> _checkForInactiveRepositories() async {
     try {
       final inactiveRepos = await ReminderService.checkInactiveRepositories();
-      
+
       if (inactiveRepos.isNotEmpty && mounted) {
         _showInactiveReposBanner(inactiveRepos);
       }
@@ -58,10 +58,11 @@ class _ReposScreenState extends State<ReposScreen> {
 
   void _showInactiveReposBanner(List<InactiveRepoInfo> inactiveRepos) {
     final title = 'Inactive Repositories';
-    final message = inactiveRepos.length == 1
-        ? '1 repository marked "In Progress" hasn\'t been updated recently'
-        : '${inactiveRepos.length} repositories marked "In Progress" haven\'t been updated recently';
-    
+    final message =
+        inactiveRepos.length == 1
+            ? '1 repository marked "In Progress" hasn\'t been updated recently'
+            : '${inactiveRepos.length} repositories marked "In Progress" haven\'t been updated recently';
+
     NotificationBannerManager.show(
       context: context,
       title: title,

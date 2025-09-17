@@ -12,29 +12,29 @@ class ReminderService {
   static const String _reminderFrequencyKey = 'reminder_frequency_days';
   static const String _lastReminderCheckKey = 'last_reminder_check';
   static const String _notificationsEnabledKey = 'notifications_enabled';
-  
+
   static const int _defaultReminderDays = 14;
   static const int _notificationId = 1001;
-  
+
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  
+
   static Timer? _reminderTimer;
   static bool _isInitialized = false;
 
   /// Initialize the reminder service
   static Future<void> init() async {
     if (_isInitialized) return;
-    
+
     // Initialize local notifications
     await _initializeNotifications();
-    
+
     // Request notification permissions
     await _requestNotificationPermissions();
-    
+
     // Start the reminder timer
     _startReminderTimer();
-    
+
     _isInitialized = true;
   }
 
@@ -42,19 +42,19 @@ class ReminderService {
   static Future<void> _initializeNotifications() async {
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/launcher_icon');
-    
+
     const DarwinInitializationSettings iosSettings =
         DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
-    
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
+
     const InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
     );
-    
+
     await _notificationsPlugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: _onNotificationTapped,
@@ -64,7 +64,7 @@ class ReminderService {
   /// Request notification permissions
   static Future<bool> _requestNotificationPermissions() async {
     if (kIsWeb) return true; // Web doesn't need permission requests
-    
+
     if (Platform.isAndroid) {
       final status = await Permission.notification.request();
       return status.isGranted;
@@ -72,7 +72,7 @@ class ReminderService {
       final status = await Permission.notification.request();
       return status.isGranted;
     }
-    
+
     return true;
   }
 
@@ -85,7 +85,7 @@ class ReminderService {
   /// Start the reminder timer
   static void _startReminderTimer() {
     _reminderTimer?.cancel();
-    
+
     // Check every hour
     _reminderTimer = Timer.periodic(
       const Duration(hours: 1),
@@ -97,21 +97,23 @@ class ReminderService {
   static Future<void> _checkAndSendReminders() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final notificationsEnabled = prefs.getBool(_notificationsEnabledKey) ?? true;
-      
+      final notificationsEnabled =
+          prefs.getBool(_notificationsEnabledKey) ?? true;
+
       if (!notificationsEnabled) return;
-      
-      final reminderDays = prefs.getInt(_reminderFrequencyKey) ?? _defaultReminderDays;
+
+      final reminderDays =
+          prefs.getInt(_reminderFrequencyKey) ?? _defaultReminderDays;
       final lastCheck = prefs.getInt(_lastReminderCheckKey) ?? 0;
       final now = DateTime.now().millisecondsSinceEpoch;
-      
+
       // Only check once per day
       if (now - lastCheck < 24 * 60 * 60 * 1000) return;
-      
+
       await prefs.setInt(_lastReminderCheckKey, now);
-      
+
       final inactiveRepos = await _getInactiveInProgressRepos(reminderDays);
-      
+
       if (inactiveRepos.isNotEmpty) {
         await _sendReminderNotification(inactiveRepos);
       }
@@ -121,16 +123,19 @@ class ReminderService {
   }
 
   /// Get repositories that are "In Progress" but haven't been updated
-  static Future<List<GitHubRepository>> _getInactiveInProgressRepos(int reminderDays) async {
+  static Future<List<GitHubRepository>> _getInactiveInProgressRepos(
+    int reminderDays,
+  ) async {
     final allStatuses = RepoStatusService.getAllRepoStatuses();
     final inactiveRepos = <GitHubRepository>[];
-    
+
     for (final status in allStatuses) {
       if (status.status == ProjectStatus.inProgress && status.isStale) {
-        final daysSinceLastCommit = status.lastCommitDate != null
-            ? DateTime.now().difference(status.lastCommitDate!).inDays
-            : 999;
-            
+        final daysSinceLastCommit =
+            status.lastCommitDate != null
+                ? DateTime.now().difference(status.lastCommitDate!).inDays
+                : 999;
+
         if (daysSinceLastCommit >= reminderDays) {
           // We need to get the repository data, but we only have the ID
           // For now, we'll create a placeholder or fetch from GitHub
@@ -139,7 +144,7 @@ class ReminderService {
         }
       }
     }
-    
+
     return inactiveRepos;
   }
 
@@ -174,34 +179,38 @@ class ReminderService {
   }
 
   /// Send reminder notification
-  static Future<void> _sendReminderNotification(List<GitHubRepository> inactiveRepos) async {
+  static Future<void> _sendReminderNotification(
+    List<GitHubRepository> inactiveRepos,
+  ) async {
     if (inactiveRepos.isEmpty) return;
-    
+
     final title = 'DevPath Reminder';
-    final body = inactiveRepos.length == 1
-        ? '${inactiveRepos.first.name} hasn\'t been updated in a while'
-        : '${inactiveRepos.length} repositories need attention';
-    
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'devpath_reminders',
-      'DevPath Reminders',
-      channelDescription: 'Notifications for inactive repositories',
-      importance: Importance.high,
-      priority: Priority.high,
-      showWhen: true,
-    );
-    
+    final body =
+        inactiveRepos.length == 1
+            ? '${inactiveRepos.first.name} hasn\'t been updated in a while'
+            : '${inactiveRepos.length} repositories need attention';
+
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'devpath_reminders',
+          'DevPath Reminders',
+          channelDescription: 'Notifications for inactive repositories',
+          importance: Importance.high,
+          priority: Priority.high,
+          showWhen: true,
+        );
+
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
     );
-    
+
     const NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
-    
+
     await _notificationsPlugin.show(
       _notificationId,
       title,
@@ -249,21 +258,25 @@ class ReminderService {
     final reminderDays = await getReminderFrequency();
     final allStatuses = RepoStatusService.getAllRepoStatuses();
     final inactiveRepos = <InactiveRepoInfo>[];
-    
+
     for (final status in allStatuses) {
-      if (status.status == ProjectStatus.inProgress && status.lastCommitDate != null) {
-        final daysSinceLastCommit = DateTime.now().difference(status.lastCommitDate!).inDays;
-        
+      if (status.status == ProjectStatus.inProgress &&
+          status.lastCommitDate != null) {
+        final daysSinceLastCommit =
+            DateTime.now().difference(status.lastCommitDate!).inDays;
+
         if (daysSinceLastCommit >= reminderDays) {
-          inactiveRepos.add(InactiveRepoInfo(
-            repoId: status.repoId,
-            daysInactive: daysSinceLastCommit,
-            lastCommitDate: status.lastCommitDate!,
-          ));
+          inactiveRepos.add(
+            InactiveRepoInfo(
+              repoId: status.repoId,
+              daysInactive: daysSinceLastCommit,
+              lastCommitDate: status.lastCommitDate!,
+            ),
+          );
         }
       }
     }
-    
+
     return inactiveRepos;
   }
 
@@ -279,10 +292,7 @@ class ReminderFrequency {
   final int days;
   final String label;
 
-  ReminderFrequency({
-    required this.days,
-    required this.label,
-  });
+  ReminderFrequency({required this.days, required this.label});
 }
 
 /// Information about an inactive repository

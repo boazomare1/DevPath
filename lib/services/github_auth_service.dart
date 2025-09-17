@@ -39,6 +39,11 @@ class GitHubAuthService extends ChangeNotifier {
   List<GitHubRepository> get repositories => _repositories;
   bool get isAuthenticated => _client != null && _currentUser != null;
 
+  // Get access token for API calls
+  Future<String?> getAccessToken() async {
+    return _client?.credentials.accessToken;
+  }
+
   // Stream controllers for reactive updates
   final StreamController<bool> _authStateController =
       StreamController<bool>.broadcast();
