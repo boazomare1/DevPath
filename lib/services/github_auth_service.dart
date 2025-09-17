@@ -106,16 +106,55 @@ class GitHubAuthService extends ChangeNotifier {
 
       // Launch browser for authentication
       if (await canLaunchUrl(authUrl)) {
-        await launchUrl(authUrl, mode: LaunchMode.externalApplication);
-
-        // Wait for callback (in a real app, you'd handle this through deep links)
-        // For now, we'll simulate the callback
-        return await _handleCallback(grant);
+        await launchUrl(authUrl, mode: LaunchMode.platformDefault);
+        
+        // Show instructions to user
+        debugPrint('Please complete authentication in the browser and return to the app');
+        return true; // Return true to indicate the browser was launched
       }
 
       return false;
     } catch (e) {
       debugPrint('Error during authentication: $e');
+      return false;
+    }
+  }
+
+  /// Handle the OAuth callback with authorization code
+  Future<bool> handleCallback(String authorizationCode) async {
+    try {
+      final grant = oauth2.AuthorizationCodeGrant(
+        _clientId,
+        Uri.parse(_authorizationEndpoint),
+        Uri.parse(_tokenEndpoint),
+        secret: _clientSecret,
+      );
+
+      // Exchange authorization code for access token
+      _client = await grant.handleAuthorizationResponse({
+        'code': authorizationCode,
+        'redirect_uri': _redirectUri,
+      });
+
+      if (_client != null) {
+        // Store credentials securely
+        await _secureStorage.write(
+          key: _tokenKey,
+          value: _client!.credentials.toJson(),
+        );
+
+        // Fetch user data and repositories
+        await _fetchUserData();
+        await _fetchRepositories();
+
+        _authStateController.add(true);
+        notifyListeners();
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      debugPrint('Error handling OAuth callback: $e');
       return false;
     }
   }
@@ -145,13 +184,16 @@ class GitHubAuthService extends ChangeNotifier {
         secret: _clientSecret,
       );
 
-      _client = await grant.handleAuthorizationCode(authorizationCode);
+      _client = await grant.handleAuthorizationResponse({
+        'code': authorizationCode,
+        'redirect_uri': _redirectUri,
+      });
 
       if (_client != null) {
-        // Store the access token securely
+        // Store credentials securely
         await _secureStorage.write(
           key: _tokenKey,
-          value: _client!.credentials.accessToken,
+          value: _client!.credentials.toJson(),
         );
 
         // Fetch user data

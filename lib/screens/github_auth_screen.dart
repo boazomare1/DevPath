@@ -45,7 +45,18 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
       final authService = context.read<GitHubAuthService>();
       final success = await authService.authenticate();
 
-      if (!success) {
+      if (success) {
+        // Show instructions to user
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Browser opened! Complete authentication and return to this app.'),
+              backgroundColor: AppColors.primary,
+              duration: Duration(seconds: 5),
+            ),
+          );
+        }
+      } else {
         setState(() {
           _errorMessage = 'Failed to start authentication. Please try again.';
         });
@@ -251,110 +262,112 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-          // GitHub Logo/Icon
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: const Icon(Icons.code, size: 60, color: Colors.black),
-          ),
-
-          const SizedBox(height: 32),
-
-          // Login Button
-          GitHubAuthButton(
-            onPressed: _isLoading ? null : _handleGitHubLogin,
-            isLoading: _isLoading,
-          ),
-
-          const SizedBox(height: 24),
-
-          // Manual Code Input (for testing)
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Manual Authentication (for testing)',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'If you have an authorization code, enter it below:',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _codeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Authorization Code',
-                    hintText: 'Enter the code from GitHub',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleManualCodeAuth,
-                    child:
-                        _isLoading
-                            ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                            : const Text('Authenticate with Code'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          if (_errorMessage != null) ...[
-            const SizedBox(height: 16),
+            // GitHub Logo/Icon
             Container(
-              padding: const EdgeInsets.all(12),
+              width: 120,
+              height: 120,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-              child: Row(
+              child: const Icon(Icons.code, size: 60, color: Colors.black),
+            ),
+
+            const SizedBox(height: 32),
+
+            // Login Button
+            GitHubAuthButton(
+              onPressed: _isLoading ? null : _handleGitHubLogin,
+              isLoading: _isLoading,
+            ),
+
+            const SizedBox(height: 24),
+
+            // Manual Code Input (for testing)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.error, color: AppColors.error, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      _errorMessage!,
-                      style: const TextStyle(color: AppColors.error),
+                  Text(
+                    'Manual Authentication',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'After completing authentication in the browser, you\'ll be redirected to a page with an authorization code. Copy that code and paste it below:',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _codeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Authorization Code',
+                      hintText: 'Enter the code from GitHub',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _handleManualCodeAuth,
+                      child:
+                          _isLoading
+                              ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : const Text('Authenticate with Code'),
                     ),
                   ),
                 ],
               ),
             ),
+
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.error, color: AppColors.error, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _errorMessage!,
+                        style: const TextStyle(color: AppColors.error),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
-        ],
         ),
       ),
     );
