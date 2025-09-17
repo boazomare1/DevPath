@@ -6,13 +6,13 @@ part 'repo_status.g.dart';
 enum ProjectStatus {
   @HiveField(0)
   inProgress,
-  
+
   @HiveField(1)
   onHold,
-  
+
   @HiveField(2)
   completed,
-  
+
   @HiveField(3)
   notStarted,
 }
@@ -30,7 +30,7 @@ extension ProjectStatusExtension on ProjectStatus {
         return 'Not Started';
     }
   }
-  
+
   String get emoji {
     switch (this) {
       case ProjectStatus.inProgress:
@@ -43,7 +43,7 @@ extension ProjectStatusExtension on ProjectStatus {
         return '📋';
     }
   }
-  
+
   String get description {
     switch (this) {
       case ProjectStatus.inProgress:
@@ -62,25 +62,25 @@ extension ProjectStatusExtension on ProjectStatus {
 class RepoStatus {
   @HiveField(0)
   final int repoId;
-  
+
   @HiveField(1)
   final ProjectStatus status;
-  
+
   @HiveField(2)
   final DateTime lastUpdated;
-  
+
   @HiveField(3)
   final String? notes;
-  
+
   @HiveField(4)
   final bool isStale;
-  
+
   @HiveField(5)
   final int openIssuesCount;
-  
+
   @HiveField(6)
   final DateTime? lastCommitDate;
-  
+
   @HiveField(7)
   final bool hasRecentActivity;
 
@@ -158,11 +158,16 @@ class RepoStatus {
     return RepoStatus(
       repoId: json['repoId'] ?? 0,
       status: ProjectStatus.values[json['status'] ?? 0],
-      lastUpdated: DateTime.parse(json['lastUpdated'] ?? DateTime.now().toIso8601String()),
+      lastUpdated: DateTime.parse(
+        json['lastUpdated'] ?? DateTime.now().toIso8601String(),
+      ),
       notes: json['notes'],
       isStale: json['isStale'] ?? false,
       openIssuesCount: json['openIssuesCount'] ?? 0,
-      lastCommitDate: json['lastCommitDate'] != null ? DateTime.parse(json['lastCommitDate']) : null,
+      lastCommitDate:
+          json['lastCommitDate'] != null
+              ? DateTime.parse(json['lastCommitDate'])
+              : null,
       hasRecentActivity: json['hasRecentActivity'] ?? false,
     );
   }

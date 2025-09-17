@@ -16,7 +16,7 @@ class RepoCard extends StatelessWidget {
       repository.id,
       repository,
     );
-    
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -64,7 +64,7 @@ class RepoCard extends StatelessWidget {
                 _buildVisibilityBadge(context),
               ],
             ),
-            
+
             // Status and highlights row
             if (repoStatus != null) ...[
               const SizedBox(height: 8),
@@ -277,7 +277,7 @@ class RepoCard extends StatelessWidget {
       children: [
         // Project Status
         _buildStatusBadge(context, status.status),
-        
+
         // Stale indicator
         if (status.isStale)
           _buildHighlightBadge(
@@ -286,7 +286,7 @@ class RepoCard extends StatelessWidget {
             Icons.schedule,
             AppColors.warning,
           ),
-        
+
         // Open issues indicator
         if (status.openIssuesCount > 0)
           _buildHighlightBadge(
@@ -295,7 +295,7 @@ class RepoCard extends StatelessWidget {
             Icons.bug_report,
             AppColors.error,
           ),
-        
+
         // Recent activity indicator
         if (status.hasRecentActivity)
           _buildHighlightBadge(
@@ -310,7 +310,7 @@ class RepoCard extends StatelessWidget {
 
   Widget _buildStatusBadge(BuildContext context, ProjectStatus status) {
     final color = _getStatusColor(context, status);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -321,10 +321,7 @@ class RepoCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            status.emoji,
-            style: const TextStyle(fontSize: 12),
-          ),
+          Text(status.emoji, style: const TextStyle(fontSize: 12)),
           const SizedBox(width: 4),
           Text(
             status.displayName,
@@ -385,29 +382,29 @@ class RepoCard extends StatelessWidget {
     if (status == null) {
       return Theme.of(context).colorScheme.outline.withOpacity(0.1);
     }
-    
+
     if (status.isStale) {
       return AppColors.warning.withOpacity(0.5);
     }
-    
+
     if (status.openIssuesCount > 0) {
       return AppColors.error.withOpacity(0.3);
     }
-    
+
     if (status.hasRecentActivity) {
       return AppColors.success.withOpacity(0.3);
     }
-    
+
     return Theme.of(context).colorScheme.outline.withOpacity(0.1);
   }
 
   double _getBorderWidth(RepoStatus? status) {
     if (status == null) return 1.0;
-    
+
     if (status.isStale || status.openIssuesCount > 0) {
       return 2.0;
     }
-    
+
     return 1.0;
   }
 
@@ -415,19 +412,19 @@ class RepoCard extends StatelessWidget {
     if (status == null) {
       return Colors.black.withOpacity(0.05);
     }
-    
+
     if (status.isStale) {
       return AppColors.warning.withOpacity(0.1);
     }
-    
+
     if (status.openIssuesCount > 0) {
       return AppColors.error.withOpacity(0.1);
     }
-    
+
     if (status.hasRecentActivity) {
       return AppColors.success.withOpacity(0.1);
     }
-    
+
     return Colors.black.withOpacity(0.05);
   }
 

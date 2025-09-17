@@ -7,7 +7,9 @@ import '../widgets/repo_filter_chips.dart';
 import '../widgets/repo_card.dart';
 import '../widgets/repo_search_bar.dart';
 import '../widgets/repo_status_selector.dart';
+import '../widgets/notification_banner.dart';
 import '../services/repo_status_service.dart';
+import '../services/reminder_service.dart';
 import '../models/repo_status.dart';
 
 class ReposScreen extends StatefulWidget {
@@ -30,13 +32,49 @@ class _ReposScreenState extends State<ReposScreen> {
   void initState() {
     super.initState();
     _initializeRepositoryStatuses();
+    _checkForInactiveRepositories();
   }
 
   Future<void> _initializeRepositoryStatuses() async {
     final authService = context.read<GitHubAuthService>();
     if (authService.isAuthenticated && authService.repositories.isNotEmpty) {
-      await RepoStatusService.initializeStatusForRepositories(authService.repositories);
+      await RepoStatusService.initializeStatusForRepositories(
+        authService.repositories,
+      );
     }
+  }
+
+  Future<void> _checkForInactiveRepositories() async {
+    try {
+      final inactiveRepos = await ReminderService.checkInactiveRepositories();
+      
+      if (inactiveRepos.isNotEmpty && mounted) {
+        _showInactiveReposBanner(inactiveRepos);
+      }
+    } catch (e) {
+      debugPrint('Error checking inactive repositories: $e');
+    }
+  }
+
+  void _showInactiveReposBanner(List<InactiveRepoInfo> inactiveRepos) {
+    final title = 'Inactive Repositories';
+    final message = inactiveRepos.length == 1
+        ? '1 repository marked "In Progress" hasn\'t been updated recently'
+        : '${inactiveRepos.length} repositories marked "In Progress" haven\'t been updated recently';
+    
+    NotificationBannerManager.show(
+      context: context,
+      title: title,
+      message: message,
+      duration: const Duration(seconds: 5),
+      onTap: () {
+        // Navigate to repos screen with stale filter
+        setState(() {
+          _showStaleOnly = true;
+        });
+        NotificationBannerManager.hide();
+      },
+    );
   }
 
   @override
@@ -366,7 +404,7 @@ class _ReposScreenState extends State<ReposScreen> {
 
   Widget _buildRepoDetailsModal(BuildContext context, GitHubRepository repo) {
     final repoStatus = RepoStatusService.getRepoStatusWithData(repo.id, repo);
-    
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       decoration: BoxDecoration(
@@ -385,7 +423,7 @@ class _ReposScreenState extends State<ReposScreen> {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          
+
           // Content
           Expanded(
             child: SingleChildScrollView(
@@ -417,12 +455,13 @@ class _ReposScreenState extends State<ReposScreen> {
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Status Management Section
                   RepoStatusSelector(
-                    currentStatus: repoStatus?.status ?? ProjectStatus.notStarted,
+                    currentStatus:
+                        repoStatus?.status ?? ProjectStatus.notStarted,
                     onStatusChanged: (status) async {
                       await RepoStatusService.updateProjectStatus(
                         repo.id,
@@ -440,7 +479,7 @@ class _ReposScreenState extends State<ReposScreen> {
                       setState(() {});
                     },
                   ),
-                  
+
                   const SizedBox(height: 24),
 
                   // Stats

@@ -4,6 +4,7 @@ import 'theme/app_theme.dart';
 import 'services/storage_service.dart';
 import 'services/github_auth_service.dart';
 import 'services/repo_status_service.dart';
+import 'services/reminder_service.dart';
 import 'screens/splash_screen.dart';
 import 'screens/main_screen.dart';
 
@@ -12,9 +13,12 @@ void main() async {
 
   // Initialize Hive
   await StorageService.init();
-  
+
   // Initialize Repo Status Service
   await RepoStatusService.init();
+  
+  // Initialize Reminder Service
+  await ReminderService.init();
 
   runApp(const DevPathApp());
 }

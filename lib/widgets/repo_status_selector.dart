@@ -38,24 +38,25 @@ class RepoStatusSelector extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Status Options
           Wrap(
             spacing: 12,
             runSpacing: 8,
-            children: ProjectStatus.values.map((status) {
-              final isSelected = currentStatus == status;
-              return _buildStatusChip(
-                context,
-                status,
-                isSelected,
-                () => onStatusChanged(status),
-              );
-            }).toList(),
+            children:
+                ProjectStatus.values.map((status) {
+                  final isSelected = currentStatus == status;
+                  return _buildStatusChip(
+                    context,
+                    status,
+                    isSelected,
+                    () => onStatusChanged(status),
+                  );
+                }).toList(),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Notes Section
           if (onNotesChanged != null) ...[
             Text(
@@ -73,12 +74,16 @@ class RepoStatusSelector extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'Add notes about this project...',
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.5),
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withOpacity(0.3),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -87,9 +92,7 @@ class RepoStatusSelector extends StatelessWidget {
                 ),
                 contentPadding: const EdgeInsets.all(12),
               ),
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
           ],
         ],
@@ -104,30 +107,29 @@ class RepoStatusSelector extends StatelessWidget {
     VoidCallback onTap,
   ) {
     final color = _getStatusColor(context, status);
-    
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected
-              ? color.withOpacity(0.2)
-              : Theme.of(context).colorScheme.surface,
+          color:
+              isSelected
+                  ? color.withOpacity(0.2)
+                  : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected
-                ? color
-                : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+            color:
+                isSelected
+                    ? color
+                    : Theme.of(context).colorScheme.outline.withOpacity(0.3),
             width: isSelected ? 2 : 1,
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              status.emoji,
-              style: const TextStyle(fontSize: 16),
-            ),
+            Text(status.emoji, style: const TextStyle(fontSize: 16)),
             const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,16 +138,22 @@ class RepoStatusSelector extends StatelessWidget {
                 Text(
                   status.displayName,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: isSelected ? color : Theme.of(context).colorScheme.onSurface,
+                    color:
+                        isSelected
+                            ? color
+                            : Theme.of(context).colorScheme.onSurface,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                   ),
                 ),
                 Text(
                   status.description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: isSelected 
-                        ? color.withOpacity(0.8)
-                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color:
+                        isSelected
+                            ? color.withOpacity(0.8)
+                            : Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.6),
                   ),
                 ),
               ],

@@ -33,7 +33,7 @@ class RepoStatusService {
   }) async {
     final existingStatus = getRepoStatus(repository.id);
     final lastCommitDate = repository.pushedAt ?? repository.updatedAt;
-    
+
     final status = RepoStatus.fromRepository(
       repoId: repository.id,
       lastCommitDate: lastCommitDate,
@@ -92,12 +92,16 @@ class RepoStatusService {
   }
 
   /// Get repository status with repository data
-  static RepoStatus? getRepoStatusWithData(int repoId, GitHubRepository repository) {
+  static RepoStatus? getRepoStatusWithData(
+    int repoId,
+    GitHubRepository repository,
+  ) {
     final status = getRepoStatus(repoId);
     if (status != null) {
       // Update status with latest repository data
       final lastCommitDate = repository.pushedAt ?? repository.updatedAt;
-      final daysSinceLastCommit = DateTime.now().difference(lastCommitDate).inDays;
+      final daysSinceLastCommit =
+          DateTime.now().difference(lastCommitDate).inDays;
       final isStale = daysSinceLastCommit > 30;
       final hasRecentActivity = daysSinceLastCommit <= 7;
 
@@ -112,7 +116,9 @@ class RepoStatusService {
   }
 
   /// Initialize status for all repositories
-  static Future<void> initializeStatusForRepositories(List<GitHubRepository> repositories) async {
+  static Future<void> initializeStatusForRepositories(
+    List<GitHubRepository> repositories,
+  ) async {
     for (final repo in repositories) {
       final existingStatus = getRepoStatus(repo.id);
       if (existingStatus == null) {
@@ -143,15 +149,17 @@ class RepoStatusService {
   static Map<String, int> getStatusStatistics() {
     final statuses = _repoStatusBox.values.toList();
     final stats = <String, int>{};
-    
+
     for (final status in ProjectStatus.values) {
-      stats[status.displayName] = statuses.where((s) => s.status == status).length;
+      stats[status.displayName] =
+          statuses.where((s) => s.status == status).length;
     }
-    
+
     stats['Stale'] = statuses.where((s) => s.isStale).length;
     stats['With Issues'] = statuses.where((s) => s.openIssuesCount > 0).length;
-    stats['Recently Active'] = statuses.where((s) => s.hasRecentActivity).length;
-    
+    stats['Recently Active'] =
+        statuses.where((s) => s.hasRecentActivity).length;
+
     return stats;
   }
 
@@ -174,20 +182,25 @@ class RepoStatusService {
     }
 
     if (hasIssues != null) {
-      results = results.where((s) => (s.openIssuesCount > 0) == hasIssues).toList();
+      results =
+          results.where((s) => (s.openIssuesCount > 0) == hasIssues).toList();
     }
 
     if (hasRecentActivity != null) {
-      results = results.where((s) => s.hasRecentActivity == hasRecentActivity).toList();
+      results =
+          results
+              .where((s) => s.hasRecentActivity == hasRecentActivity)
+              .toList();
     }
 
     if (searchQuery != null && searchQuery.isNotEmpty) {
       final query = searchQuery.toLowerCase();
-      results = results.where((s) {
-        // Note: This would need repository data to search by name/description
-        // For now, we'll search by notes
-        return s.notes?.toLowerCase().contains(query) ?? false;
-      }).toList();
+      results =
+          results.where((s) {
+            // Note: This would need repository data to search by name/description
+            // For now, we'll search by notes
+            return s.notes?.toLowerCase().contains(query) ?? false;
+          }).toList();
     }
 
     return results;

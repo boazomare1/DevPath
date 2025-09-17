@@ -288,14 +288,16 @@ class RepoFilterChips extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? color.withOpacity(0.2)
-              : Theme.of(context).colorScheme.surfaceContainerHighest,
+          color:
+              isSelected
+                  ? color.withOpacity(0.2)
+                  : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected
-                ? color
-                : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+            color:
+                isSelected
+                    ? color
+                    : Theme.of(context).colorScheme.outline.withOpacity(0.3),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -305,15 +307,23 @@ class RepoFilterChips extends StatelessWidget {
             Icon(
               icon,
               size: 14,
-              color: isSelected ? color : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              color:
+                  isSelected
+                      ? color
+                      : Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
             ),
             const SizedBox(width: 4),
             Text(
               label,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: isSelected
-                    ? color
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color:
+                    isSelected
+                        ? color
+                        : Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.7),
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
