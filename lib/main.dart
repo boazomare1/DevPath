@@ -1,0 +1,31 @@
+import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
+import 'services/storage_service.dart';
+import 'screens/splash_screen.dart';
+import 'screens/main_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Hive
+  await StorageService.init();
+
+  runApp(const DevPathApp());
+}
+
+class DevPathApp extends StatelessWidget {
+  const DevPathApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'DevPath',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.dark, // Dark mode first (developer preference)
+      home: const SplashScreen(),
+      routes: {'/main': (context) => const MainScreen()},
+    );
+  }
+}

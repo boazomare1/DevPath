@@ -1,0 +1,31 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="backgroundGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22D3EE;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="arrowGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FBBF24;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background with rounded corners -->
+  <rect width="200" height="200" rx="40" ry="40" fill="url(#backgroundGradient)"/>
+  
+  <!-- Left bracket -->
+  <rect x="50" y="60" width="8" height="60" rx="4" fill="white"/>
+  <rect x="50" y="60" width="20" height="8" rx="4" fill="white"/>
+  <rect x="50" y="112" width="20" height="8" rx="4" fill="white"/>
+  
+  <!-- Right bracket -->
+  <rect x="142" y="60" width="8" height="60" rx="4" fill="white"/>
+  <rect x="130" y="60" width="20" height="8" rx="4" fill="white"/>
+  <rect x="130" y="112" width="20" height="8" rx="4" fill="white"/>
+  
+  <!-- Upward arrow -->
+  <path d="M100 90 L110 70 L120 90 L115 90 L115 110 L105 110 L105 90 Z" fill="url(#arrowGradient)"/>
+  
+  <!-- DevPath text -->
+  <text x="100" y="150" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">DEVPATH</text>
+</svg>
