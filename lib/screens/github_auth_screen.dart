@@ -50,7 +50,9 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Browser opened! Complete authentication and return to this app.'),
+              content: Text(
+                'Browser opened! Complete authentication and return to this app.',
+              ),
               backgroundColor: AppColors.primary,
               duration: Duration(seconds: 5),
             ),
@@ -311,7 +313,7 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'After completing authentication in the browser, you\'ll be redirected to a page with an authorization code. Copy that code and paste it below:',
+                    'After completing authentication in the browser, you\'ll be redirected to a page showing JSON data. Look for the "code" parameter in the JSON and copy its value. Paste that code below:',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),

@@ -8,11 +8,10 @@ import '../models/github_user.dart';
 import '../models/github_repository.dart';
 
 class GitHubAuthService extends ChangeNotifier {
-  static const String _clientId =
-      'Ov23liUw25rI3TkTlt69'; 
+  static const String _clientId = 'Ov23liUw25rI3TkTlt69';
   static const String _clientSecret =
       '4a906bc86f6df6868015a902ceca7faf42c01b0d'; // Replace with your GitHub OAuth App Client Secret
-  static const String _redirectUri = 'devpath://oauth/callback';
+  static const String _redirectUri = 'https://httpbin.org/get';
   static const String _authorizationEndpoint =
       'https://github.com/login/oauth/authorize';
   static const String _tokenEndpoint =
@@ -107,9 +106,11 @@ class GitHubAuthService extends ChangeNotifier {
       // Launch browser for authentication
       if (await canLaunchUrl(authUrl)) {
         await launchUrl(authUrl, mode: LaunchMode.platformDefault);
-        
+
         // Show instructions to user
-        debugPrint('Please complete authentication in the browser and return to the app');
+        debugPrint(
+          'Please complete authentication in the browser and return to the app',
+        );
         return true; // Return true to indicate the browser was launched
       }
 
