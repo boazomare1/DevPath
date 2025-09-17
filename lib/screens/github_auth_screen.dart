@@ -313,8 +313,33 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'After completing authentication in the browser, you\'ll be redirected to a page showing JSON data. Look for the "code" parameter in the JSON and copy its value. Paste that code below:',
+                    'After completing authentication in the browser, you\'ll be redirected to a page showing JSON data. Look for "args" → "code" in the JSON structure and copy that value.',
                     style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Text(
+                      'Example JSON structure:\n'
+                      '{\n'
+                      '  "args": {\n'
+                      '    "code": "abc123def456",\n'
+                      '    "state": "xyz789"\n'
+                      '  }\n'
+                      '}\n\n'
+                      'Copy the value of "code": "abc123def456"',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontFamily: 'monospace',
+                        fontSize: 11,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
