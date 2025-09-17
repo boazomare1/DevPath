@@ -8,20 +8,22 @@ import '../models/github_user.dart';
 import '../models/github_repository.dart';
 
 class GitHubAuthService extends ChangeNotifier {
-  static const String _clientId = 'YOUR_GITHUB_CLIENT_ID'; // Replace with your GitHub OAuth App Client ID
-  static const String _clientSecret = 'YOUR_GITHUB_CLIENT_SECRET'; // Replace with your GitHub OAuth App Client Secret
+  static const String _clientId =
+      'YOUR_GITHUB_CLIENT_ID'; // Replace with your GitHub OAuth App Client ID
+  static const String _clientSecret =
+      'YOUR_GITHUB_CLIENT_SECRET'; // Replace with your GitHub OAuth App Client Secret
   static const String _redirectUri = 'devpath://oauth/callback';
-  static const String _authorizationEndpoint = 'https://github.com/login/oauth/authorize';
-  static const String _tokenEndpoint = 'https://github.com/login/oauth/access_token';
+  static const String _authorizationEndpoint =
+      'https://github.com/login/oauth/authorize';
+  static const String _tokenEndpoint =
+      'https://github.com/login/oauth/access_token';
   static const String _apiBaseUrl = 'https://api.github.com';
-  
+
   static const String _tokenKey = 'github_access_token';
   static const String _userKey = 'github_user_data';
-  
+
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
     iOptions: IOSOptions(
       accessibility: KeychainAccessibility.first_unlock_this_device,
     ),
@@ -38,9 +40,12 @@ class GitHubAuthService extends ChangeNotifier {
   bool get isAuthenticated => _client != null && _currentUser != null;
 
   // Stream controllers for reactive updates
-  final StreamController<bool> _authStateController = StreamController<bool>.broadcast();
-  final StreamController<GitHubUser?> _userController = StreamController<GitHubUser?>.broadcast();
-  final StreamController<List<GitHubRepository>> _reposController = StreamController<List<GitHubRepository>>.broadcast();
+  final StreamController<bool> _authStateController =
+      StreamController<bool>.broadcast();
+  final StreamController<GitHubUser?> _userController =
+      StreamController<GitHubUser?>.broadcast();
+  final StreamController<List<GitHubRepository>> _reposController =
+      StreamController<List<GitHubRepository>>.broadcast();
 
   Stream<bool> get authStateStream => _authStateController.stream;
   Stream<GitHubUser?> get userStream => _userController.stream;
@@ -56,16 +61,16 @@ class GitHubAuthService extends ChangeNotifier {
           identifier: _clientId,
           secret: _clientSecret,
         );
-        
+
         // Load user data from secure storage
         final userData = await _secureStorage.read(key: _userKey);
         if (userData != null) {
           _currentUser = GitHubUser.fromJson(jsonDecode(userData));
           _userController.add(_currentUser);
         }
-        
+
         _authStateController.add(true);
-        
+
         // Fetch fresh user data and repositories
         await _fetchUserData();
         await _fetchRepositories();
@@ -97,12 +102,12 @@ class GitHubAuthService extends ChangeNotifier {
       // Launch browser for authentication
       if (await canLaunchUrl(authUrl)) {
         await launchUrl(authUrl, mode: LaunchMode.externalApplication);
-        
+
         // Wait for callback (in a real app, you'd handle this through deep links)
         // For now, we'll simulate the callback
         return await _handleCallback(grant);
       }
-      
+
       return false;
     } catch (e) {
       debugPrint('Error during authentication: $e');
@@ -115,7 +120,9 @@ class GitHubAuthService extends ChangeNotifier {
     try {
       // In a real app, you'd get the authorization code from the deep link
       // For demo purposes, we'll show instructions to the user
-      debugPrint('Please complete authentication in the browser and copy the authorization code');
+      debugPrint(
+        'Please complete authentication in the browser and copy the authorization code',
+      );
       return false;
     } catch (e) {
       debugPrint('Error handling callback: $e');
@@ -134,22 +141,22 @@ class GitHubAuthService extends ChangeNotifier {
       );
 
       _client = await grant.handleAuthorizationCode(authorizationCode);
-      
+
       if (_client != null) {
         // Store the access token securely
         await _secureStorage.write(
           key: _tokenKey,
           value: _client!.credentials.accessToken,
         );
-        
+
         // Fetch user data
         await _fetchUserData();
         await _fetchRepositories();
-        
+
         _authStateController.add(true);
         return true;
       }
-      
+
       return false;
     } catch (e) {
       debugPrint('Error authenticating with code: $e');
@@ -163,24 +170,21 @@ class GitHubAuthService extends ChangeNotifier {
 
     try {
       final response = await _client!.get(Uri.parse('$_apiBaseUrl/user'));
-      
+
       if (response.statusCode == 200) {
         final userData = jsonDecode(response.body);
         _currentUser = GitHubUser.fromJson(userData);
-        
+
         // Store user data securely
-        await _secureStorage.write(
-          key: _userKey,
-          value: jsonEncode(userData),
-        );
-        
+        await _secureStorage.write(key: _userKey, value: jsonEncode(userData));
+
         _userController.add(_currentUser);
         return _currentUser;
       }
     } catch (e) {
       debugPrint('Error fetching user data: $e');
     }
-    
+
     return null;
   }
 
@@ -192,20 +196,19 @@ class GitHubAuthService extends ChangeNotifier {
       final response = await _client!.get(
         Uri.parse('$_apiBaseUrl/user/repos?sort=updated&per_page=100'),
       );
-      
+
       if (response.statusCode == 200) {
         final List<dynamic> reposData = jsonDecode(response.body);
-        _repositories = reposData
-            .map((repo) => GitHubRepository.fromJson(repo))
-            .toList();
-        
+        _repositories =
+            reposData.map((repo) => GitHubRepository.fromJson(repo)).toList();
+
         _reposController.add(_repositories);
         return _repositories;
       }
     } catch (e) {
       debugPrint('Error fetching repositories: $e');
     }
-    
+
     return [];
   }
 
@@ -215,9 +218,11 @@ class GitHubAuthService extends ChangeNotifier {
 
     try {
       final response = await _client!.get(
-        Uri.parse('$_apiBaseUrl/users/$username/repos?sort=updated&per_page=100'),
+        Uri.parse(
+          '$_apiBaseUrl/users/$username/repos?sort=updated&per_page=100',
+        ),
       );
-      
+
       if (response.statusCode == 200) {
         final List<dynamic> reposData = jsonDecode(response.body);
         return reposData
@@ -227,7 +232,7 @@ class GitHubAuthService extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error fetching user repositories: $e');
     }
-    
+
     return [];
   }
 
@@ -247,12 +252,12 @@ class GitHubAuthService extends ChangeNotifier {
       // Clear secure storage
       await _secureStorage.delete(key: _tokenKey);
       await _secureStorage.delete(key: _userKey);
-      
+
       // Clear in-memory data
       _client = null;
       _currentUser = null;
       _repositories.clear();
-      
+
       // Notify listeners
       _authStateController.add(false);
       _userController.add(null);
@@ -296,8 +301,8 @@ class GitHubAuthService extends ChangeNotifier {
     final lowercaseQuery = query.toLowerCase();
     return _repositories.where((repo) {
       return repo.name.toLowerCase().contains(lowercaseQuery) ||
-             repo.description.toLowerCase().contains(lowercaseQuery) ||
-             repo.language.toLowerCase().contains(lowercaseQuery);
+          repo.description.toLowerCase().contains(lowercaseQuery) ||
+          repo.language.toLowerCase().contains(lowercaseQuery);
     }).toList();
   }
 

@@ -124,13 +124,19 @@ class GitHubRepository {
       forks: json['forks_count'] ?? 0,
       isPrivate: json['private'] ?? false,
       isFork: json['fork'] ?? false,
-      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updated_at'] ?? DateTime.now().toIso8601String()),
-      pushedAt: json['pushed_at'] != null ? DateTime.parse(json['pushed_at']) : null,
+      createdAt: DateTime.parse(
+        json['created_at'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updated_at'] ?? DateTime.now().toIso8601String(),
+      ),
+      pushedAt:
+          json['pushed_at'] != null ? DateTime.parse(json['pushed_at']) : null,
       openIssuesCount: json['open_issues_count'] ?? 0,
       defaultBranch: json['default_branch'] ?? 'main',
       size: json['size'] ?? 0,
-      topics: json['topics'] != null ? (json['topics'] as List).join(',') : null,
+      topics:
+          json['topics'] != null ? (json['topics'] as List).join(',') : null,
       hasIssues: json['has_issues'] ?? false,
       hasProjects: json['has_projects'] ?? false,
       hasWiki: json['has_wiki'] ?? false,

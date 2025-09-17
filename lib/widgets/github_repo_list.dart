@@ -5,10 +5,7 @@ import '../theme/app_colors.dart';
 class GitHubRepoList extends StatelessWidget {
   final List<GitHubRepository> repositories;
 
-  const GitHubRepoList({
-    super.key,
-    required this.repositories,
-  });
+  const GitHubRepoList({super.key, required this.repositories});
 
   @override
   Widget build(BuildContext context) {
@@ -24,15 +21,16 @@ class GitHubRepoList extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Expanded(
-          child: repositories.isEmpty
-              ? _buildEmptyState(context)
-              : ListView.builder(
-                  itemCount: repositories.length,
-                  itemBuilder: (context, index) {
-                    final repo = repositories[index];
-                    return _buildRepoCard(context, repo);
-                  },
-                ),
+          child:
+              repositories.isEmpty
+                  ? _buildEmptyState(context)
+                  : ListView.builder(
+                    itemCount: repositories.length,
+                    itemBuilder: (context, index) {
+                      final repo = repositories[index];
+                      return _buildRepoCard(context, repo);
+                    },
+                  ),
         ),
       ],
     );
@@ -102,7 +100,10 @@ class GitHubRepoList extends StatelessWidget {
               ),
               if (repo.isPrivate) ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.warning.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -113,11 +114,7 @@ class GitHubRepoList extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.lock,
-                        size: 12,
-                        color: AppColors.warning,
-                      ),
+                      Icon(Icons.lock, size: 12, color: AppColors.warning),
                       const SizedBox(width: 4),
                       Text(
                         'Private',
@@ -131,7 +128,10 @@ class GitHubRepoList extends StatelessWidget {
                 ),
               ] else ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.success.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -142,11 +142,7 @@ class GitHubRepoList extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.public,
-                        size: 12,
-                        color: AppColors.success,
-                      ),
+                      Icon(Icons.public, size: 12, color: AppColors.success),
                       const SizedBox(width: 4),
                       Text(
                         'Public',
@@ -161,7 +157,7 @@ class GitHubRepoList extends StatelessWidget {
               ],
             ],
           ),
-          
+
           if (repo.description.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
@@ -173,9 +169,9 @@ class GitHubRepoList extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ],
-          
+
           const SizedBox(height: 12),
-          
+
           // Stats and info
           Row(
             children: [
@@ -212,9 +208,9 @@ class GitHubRepoList extends StatelessWidget {
               ],
             ],
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Footer with dates
           Row(
             children: [
@@ -227,7 +223,9 @@ class GitHubRepoList extends StatelessWidget {
               Text(
                 'Updated ${_formatDate(repo.updatedAt)}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.5),
                 ),
               ),
               const Spacer(),
@@ -235,13 +233,17 @@ class GitHubRepoList extends StatelessWidget {
                 Icon(
                   Icons.tag,
                   size: 14,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.5),
                 ),
                 const SizedBox(width: 4),
                 Text(
                   repo.topics!.split(',').take(2).join(', '),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.5),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -254,24 +256,23 @@ class GitHubRepoList extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoChip(BuildContext context, String label, IconData icon, Color color) {
+  Widget _buildInfoChip(
+    BuildContext context,
+    String label,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: color.withOpacity(0.2),
-        ),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 12,
-            color: color,
-          ),
+          Icon(icon, size: 12, color: color),
           const SizedBox(width: 4),
           Text(
             label,
@@ -288,7 +289,7 @@ class GitHubRepoList extends StatelessWidget {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays == 0) {
       return 'today';
     } else if (difference.inDays == 1) {

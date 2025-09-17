@@ -22,7 +22,9 @@ class DevPathApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<GitHubAuthService>(create: (_) => GitHubAuthService()),
+        ChangeNotifierProvider<GitHubAuthService>(
+          create: (_) => GitHubAuthService(),
+        ),
       ],
       child: MaterialApp(
         title: 'DevPath',

@@ -5,11 +5,7 @@ class GitHubAuthButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isLoading;
 
-  const GitHubAuthButton({
-    super.key,
-    this.onPressed,
-    this.isLoading = false,
-  });
+  const GitHubAuthButton({super.key, this.onPressed, this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {

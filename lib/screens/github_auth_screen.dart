@@ -44,7 +44,7 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
     try {
       final authService = context.read<GitHubAuthService>();
       final success = await authService.authenticate();
-      
+
       if (!success) {
         setState(() {
           _errorMessage = 'Failed to start authentication. Please try again.';
@@ -76,8 +76,10 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
 
     try {
       final authService = context.read<GitHubAuthService>();
-      final success = await authService.authenticateWithCode(_codeController.text.trim());
-      
+      final success = await authService.authenticateWithCode(
+        _codeController.text.trim(),
+      );
+
       if (success) {
         _codeController.clear();
         if (mounted) {
@@ -160,7 +162,9 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                 Text(
                   'Connect your GitHub account to sync repositories and track your development progress',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -171,7 +175,7 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                   stream: context.watch<GitHubAuthService>().authStateStream,
                   builder: (context, snapshot) {
                     final isAuthenticated = snapshot.data ?? false;
-                    
+
                     if (isAuthenticated) {
                       return _buildAuthenticatedView();
                     } else {
@@ -202,9 +206,9 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
               return const SizedBox.shrink();
             },
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Repositories
           Expanded(
             child: StreamBuilder<List<GitHubRepository>>(
@@ -214,15 +218,13 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                 if (repos.isNotEmpty) {
                   return GitHubRepoList(repositories: repos);
                 }
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               },
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Logout Button
           SizedBox(
             width: double.infinity,
@@ -262,23 +264,19 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                 ),
               ],
             ),
-            child: const Icon(
-              Icons.code,
-              size: 60,
-              color: Colors.black,
-            ),
+            child: const Icon(Icons.code, size: 60, color: Colors.black),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Login Button
           GitHubAuthButton(
             onPressed: _isLoading ? null : _handleGitHubLogin,
             isLoading: _isLoading,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Manual Code Input (for testing)
           Container(
             padding: const EdgeInsets.all(20),
@@ -317,19 +315,20 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _handleManualCodeAuth,
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text('Authenticate with Code'),
+                    child:
+                        _isLoading
+                            ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                            : const Text('Authenticate with Code'),
                   ),
                 ),
               ],
             ),
           ),
-          
+
           if (_errorMessage != null) ...[
             const SizedBox(height: 16),
             Container(

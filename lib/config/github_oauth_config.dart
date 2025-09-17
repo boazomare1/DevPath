@@ -8,32 +8,35 @@ class GitHubOAuthConfig {
   //    - Homepage URL: https://your-domain.com (or localhost for development)
   //    - Authorization callback URL: devpath://oauth/callback
   // 4. Copy the Client ID and Client Secret here
-  
+
   static const String clientId = 'YOUR_GITHUB_CLIENT_ID';
   static const String clientSecret = 'YOUR_GITHUB_CLIENT_SECRET';
   static const String redirectUri = 'devpath://oauth/callback';
-  
+
   // GitHub API Configuration
-  static const String authorizationEndpoint = 'https://github.com/login/oauth/authorize';
-  static const String tokenEndpoint = 'https://github.com/login/oauth/access_token';
+  static const String authorizationEndpoint =
+      'https://github.com/login/oauth/authorize';
+  static const String tokenEndpoint =
+      'https://github.com/login/oauth/access_token';
   static const String apiBaseUrl = 'https://api.github.com';
-  
+
   // OAuth Scopes
   static const List<String> scopes = [
-    'user:email',    // Read user email
-    'read:user',     // Read user profile
-    'repo',          // Read and write access to repositories
+    'user:email', // Read user email
+    'read:user', // Read user profile
+    'repo', // Read and write access to repositories
   ];
-  
+
   // Deep Link Configuration
   static const String deepLinkScheme = 'devpath';
   static const String deepLinkHost = 'oauth';
   static const String deepLinkPath = '/callback';
-  
+
   // Development Configuration
   static const bool isDevelopment = true;
-  static const String developmentRedirectUri = 'http://localhost:8080/oauth/callback';
-  
+  static const String developmentRedirectUri =
+      'http://localhost:8080/oauth/callback';
+
   // Get the appropriate redirect URI based on environment
   static String get redirectUriForEnvironment {
     if (isDevelopment) {
@@ -41,13 +44,13 @@ class GitHubOAuthConfig {
     }
     return redirectUri;
   }
-  
+
   // Validate configuration
   static bool get isConfigured {
-    return clientId != 'YOUR_GITHUB_CLIENT_ID' && 
-           clientSecret != 'YOUR_GITHUB_CLIENT_SECRET';
+    return clientId != 'YOUR_GITHUB_CLIENT_ID' &&
+        clientSecret != 'YOUR_GITHUB_CLIENT_SECRET';
   }
-  
+
   // Get authorization URL
   static String getAuthorizationUrl() {
     final params = {
@@ -56,14 +59,17 @@ class GitHubOAuthConfig {
       'scope': scopes.join(' '),
       'state': _generateState(),
     };
-    
+
     final queryString = params.entries
-        .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .map(
+          (e) =>
+              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
+        )
         .join('&');
-    
+
     return '$authorizationEndpoint?$queryString';
   }
-  
+
   // Generate a random state parameter for security
   static String _generateState() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;

@@ -5,10 +5,7 @@ import '../theme/app_colors.dart';
 class GitHubUserCard extends StatelessWidget {
   final GitHubUser user;
 
-  const GitHubUserCard({
-    super.key,
-    required this.user,
-  });
+  const GitHubUserCard({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -47,39 +44,42 @@ class GitHubUserCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withOpacity(0.2),
                     width: 2,
                   ),
                 ),
                 child: ClipOval(
-                  child: user.avatarUrl.isNotEmpty
-                      ? Image.network(
-                          user.avatarUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: AppColors.primary.withOpacity(0.1),
-                              child: const Icon(
-                                Icons.person,
-                                color: AppColors.primary,
-                                size: 30,
-                              ),
-                            );
-                          },
-                        )
-                      : Container(
-                          color: AppColors.primary.withOpacity(0.1),
-                          child: const Icon(
-                            Icons.person,
-                            color: AppColors.primary,
-                            size: 30,
+                  child:
+                      user.avatarUrl.isNotEmpty
+                          ? Image.network(
+                            user.avatarUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppColors.primary.withOpacity(0.1),
+                                child: const Icon(
+                                  Icons.person,
+                                  color: AppColors.primary,
+                                  size: 30,
+                                ),
+                              );
+                            },
+                          )
+                          : Container(
+                            color: AppColors.primary.withOpacity(0.1),
+                            child: const Icon(
+                              Icons.person,
+                              color: AppColors.primary,
+                              size: 30,
+                            ),
                           ),
-                        ),
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // User info
               Expanded(
                 child: Column(
@@ -97,7 +97,9 @@ class GitHubUserCard extends StatelessWidget {
                       Text(
                         '@${user.login}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -106,7 +108,9 @@ class GitHubUserCard extends StatelessWidget {
                       Text(
                         user.bio,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.8),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -117,9 +121,9 @@ class GitHubUserCard extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Stats
           Row(
             children: [
@@ -145,7 +149,7 @@ class GitHubUserCard extends StatelessWidget {
               ),
             ],
           ),
-          
+
           if (user.location.isNotEmpty || user.company.isNotEmpty) ...[
             const SizedBox(height: 16),
             Row(
@@ -154,13 +158,17 @@ class GitHubUserCard extends StatelessWidget {
                   Icon(
                     Icons.location_on,
                     size: 16,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.6),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     user.location,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.7),
                     ),
                   ),
                 ],
@@ -171,13 +179,17 @@ class GitHubUserCard extends StatelessWidget {
                   Icon(
                     Icons.business,
                     size: 16,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.6),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     user.company,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.7),
                     ),
                   ),
                 ],
@@ -189,7 +201,12 @@ class GitHubUserCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String label, String value, IconData icon) {
+  Widget _buildStatItem(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+  ) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
@@ -199,11 +216,7 @@ class GitHubUserCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(
-              icon,
-              size: 20,
-              color: AppColors.primary,
-            ),
+            Icon(icon, size: 20, color: AppColors.primary),
             const SizedBox(height: 4),
             Text(
               value,

@@ -99,8 +99,12 @@ class GitHubUser {
       publicGists: json['public_gists'] ?? 0,
       followers: json['followers'] ?? 0,
       following: json['following'] ?? 0,
-      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updated_at'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['created_at'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updated_at'] ?? DateTime.now().toIso8601String(),
+      ),
       hireable: json['hireable'] ?? false,
       type: json['type'] ?? 'User',
       twitterUsername: json['twitter_username'],
