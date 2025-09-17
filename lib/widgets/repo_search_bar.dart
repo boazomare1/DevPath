@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class RepoSearchBar extends StatefulWidget {
   final Function(String) onSearchChanged;
 
-  const RepoSearchBar({
-    super.key,
-    required this.onSearchChanged,
-  });
+  const RepoSearchBar({super.key, required this.onSearchChanged});
 
   @override
   State<RepoSearchBar> createState() => _RepoSearchBarState();
@@ -56,30 +53,31 @@ class _RepoSearchBarState extends State<RepoSearchBar> {
             Icons.search,
             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ),
-          suffixIcon: _isSearching
-              ? IconButton(
-                  onPressed: () {
-                    _controller.clear();
-                    widget.onSearchChanged('');
-                    setState(() {
-                      _isSearching = false;
-                    });
-                  },
-                  icon: Icon(
-                    Icons.clear,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                  ),
-                )
-              : null,
+          suffixIcon:
+              _isSearching
+                  ? IconButton(
+                    onPressed: () {
+                      _controller.clear();
+                      widget.onSearchChanged('');
+                      setState(() {
+                        _isSearching = false;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.clear,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                  )
+                  : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 16,
           ),
         ),
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       ),
     );
   }

@@ -6,6 +6,9 @@ import '../theme/app_colors.dart';
 import '../widgets/repo_filter_chips.dart';
 import '../widgets/repo_card.dart';
 import '../widgets/repo_search_bar.dart';
+import '../widgets/repo_status_selector.dart';
+import '../services/repo_status_service.dart';
+import '../models/repo_status.dart';
 
 class ReposScreen extends StatefulWidget {
   const ReposScreen({super.key});
@@ -19,6 +22,22 @@ class _ReposScreenState extends State<ReposScreen> {
   String _selectedLanguage = 'All';
   bool _showActiveOnly = true;
   bool _showArchivedOnly = false;
+  ProjectStatus? _selectedStatus;
+  bool _showStaleOnly = false;
+  bool _showWithIssuesOnly = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeRepositoryStatuses();
+  }
+
+  Future<void> _initializeRepositoryStatuses() async {
+    final authService = context.read<GitHubAuthService>();
+    if (authService.isAuthenticated && authService.repositories.isNotEmpty) {
+      await RepoStatusService.initializeStatusForRepositories(authService.repositories);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +58,12 @@ class _ReposScreenState extends State<ReposScreen> {
             children: [
               // Header
               _buildHeader(context),
-              
+
               // Search and Filters
               _buildSearchAndFilters(context),
-              
+
               // Repositories List
-              Expanded(
-                child: _buildRepositoriesList(context),
-              ),
+              Expanded(child: _buildRepositoriesList(context)),
             ],
           ),
         ),
@@ -77,11 +94,7 @@ class _ReposScreenState extends State<ReposScreen> {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.folder,
-                  color: Colors.white,
-                  size: 28,
-                ),
+                child: const Icon(Icons.folder, color: Colors.white, size: 28),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -90,7 +103,9 @@ class _ReposScreenState extends State<ReposScreen> {
                   children: [
                     Text(
                       'My Repositories',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -99,7 +114,9 @@ class _ReposScreenState extends State<ReposScreen> {
                     Text(
                       'Manage and explore your GitHub repositories',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.7),
                       ),
                     ),
                   ],
@@ -125,14 +142,17 @@ class _ReposScreenState extends State<ReposScreen> {
               });
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Filter Chips
           RepoFilterChips(
             selectedLanguage: _selectedLanguage,
             showActiveOnly: _showActiveOnly,
             showArchivedOnly: _showArchivedOnly,
+            selectedStatus: _selectedStatus,
+            showStaleOnly: _showStaleOnly,
+            showWithIssuesOnly: _showWithIssuesOnly,
             onLanguageChanged: (language) {
               setState(() {
                 _selectedLanguage = language;
@@ -150,6 +170,21 @@ class _ReposScreenState extends State<ReposScreen> {
                 if (showArchived) _showActiveOnly = false;
               });
             },
+            onStatusChanged: (status) {
+              setState(() {
+                _selectedStatus = status;
+              });
+            },
+            onStaleFilterChanged: (showStale) {
+              setState(() {
+                _showStaleOnly = showStale;
+              });
+            },
+            onWithIssuesFilterChanged: (showWithIssues) {
+              setState(() {
+                _showWithIssuesOnly = showWithIssues;
+              });
+            },
           ),
         ],
       ),
@@ -161,9 +196,7 @@ class _ReposScreenState extends State<ReposScreen> {
       stream: context.watch<GitHubAuthService>().reposStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         final allRepos = snapshot.data!;
@@ -210,29 +243,44 @@ class _ReposScreenState extends State<ReposScreen> {
                 Icon(
                   Icons.folder_open,
                   size: 64,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.3),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _searchQuery.isNotEmpty || _selectedLanguage != 'All' || _showActiveOnly || _showArchivedOnly
+                  _searchQuery.isNotEmpty ||
+                          _selectedLanguage != 'All' ||
+                          _showActiveOnly ||
+                          _showArchivedOnly
                       ? 'No repositories match your filters'
                       : 'No repositories found',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  _searchQuery.isNotEmpty || _selectedLanguage != 'All' || _showActiveOnly || _showArchivedOnly
+                  _searchQuery.isNotEmpty ||
+                          _selectedLanguage != 'All' ||
+                          _showActiveOnly ||
+                          _showArchivedOnly
                       ? 'Try adjusting your search or filter criteria'
                       : 'Connect your GitHub account to view your repositories',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.5),
                   ),
                   textAlign: TextAlign.center,
                 ),
-                if (_searchQuery.isNotEmpty || _selectedLanguage != 'All' || _showActiveOnly || _showArchivedOnly) ...[
+                if (_searchQuery.isNotEmpty ||
+                    _selectedLanguage != 'All' ||
+                    _showActiveOnly ||
+                    _showArchivedOnly) ...[
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -284,6 +332,25 @@ class _ReposScreenState extends State<ReposScreen> {
         return false;
       }
 
+      // Status filters
+      final repoStatus = RepoStatusService.getRepoStatusWithData(repo.id, repo);
+      if (repoStatus != null) {
+        // Project status filter
+        if (_selectedStatus != null && repoStatus.status != _selectedStatus) {
+          return false;
+        }
+
+        // Stale filter
+        if (_showStaleOnly && !repoStatus.isStale) {
+          return false;
+        }
+
+        // Issues filter
+        if (_showWithIssuesOnly && repoStatus.openIssuesCount == 0) {
+          return false;
+        }
+      }
+
       return true;
     }).toList();
   }
@@ -298,8 +365,10 @@ class _ReposScreenState extends State<ReposScreen> {
   }
 
   Widget _buildRepoDetailsModal(BuildContext context, GitHubRepository repo) {
+    final repoStatus = RepoStatusService.getRepoStatusWithData(repo.id, repo);
+    
     return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
+      height: MediaQuery.of(context).size.height * 0.8,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -319,7 +388,7 @@ class _ReposScreenState extends State<ReposScreen> {
           
           // Content
           Expanded(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,9 +399,8 @@ class _ReposScreenState extends State<ReposScreen> {
                       Expanded(
                         child: Text(
                           repo.name,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                       IconButton(
@@ -341,7 +409,7 @@ class _ReposScreenState extends State<ReposScreen> {
                       ),
                     ],
                   ),
-                  
+
                   if (repo.description.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     Text(
@@ -350,23 +418,66 @@ class _ReposScreenState extends State<ReposScreen> {
                     ),
                   ],
                   
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   
+                  // Status Management Section
+                  RepoStatusSelector(
+                    currentStatus: repoStatus?.status ?? ProjectStatus.notStarted,
+                    onStatusChanged: (status) async {
+                      await RepoStatusService.updateProjectStatus(
+                        repo.id,
+                        status,
+                      );
+                      setState(() {});
+                    },
+                    notes: repoStatus?.notes,
+                    onNotesChanged: (notes) async {
+                      await RepoStatusService.updateProjectStatus(
+                        repo.id,
+                        repoStatus?.status ?? ProjectStatus.notStarted,
+                        notes: notes,
+                      );
+                      setState(() {});
+                    },
+                  ),
+                  
+                  const SizedBox(height: 24),
+
                   // Stats
                   Wrap(
                     spacing: 12,
                     runSpacing: 8,
                     children: [
-                      _buildStatChip(context, 'Stars', repo.stars.toString(), Icons.star),
-                      _buildStatChip(context, 'Forks', repo.forks.toString(), Icons.fork_right),
+                      _buildStatChip(
+                        context,
+                        'Stars',
+                        repo.stars.toString(),
+                        Icons.star,
+                      ),
+                      _buildStatChip(
+                        context,
+                        'Forks',
+                        repo.forks.toString(),
+                        Icons.fork_right,
+                      ),
                       if (repo.language.isNotEmpty)
-                        _buildStatChip(context, 'Language', repo.language, Icons.code),
-                      _buildStatChip(context, 'Issues', repo.openIssuesCount.toString(), Icons.bug_report),
+                        _buildStatChip(
+                          context,
+                          'Language',
+                          repo.language,
+                          Icons.code,
+                        ),
+                      _buildStatChip(
+                        context,
+                        'Issues',
+                        repo.openIssuesCount.toString(),
+                        Icons.bug_report,
+                      ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Actions
                   Row(
                     children: [
@@ -404,7 +515,12 @@ class _ReposScreenState extends State<ReposScreen> {
     );
   }
 
-  Widget _buildStatChip(BuildContext context, String label, String value, IconData icon) {
+  Widget _buildStatChip(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -421,9 +537,9 @@ class _ReposScreenState extends State<ReposScreen> {
           const SizedBox(width: 6),
           Text(
             '$value $label',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
           ),
         ],
       ),

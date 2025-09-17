@@ -17,7 +17,7 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const DashboardScreen(), 
+    const DashboardScreen(),
     const SkillsScreen(),
     const ReposScreen(),
     const GitHubAuthScreen(),
