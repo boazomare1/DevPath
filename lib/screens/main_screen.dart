@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
 import 'dashboard_screen.dart';
 import 'skills_screen.dart';
+import 'github_auth_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -14,7 +15,11 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [const DashboardScreen(), const SkillsScreen()];
+  final List<Widget> _screens = [
+    const DashboardScreen(), 
+    const SkillsScreen(),
+    const GitHubAuthScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +56,7 @@ class _MainScreenState extends State<MainScreen> {
                   label: 'Dashboard',
                 ),
                 _buildNavItem(index: 1, icon: Icons.list_alt, label: 'Skills'),
+                _buildNavItem(index: 2, icon: Icons.code, label: 'GitHub'),
               ],
             ),
           ),

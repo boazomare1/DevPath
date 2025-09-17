@@ -5,6 +5,8 @@ import '../models/skill_status.dart';
 import '../models/skill_status_adapter.dart';
 import '../models/skill_category_adapter.dart';
 import '../models/skill_project.dart';
+import '../models/github_repository.dart';
+import '../models/github_user.dart';
 
 class StorageService {
   static const String _skillsBoxName = 'skills';
@@ -21,6 +23,8 @@ class StorageService {
     Hive.registerAdapter(SkillStatusAdapter());
     Hive.registerAdapter(SkillCategoryAdapter());
     Hive.registerAdapter(SkillProjectAdapter());
+    Hive.registerAdapter(GitHubRepositoryAdapter());
+    Hive.registerAdapter(GitHubUserAdapter());
 
     // Open boxes
     _skillsBox = await Hive.openBox<Skill>(_skillsBoxName);
