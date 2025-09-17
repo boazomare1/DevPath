@@ -12,8 +12,9 @@ class GitHubInsightsService {
     GitHubRepository repository,
   ) async {
     try {
-      final url = '$_apiBaseUrl/repos/${repository.fullName}/stats/commit_activity';
-      
+      final url =
+          '$_apiBaseUrl/repos/${repository.fullName}/stats/commit_activity';
+
       final response = await http.get(
         Uri.parse(url),
         headers: {
@@ -24,20 +25,23 @@ class GitHubInsightsService {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        
+
         // Get the last 6 months of data
-        final last6Months = data.length >= 24 ? data.sublist(data.length - 24) : data;
-        
+        final last6Months =
+            data.length >= 24 ? data.sublist(data.length - 24) : data;
+
         return last6Months.asMap().entries.map((entry) {
           final weekIndex = entry.key;
           final weekData = entry.value;
           final totalCommits = weekData['total'] as int;
-          
+
           // Convert week index to month name
           final now = DateTime.now();
-          final weekDate = now.subtract(Duration(days: (last6Months.length - weekIndex - 1) * 7));
+          final weekDate = now.subtract(
+            Duration(days: (last6Months.length - weekIndex - 1) * 7),
+          );
           final monthName = _getMonthName(weekDate.month);
-          
+
           return CommitActivityData(
             month: monthName,
             commits: totalCommits,
@@ -62,20 +66,34 @@ class GitHubInsightsService {
     try {
       // Aggregate commit activity from all repositories
       final Map<String, int> monthlyCommits = {};
-      
+
       for (final repo in repositories) {
         final activity = await getCommitActivity(accessToken, repo);
-        
+
         for (final data in activity) {
           final monthKey = data.month;
-          monthlyCommits[monthKey] = (monthlyCommits[monthKey] ?? 0) + data.commits;
+          monthlyCommits[monthKey] =
+              (monthlyCommits[monthKey] ?? 0) + data.commits;
         }
       }
-      
+
       // Convert to list and sort by month
-      final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      final months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
       final currentMonth = DateTime.now().month;
-      
+
       return months.sublist(currentMonth - 6, currentMonth).map((month) {
         return CommitActivityData(
           month: month,
@@ -96,12 +114,12 @@ class GitHubInsightsService {
   ) async {
     try {
       final Map<String, LanguageStats> languageStats = {};
-      
+
       for (final repo in repositories) {
         if (repo.language.isNotEmpty) {
           final language = repo.language;
           final existing = languageStats[language];
-          
+
           languageStats[language] = LanguageStats(
             name: language,
             repositoryCount: (existing?.repositoryCount ?? 0) + 1,
@@ -110,7 +128,7 @@ class GitHubInsightsService {
           );
         }
       }
-      
+
       return languageStats;
     } catch (e) {
       debugPrint('Error fetching language statistics: $e');
@@ -124,20 +142,31 @@ class GitHubInsightsService {
     List<GitHubRepository> repositories,
   ) async {
     try {
-      final commitActivity = await getAllRepositoriesCommitActivity(accessToken, repositories);
-      final languageStats = await getLanguageStatistics(accessToken, repositories);
-      
+      final commitActivity = await getAllRepositoriesCommitActivity(
+        accessToken,
+        repositories,
+      );
+      final languageStats = await getLanguageStatistics(
+        accessToken,
+        repositories,
+      );
+
       // Calculate total statistics
       int totalRepos = repositories.length;
       int totalStars = repositories.fold(0, (sum, repo) => sum + repo.stars);
       int totalForks = repositories.fold(0, (sum, repo) => sum + repo.forks);
-      int totalIssues = repositories.fold(0, (sum, repo) => sum + repo.openIssuesCount);
-      
+      int totalIssues = repositories.fold(
+        0,
+        (sum, repo) => sum + repo.openIssuesCount,
+      );
+
       // Calculate average commits per month
-      final avgCommitsPerMonth = commitActivity.isNotEmpty
-          ? commitActivity.fold(0, (sum, data) => sum + data.commits) / commitActivity.length
-          : 0.0;
-      
+      final avgCommitsPerMonth =
+          commitActivity.isNotEmpty
+              ? commitActivity.fold(0, (sum, data) => sum + data.commits) /
+                  commitActivity.length
+              : 0.0;
+
       // Find most active month
       String mostActiveMonth = 'N/A';
       int maxCommits = 0;
@@ -147,7 +176,7 @@ class GitHubInsightsService {
           mostActiveMonth = data.month;
         }
       }
-      
+
       return RepositoryInsights(
         totalRepositories: totalRepos,
         totalStars: totalStars,
@@ -169,24 +198,30 @@ class GitHubInsightsService {
   static List<CommitActivityData> _generateMockCommitActivity() {
     final now = DateTime.now();
     final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    
+
     return months.map((month) {
       // Generate realistic commit counts
       final random = DateTime.now().millisecondsSinceEpoch % 100;
       final commits = 20 + (random % 30);
-      
-      return CommitActivityData(
-        month: month,
-        commits: commits,
-        week: now,
-      );
+
+      return CommitActivityData(month: month, commits: commits, week: now);
     }).toList();
   }
 
   static String _getMonthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }

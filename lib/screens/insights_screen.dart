@@ -50,7 +50,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
           accessToken,
           authService.repositories,
         );
-        
+
         if (mounted) {
           setState(() {
             _insights = insights;
@@ -96,13 +96,15 @@ class _InsightsScreenState extends State<InsightsScreen> {
                     gradient: LinearGradient(
                       colors: [
                         Theme.of(context).colorScheme.surface.withOpacity(0.9),
-                        Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.9),
+                        Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest.withOpacity(0.9),
                       ],
                     ),
                   ),
                 ),
               ),
-              
+
               // Content
               SliverPadding(
                 padding: const EdgeInsets.all(24),
@@ -113,37 +115,37 @@ class _InsightsScreenState extends State<InsightsScreen> {
                         if (!authService.isAuthenticated) {
                           return _buildNotConnectedView(context);
                         }
-                        
+
                         final repos = authService.repositories;
                         if (repos.isEmpty) {
                           return _buildNoReposView(context);
                         }
-                        
+
                         if (_isLoading) {
                           return _buildLoadingView(context);
                         }
-                        
+
                         if (_insights == null) {
                           return _buildErrorView(context);
                         }
-                        
+
                         return Column(
                           children: [
                             // Language Breakdown Chart
                             _buildLanguageBreakdownChart(context, _insights!),
-                            
+
                             const SizedBox(height: 32),
-                            
+
                             // Commit Activity Chart
                             _buildCommitActivityChart(context, _insights!),
-                            
+
                             const SizedBox(height: 32),
-                            
+
                             // Repository Statistics
                             _buildRepositoryStats(context, _insights!),
-                            
+
                             const SizedBox(height: 24),
-                            
+
                             // Refresh Button
                             _buildRefreshButton(context),
                           ],
@@ -330,9 +332,12 @@ class _InsightsScreenState extends State<InsightsScreen> {
     );
   }
 
-  Widget _buildLanguageBreakdownChart(BuildContext context, RepositoryInsights insights) {
+  Widget _buildLanguageBreakdownChart(
+    BuildContext context,
+    RepositoryInsights insights,
+  ) {
     final languageData = insights.languageStats;
-    
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -394,9 +399,12 @@ class _InsightsScreenState extends State<InsightsScreen> {
     );
   }
 
-  Widget _buildCommitActivityChart(BuildContext context, RepositoryInsights insights) {
+  Widget _buildCommitActivityChart(
+    BuildContext context,
+    RepositoryInsights insights,
+  ) {
     final commitData = insights.commitActivity;
-    
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -470,8 +478,10 @@ class _InsightsScreenState extends State<InsightsScreen> {
     );
   }
 
-  Widget _buildRepositoryStats(BuildContext context, RepositoryInsights insights) {
-    
+  Widget _buildRepositoryStats(
+    BuildContext context,
+    RepositoryInsights insights,
+  ) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -604,9 +614,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-        ),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Column(
         children: [
@@ -632,49 +640,59 @@ class _InsightsScreenState extends State<InsightsScreen> {
     );
   }
 
-  Widget _buildLanguageLegend(BuildContext context, Map<String, LanguageStats> languageData) {
+  Widget _buildLanguageLegend(
+    BuildContext context,
+    Map<String, LanguageStats> languageData,
+  ) {
     final colors = _getLanguageColors();
-    final entries = languageData.entries.toList()
-      ..sort((a, b) => b.value.repositoryCount.compareTo(a.value.repositoryCount));
-    
+    final entries =
+        languageData.entries.toList()..sort(
+          (a, b) => b.value.repositoryCount.compareTo(a.value.repositoryCount),
+        );
+
     return Wrap(
       spacing: 16,
       runSpacing: 8,
-      children: entries.map((entry) {
-        final color = colors[entry.key] ?? AppColors.primary;
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 12,
-              height: 12,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              '${entry.key} (${entry.value.repositoryCount})',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-          ],
-        );
-      }).toList(),
+      children:
+          entries.map((entry) {
+            final color = colors[entry.key] ?? AppColors.primary;
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${entry.key} (${entry.value.repositoryCount})',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            );
+          }).toList(),
     );
   }
 
-
-  List<PieChartSectionData> _buildPieChartSections(Map<String, LanguageStats> languageData) {
+  List<PieChartSectionData> _buildPieChartSections(
+    Map<String, LanguageStats> languageData,
+  ) {
     final colors = _getLanguageColors();
-    final total = languageData.values.fold(0, (sum, stats) => sum + stats.repositoryCount);
-    
+    final total = languageData.values.fold(
+      0,
+      (sum, stats) => sum + stats.repositoryCount,
+    );
+
     return languageData.entries.map((entry) {
       final percentage = (entry.value.repositoryCount / total) * 100;
       final color = colors[entry.key] ?? AppColors.primary;
-      
+
       return PieChartSectionData(
         color: color,
         value: entry.value.repositoryCount.toDouble(),
@@ -693,7 +711,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
     return data.asMap().entries.map((entry) {
       final index = entry.key;
       final data = entry.value;
-      
+
       return BarChartGroupData(
         x: index,
         barRods: [
@@ -717,10 +735,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
           getTitlesWidget: (value, meta) {
             return Text(
               value.toInt().toString(),
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             );
           },
         ),
@@ -734,10 +749,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
             if (value.toInt() >= 0 && value.toInt() < months.length) {
               return Text(
                 months[value.toInt()],
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               );
             }
             return const Text('');
@@ -767,5 +779,4 @@ class _InsightsScreenState extends State<InsightsScreen> {
       'Unknown': Colors.grey,
     };
   }
-
 }

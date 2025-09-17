@@ -53,24 +53,31 @@ class _MainScreenState extends State<MainScreen> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(
-                  index: 0,
-                  icon: Icons.dashboard,
-                  label: 'Dashboard',
-                ),
-                _buildNavItem(index: 1, icon: Icons.list_alt, label: 'Skills'),
-                _buildNavItem(index: 2, icon: Icons.folder, label: 'Repos'),
-                _buildNavItem(index: 3, icon: Icons.analytics, label: 'Insights'),
-                _buildNavItem(index: 4, icon: Icons.code, label: 'GitHub'),
-                _buildNavItem(
-                  index: 5,
-                  icon: Icons.settings,
-                  label: 'Settings',
-                ),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildNavItem(
+                    index: 0,
+                    icon: Icons.dashboard,
+                    label: 'Dashboard',
+                  ),
+                  _buildNavItem(index: 1, icon: Icons.list_alt, label: 'Skills'),
+                  _buildNavItem(index: 2, icon: Icons.folder, label: 'Repos'),
+                  _buildNavItem(
+                    index: 3,
+                    icon: Icons.analytics,
+                    label: 'Insights',
+                  ),
+                  _buildNavItem(index: 4, icon: Icons.code, label: 'GitHub'),
+                  _buildNavItem(
+                    index: 5,
+                    icon: Icons.settings,
+                    label: 'Settings',
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -88,13 +95,14 @@ class _MainScreenState extends State<MainScreen> {
     return GestureDetector(
       onTap: () => setState(() => _currentIndex = index),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 2),
         decoration: BoxDecoration(
           color:
               isSelected
                   ? AppColors.primary.withOpacity(0.2)
                   : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           border:
               isSelected
                   ? Border.all(color: AppColors.primary.withOpacity(0.5))
@@ -106,13 +114,13 @@ class _MainScreenState extends State<MainScreen> {
             Icon(
               icon,
               color: isSelected ? AppColors.primary : AppColors.textSecondary,
-              size: 24,
+              size: 18,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               label,
               style: GoogleFonts.inter(
-                fontSize: 12,
+                fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                 color: isSelected ? AppColors.primary : AppColors.textSecondary,
               ),

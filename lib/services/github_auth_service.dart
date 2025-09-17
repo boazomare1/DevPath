@@ -9,9 +9,9 @@ import '../models/github_repository.dart';
 
 class GitHubAuthService extends ChangeNotifier {
   static const String _clientId =
-      'YOUR_GITHUB_CLIENT_ID'; // Replace with your GitHub OAuth App Client ID
+      'Ov23liUw25rI3TkTlt69'; 
   static const String _clientSecret =
-      'YOUR_GITHUB_CLIENT_SECRET'; // Replace with your GitHub OAuth App Client Secret
+      '4a906bc86f6df6868015a902ceca7faf42c01b0d'; // Replace with your GitHub OAuth App Client Secret
   static const String _redirectUri = 'devpath://oauth/callback';
   static const String _authorizationEndpoint =
       'https://github.com/login/oauth/authorize';
