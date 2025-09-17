@@ -178,6 +178,10 @@ class GitHubAuthService extends ChangeNotifier {
   /// Authenticate with authorization code (for manual testing)
   Future<bool> authenticateWithCode(String authorizationCode) async {
     try {
+      debugPrint('Attempting to authenticate with code: ${authorizationCode.substring(0, 8)}...');
+      debugPrint('Client ID: $_clientId');
+      debugPrint('Redirect URI: $_redirectUri');
+      
       final grant = oauth2.AuthorizationCodeGrant(
         _clientId,
         Uri.parse(_authorizationEndpoint),
@@ -191,6 +195,7 @@ class GitHubAuthService extends ChangeNotifier {
       });
 
       if (_client != null) {
+        debugPrint('Successfully obtained access token');
         // Store credentials securely
         await _secureStorage.write(
           key: _tokenKey,
@@ -202,12 +207,18 @@ class GitHubAuthService extends ChangeNotifier {
         await _fetchRepositories();
 
         _authStateController.add(true);
+        notifyListeners();
         return true;
       }
 
+      debugPrint('Failed to obtain access token');
       return false;
     } catch (e) {
       debugPrint('Error authenticating with code: $e');
+      debugPrint('Error type: ${e.runtimeType}');
+      if (e.toString().contains('invalid_grant')) {
+        debugPrint('The authorization code may have expired or been used already');
+      }
       return false;
     }
   }

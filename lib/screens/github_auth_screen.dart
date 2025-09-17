@@ -105,7 +105,7 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
         }
       } else {
         setState(() {
-          _errorMessage = 'Invalid authorization code. Please try again.';
+          _errorMessage = 'Authentication failed. The code may have expired or been used already. Please try getting a new code.';
         });
       }
     } catch (e) {
@@ -323,7 +323,9 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withOpacity(0.3),
                       ),
                     ),
                     child: Text(
