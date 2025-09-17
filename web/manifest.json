@@ -8,7 +8,11 @@
     "description": "A developer skill tracking app for senior developers. Track your progress against the skills and knowledge expected at companies like Google or Andela.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
-    "categories": ["productivity", "education", "utilities"],
+    "categories": [
+        "productivity",
+        "education",
+        "utilities"
+    ],
     "lang": "en",
     "scope": "/",
     "icons": [
