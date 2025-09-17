@@ -6,17 +6,15 @@ import 'package:oauth2/oauth2.dart' as oauth2;
 import 'package:url_launcher/url_launcher.dart';
 import '../models/github_user.dart';
 import '../models/github_repository.dart';
+import '../config/github_oauth_config.dart';
 
 class GitHubAuthService extends ChangeNotifier {
-  static const String _clientId = 'Ov23liUw25rI3TkTlt69';
-  static const String _clientSecret =
-      '4a906bc86f6df6868015a902ceca7faf42c01b0d'; // Replace with your GitHub OAuth App Client Secret
-  static const String _redirectUri = 'https://httpbin.org/get';
-  static const String _authorizationEndpoint =
-      'https://github.com/login/oauth/authorize';
-  static const String _tokenEndpoint =
-      'https://github.com/login/oauth/access_token';
-  static const String _apiBaseUrl = 'https://api.github.com';
+  static const String _clientId = GitHubOAuthConfig.clientId;
+  static const String _clientSecret = GitHubOAuthConfig.clientSecret;
+  static const String _redirectUri = GitHubOAuthConfig.redirectUri;
+  static const String _authorizationEndpoint = GitHubOAuthConfig.authorizationEndpoint;
+  static const String _tokenEndpoint = GitHubOAuthConfig.tokenEndpoint;
+  static const String _apiBaseUrl = GitHubOAuthConfig.apiBaseUrl;
 
   static const String _tokenKey = 'github_access_token';
   static const String _userKey = 'github_user_data';
@@ -178,10 +176,12 @@ class GitHubAuthService extends ChangeNotifier {
   /// Authenticate with authorization code (for manual testing)
   Future<bool> authenticateWithCode(String authorizationCode) async {
     try {
-      debugPrint('Attempting to authenticate with code: ${authorizationCode.substring(0, 8)}...');
+      debugPrint(
+        'Attempting to authenticate with code: ${authorizationCode.substring(0, 8)}...',
+      );
       debugPrint('Client ID: $_clientId');
       debugPrint('Redirect URI: $_redirectUri');
-      
+
       final grant = oauth2.AuthorizationCodeGrant(
         _clientId,
         Uri.parse(_authorizationEndpoint),
@@ -217,7 +217,9 @@ class GitHubAuthService extends ChangeNotifier {
       debugPrint('Error authenticating with code: $e');
       debugPrint('Error type: ${e.runtimeType}');
       if (e.toString().contains('invalid_grant')) {
-        debugPrint('The authorization code may have expired or been used already');
+        debugPrint(
+          'The authorization code may have expired or been used already',
+        );
       }
       return false;
     }

@@ -105,7 +105,8 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
         }
       } else {
         setState(() {
-          _errorMessage = 'Authentication failed. The code may have expired or been used already. Please try getting a new code.';
+          _errorMessage =
+              'Authentication failed. The code may have expired or been used already. Please try getting a new code.';
         });
       }
     } catch (e) {

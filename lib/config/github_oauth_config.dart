@@ -6,12 +6,12 @@ class GitHubOAuthConfig {
   // 3. Fill in the details:
   //    - Application name: DevPath
   //    - Homepage URL: https://your-domain.com (or localhost for development)
-  //    - Authorization callback URL: devpath://oauth/callback
+  //    - Authorization callback URL: https://httpbin.org/get
   // 4. Copy the Client ID and Client Secret herejj
 
   static const String clientId = 'Ov23liUw25rI3TkTlt69';
   static const String clientSecret = '4a906bc86f6df6868015a902ceca7faf42c01b0d';
-  static const String redirectUri = 'devpath://oauth/callback';
+  static const String redirectUri = 'https://httpbin.org/get';
 
   // GitHub API Configuration
   static const String authorizationEndpoint =
