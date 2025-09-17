@@ -246,9 +246,11 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
 
   Widget _buildUnauthenticatedView() {
     return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
           // GitHub Logo/Icon
           Container(
             width: 120,
@@ -353,6 +355,7 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
             ),
           ],
         ],
+        ),
       ),
     );
   }

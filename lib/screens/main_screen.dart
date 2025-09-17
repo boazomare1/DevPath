@@ -63,7 +63,11 @@ class _MainScreenState extends State<MainScreen> {
                     icon: Icons.dashboard,
                     label: 'Dashboard',
                   ),
-                  _buildNavItem(index: 1, icon: Icons.list_alt, label: 'Skills'),
+                  _buildNavItem(
+                    index: 1,
+                    icon: Icons.list_alt,
+                    label: 'Skills',
+                  ),
                   _buildNavItem(index: 2, icon: Icons.folder, label: 'Repos'),
                   _buildNavItem(
                     index: 3,
