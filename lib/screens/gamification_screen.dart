@@ -50,7 +50,10 @@ class _GamificationScreenState extends State<GamificationScreen>
 
               // Tab bar
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
@@ -151,7 +154,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                   ),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withOpacity(0.2),
                   ),
                 ),
                 child: Column(
@@ -173,7 +178,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                             ),
                             Text(
                               '${stats.totalXP} XP',
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge?.copyWith(
                                 color: Theme.of(
                                   context,
                                 ).colorScheme.onSurface.withOpacity(0.7),
@@ -187,7 +194,11 @@ class _GamificationScreenState extends State<GamificationScreen>
                             color: AppColors.primary,
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Icon(Icons.star, size: 32, color: AppColors.primary),
+                          child: Icon(
+                            Icons.star,
+                            size: 32,
+                            color: AppColors.primary,
+                          ),
                         ),
                       ],
                     ),
@@ -203,7 +214,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                           children: [
                             Text(
                               'Progress to Level ${stats.level + 1}',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(
                                 color: Theme.of(
                                   context,
                                 ).colorScheme.onSurface.withOpacity(0.7),
@@ -211,7 +224,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                             ),
                             Text(
                               '$nextLevelXP XP to go',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
                                 color: Theme.of(
                                   context,
                                 ).colorScheme.onSurface.withOpacity(0.5),
@@ -221,7 +236,10 @@ class _GamificationScreenState extends State<GamificationScreen>
                         ),
                         const SizedBox(height: 8),
                         LinearProgressIndicator(
-                          value: _calculateLevelProgress(stats.totalXP, stats.level),
+                          value: _calculateLevelProgress(
+                            stats.totalXP,
+                            stats.level,
+                          ),
                           backgroundColor: Theme.of(
                             context,
                           ).colorScheme.outline.withOpacity(0.2),
@@ -318,10 +336,14 @@ class _GamificationScreenState extends State<GamificationScreen>
                 padding: const EdgeInsets.all(16),
                 child: StreakWidget(
                   stats: gamificationService.userStats,
-                  onTap: () => _showStreakDetails(context, gamificationService.userStats),
+                  onTap:
+                      () => _showStreakDetails(
+                        context,
+                        gamificationService.userStats,
+                      ),
                 ),
               ),
-              
+
               // Badges collection
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -379,9 +401,7 @@ class _GamificationScreenState extends State<GamificationScreen>
           Icon(
             icon,
             size: 64,
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
           ),
           const SizedBox(height: 16),
           Text(
@@ -394,9 +414,7 @@ class _GamificationScreenState extends State<GamificationScreen>
           Text(
             subtitle,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
             ),
           ),
         ],
@@ -458,9 +476,10 @@ class _GamificationScreenState extends State<GamificationScreen>
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: badge.isEarned
-              ? AppColors.warning
-              : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color:
+              badge.isEarned
+                  ? AppColors.warning
+                  : Theme.of(context).colorScheme.outline.withOpacity(0.2),
         ),
       ),
       child: Column(
@@ -521,9 +540,10 @@ class _GamificationScreenState extends State<GamificationScreen>
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isCompleted
-              ? AppColors.success
-              : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color:
+              isCompleted
+                  ? AppColors.success
+                  : Theme.of(context).colorScheme.outline.withOpacity(0.2),
         ),
       ),
       child: Row(
@@ -531,9 +551,10 @@ class _GamificationScreenState extends State<GamificationScreen>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isCompleted
-                  ? AppColors.success.withOpacity(0.1)
-                  : Theme.of(context).colorScheme.outline.withOpacity(0.1),
+              color:
+                  isCompleted
+                      ? AppColors.success.withOpacity(0.1)
+                      : Theme.of(context).colorScheme.outline.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(achievement.icon, style: const TextStyle(fontSize: 24)),
@@ -609,7 +630,7 @@ class _GamificationScreenState extends State<GamificationScreen>
     final nextLevelXP = (currentLevel + 1) * 100;
     final progressXP = totalXP - currentLevelXP;
     final requiredXP = nextLevelXP - currentLevelXP;
-    
+
     if (requiredXP <= 0) return 1.0;
     return (progressXP / requiredXP).clamp(0.0, 1.0);
   }
@@ -617,160 +638,168 @@ class _GamificationScreenState extends State<GamificationScreen>
   void _showBadgeDetails(BuildContext context, gamification.Badge badge) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Text(
-              badge.icon,
-              style: const TextStyle(fontSize: 32),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                badge.name,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              badge.description,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            Row(
+      builder:
+          (context) => AlertDialog(
+            title: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getCategoryColor(badge.category).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                Text(badge.icon, style: const TextStyle(fontSize: 32)),
+                const SizedBox(width: 12),
+                Expanded(
                   child: Text(
-                    badge.category,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: _getCategoryColor(badge.category),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '${badge.points} XP',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
+                    badge.name,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ],
             ),
-            if (badge.isEarned) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.warning.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  badge.description,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                child: Row(
+                const SizedBox(height: 16),
+                Row(
                   children: [
-                    Icon(
-                      Icons.check_circle,
-                      color: AppColors.warning,
-                      size: 20,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getCategoryColor(
+                          badge.category,
+                        ).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        badge.category,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: _getCategoryColor(badge.category),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      'Earned on ${_formatDate(badge.earnedAt)}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.warning,
-                        fontWeight: FontWeight.w600,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${badge.points} XP',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
                 ),
+                if (badge.isEarned) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppColors.warning.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.check_circle,
+                          color: AppColors.warning,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Earned on ${_formatDate(badge.earnedAt)}',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.warning,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
               ),
             ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
           ),
-        ],
-      ),
     );
   }
 
   void _showStreakDetails(BuildContext context, gamification.UserStats stats) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(
-              Icons.local_fire_department,
-              color: AppColors.warning,
+      builder:
+          (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(Icons.local_fire_department, color: AppColors.warning),
+                const SizedBox(width: 8),
+                const Text('Streak Details'),
+              ],
             ),
-            const SizedBox(width: 8),
-            const Text('Streak Details'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildStreakDetailItem(
-              context,
-              'Current Daily Streak',
-              '${stats.dailyStreak} days',
-              Icons.calendar_today,
-              AppColors.warning,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildStreakDetailItem(
+                  context,
+                  'Current Daily Streak',
+                  '${stats.dailyStreak} days',
+                  Icons.calendar_today,
+                  AppColors.warning,
+                ),
+                _buildStreakDetailItem(
+                  context,
+                  'Weekly Streak',
+                  '${stats.weeklyStreak} weeks',
+                  Icons.date_range,
+                  AppColors.primary,
+                ),
+                _buildStreakDetailItem(
+                  context,
+                  'Longest Streak',
+                  '${stats.longestStreak} days',
+                  Icons.trending_up,
+                  AppColors.success,
+                ),
+                _buildStreakDetailItem(
+                  context,
+                  'Total Sessions',
+                  '${stats.totalSessions}',
+                  Icons.play_arrow,
+                  AppColors.secondary,
+                ),
+              ],
             ),
-            _buildStreakDetailItem(
-              context,
-              'Weekly Streak',
-              '${stats.weeklyStreak} weeks',
-              Icons.date_range,
-              AppColors.primary,
-            ),
-            _buildStreakDetailItem(
-              context,
-              'Longest Streak',
-              '${stats.longestStreak} days',
-              Icons.trending_up,
-              AppColors.success,
-            ),
-            _buildStreakDetailItem(
-              context,
-              'Total Sessions',
-              '${stats.totalSessions}',
-              Icons.play_arrow,
-              AppColors.secondary,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -788,10 +817,7 @@ class _GamificationScreenState extends State<GamificationScreen>
           Icon(icon, color: color, size: 20),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
           ),
           Text(
             value,

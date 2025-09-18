@@ -10,6 +10,7 @@ import 'insights_screen.dart';
 import 'roadmap_screen.dart';
 import 'gamification_screen.dart';
 import 'career_goals_screen.dart';
+import 'enhanced_career_goals_screen.dart';
 import 'ai_assistant_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
     const AIAssistantScreen(),
     const RoadmapScreen(),
     const GamificationScreen(),
-    const CareerGoalsScreen(),
+    const EnhancedCareerGoalsScreen(),
     const GitHubAuthScreen(),
     const SettingsScreen(),
   ];

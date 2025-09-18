@@ -423,16 +423,16 @@ class GamificationService extends ChangeNotifier {
   Future<void> addXP(int xp, {String? category, String? activity}) async {
     final newTotalXP = _userStats.totalXP + xp;
     final newLevel = _calculateLevel(newTotalXP);
-    
+
     // Update streaks
     await _updateStreaks();
-    
+
     // Update category XP
     final updatedCategoryXP = Map<String, int>.from(_userStats.categoryXP);
     if (category != null) {
       updatedCategoryXP[category] = (updatedCategoryXP[category] ?? 0) + xp;
     }
-    
+
     // Add to recent activities
     final updatedActivities = List<String>.from(_userStats.recentActivities);
     if (activity != null) {
@@ -464,16 +464,16 @@ class GamificationService extends ChangeNotifier {
   Future<void> _updateStreaks() async {
     final now = DateTime.now();
     final lastActivity = _userStats.lastActivity;
-    
+
     // Check if it's a new day
     final daysDifference = now.difference(lastActivity).inDays;
     final isNewDay = daysDifference >= 1;
     final isNewWeek = now.difference(lastActivity).inDays >= 7;
-    
+
     int newDailyStreak = _userStats.dailyStreak;
     int newWeeklyStreak = _userStats.weeklyStreak;
     int newLongestStreak = _userStats.longestStreak;
-    
+
     if (isNewDay) {
       if (daysDifference == 1) {
         // Consecutive day - increment streak
@@ -482,13 +482,13 @@ class GamificationService extends ChangeNotifier {
         // Streak broken - reset
         newDailyStreak = 1;
       }
-      
+
       // Update longest streak
       if (newDailyStreak > newLongestStreak) {
         newLongestStreak = newDailyStreak;
       }
     }
-    
+
     if (isNewWeek) {
       if (daysDifference >= 7 && daysDifference < 14) {
         // Consecutive week - increment streak
@@ -509,7 +509,7 @@ class GamificationService extends ChangeNotifier {
   /// Get streak bonus XP
   int _getStreakBonus() {
     int bonus = 0;
-    
+
     // Daily streak bonus
     if (_userStats.dailyStreak >= 7) {
       bonus += 50; // 7-day streak bonus
@@ -517,22 +517,26 @@ class GamificationService extends ChangeNotifier {
     if (_userStats.dailyStreak >= 30) {
       bonus += 100; // 30-day streak bonus
     }
-    
+
     // Weekly streak bonus
     if (_userStats.weeklyStreak >= 4) {
       bonus += 200; // 4-week streak bonus
     }
-    
+
     return bonus;
   }
 
   /// Add XP with streak bonus
-  Future<void> addXPWithStreakBonus(int baseXP, {String? category, String? activity}) async {
+  Future<void> addXPWithStreakBonus(
+    int baseXP, {
+    String? category,
+    String? activity,
+  }) async {
     final streakBonus = _getStreakBonus();
     final totalXP = baseXP + streakBonus;
-    
+
     await addXP(totalXP, category: category, activity: activity);
-    
+
     if (streakBonus > 0) {
       debugPrint('🔥 Streak bonus: +$streakBonus XP!');
     }
@@ -695,7 +699,8 @@ class GamificationService extends ChangeNotifier {
 
   /// Initialize default badges
   void _initializeDefaultBadges() {
-    if (_badges.isNotEmpty) return; // Don't reinitialize if badges already exist
+    if (_badges.isNotEmpty)
+      return; // Don't reinitialize if badges already exist
 
     _badges = [
       // Skill-based badges
@@ -744,7 +749,7 @@ class GamificationService extends ChangeNotifier {
         points: 150,
         earnedAt: DateTime.now(),
       ),
-      
+
       // Streak badges
       Badge(
         id: 'week_warrior',
@@ -773,7 +778,7 @@ class GamificationService extends ChangeNotifier {
         points: 1000,
         earnedAt: DateTime.now(),
       ),
-      
+
       // Level badges
       Badge(
         id: 'level_5',
@@ -802,7 +807,7 @@ class GamificationService extends ChangeNotifier {
         points: 1000,
         earnedAt: DateTime.now(),
       ),
-      
+
       // GitHub badges
       Badge(
         id: 'github_hero',
@@ -831,7 +836,7 @@ class GamificationService extends ChangeNotifier {
         points: 300,
         earnedAt: DateTime.now(),
       ),
-      
+
       // Special badges
       Badge(
         id: 'early_bird',

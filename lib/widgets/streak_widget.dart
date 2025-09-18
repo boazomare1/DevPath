@@ -6,11 +6,7 @@ class StreakWidget extends StatelessWidget {
   final gamification.UserStats stats;
   final VoidCallback? onTap;
 
-  const StreakWidget({
-    super.key,
-    required this.stats,
-    this.onTap,
-  });
+  const StreakWidget({super.key, required this.stats, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +24,7 @@ class StreakWidget extends StatelessWidget {
             ],
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppColors.warning.withOpacity(0.3),
-          ),
+          border: Border.all(color: AppColors.warning.withOpacity(0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,7 +47,10 @@ class StreakWidget extends StatelessWidget {
                 const Spacer(),
                 if (stats.dailyStreak > 0)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.warning,
                       borderRadius: BorderRadius.circular(12),
@@ -68,9 +65,9 @@ class StreakWidget extends StatelessWidget {
                   ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Streak stats
             Row(
               children: [
@@ -105,9 +102,9 @@ class StreakWidget extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Streak progress bar
             _buildStreakProgress(context),
           ],
@@ -125,11 +122,7 @@ class StreakWidget extends StatelessWidget {
   ) {
     return Column(
       children: [
-        Icon(
-          icon,
-          color: color,
-          size: 20,
-        ),
+        Icon(icon, color: color, size: 20),
         const SizedBox(height: 4),
         Text(
           value,
@@ -152,7 +145,7 @@ class StreakWidget extends StatelessWidget {
     // Calculate streak progress (0-7 days for daily streak)
     final progress = (stats.dailyStreak % 7) / 7.0;
     final streakLevel = (stats.dailyStreak / 7).floor() + 1;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -177,7 +170,9 @@ class StreakWidget extends StatelessWidget {
         const SizedBox(height: 8),
         LinearProgressIndicator(
           value: progress,
-          backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          backgroundColor: Theme.of(
+            context,
+          ).colorScheme.outline.withOpacity(0.2),
           valueColor: AlwaysStoppedAnimation<Color>(AppColors.warning),
         ),
         const SizedBox(height: 8),
@@ -221,7 +216,8 @@ class StreakCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final daysInMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0).day;
+    final daysInMonth =
+        DateTime(currentMonth.year, currentMonth.month + 1, 0).day;
     final firstDayOfMonth = DateTime(currentMonth.year, currentMonth.month, 1);
     final firstWeekday = firstDayOfMonth.weekday;
 
@@ -245,7 +241,7 @@ class StreakCalendar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Calendar grid
           GridView.builder(
             shrinkWrap: true,
@@ -261,37 +257,46 @@ class StreakCalendar extends StatelessWidget {
               if (index < firstWeekday - 1) {
                 return const SizedBox.shrink();
               }
-              
+
               final day = index - firstWeekday + 2;
               final date = DateTime(currentMonth.year, currentMonth.month, day);
-              final isActive = activeDays.any((d) => 
-                d.year == date.year && 
-                d.month == date.month && 
-                d.day == date.day
+              final isActive = activeDays.any(
+                (d) =>
+                    d.year == date.year &&
+                    d.month == date.month &&
+                    d.day == date.day,
               );
-              final isToday = date.day == DateTime.now().day && 
-                             date.month == DateTime.now().month && 
-                             date.year == DateTime.now().year;
-              
+              final isToday =
+                  date.day == DateTime.now().day &&
+                  date.month == DateTime.now().month &&
+                  date.year == DateTime.now().year;
+
               return Container(
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? AppColors.warning
-                      : isToday
+                  color:
+                      isActive
+                          ? AppColors.warning
+                          : isToday
                           ? AppColors.primary.withOpacity(0.3)
-                          : Theme.of(context).colorScheme.outline.withOpacity(0.1),
+                          : Theme.of(
+                            context,
+                          ).colorScheme.outline.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(4),
-                  border: isToday
-                      ? Border.all(color: AppColors.primary, width: 1)
-                      : null,
+                  border:
+                      isToday
+                          ? Border.all(color: AppColors.primary, width: 1)
+                          : null,
                 ),
                 child: Center(
                   child: Text(
                     day.toString(),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: isActive || isToday
-                          ? Colors.white
-                          : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color:
+                          isActive || isToday
+                              ? Colors.white
+                              : Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.6),
                       fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
