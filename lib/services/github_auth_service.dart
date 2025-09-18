@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:oauth2/oauth2.dart' as oauth2;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 import '../models/github_user.dart';
 import '../models/github_repository.dart';
 import '../config/github_oauth_config.dart';
@@ -43,7 +44,6 @@ class GitHubAuthService extends ChangeNotifier {
   Future<String?> getAccessToken() async {
     return _client?.credentials.accessToken;
   }
-
 
   /// Get a fresh authorization URL (useful for debugging)
   Future<Uri?> getFreshAuthorizationUrl() async {
@@ -218,27 +218,18 @@ class GitHubAuthService extends ChangeNotifier {
       debugPrint('Client ID: $_clientId');
       debugPrint('Redirect URI: $_redirectUri');
 
-      // Check if we have a current grant, if not create one
-      if (_currentGrant == null) {
-        debugPrint('No current grant found, creating new one...');
-        _currentGrant = oauth2.AuthorizationCodeGrant(
-          _clientId,
-          Uri.parse(_authorizationEndpoint),
-          Uri.parse(_tokenEndpoint),
+      // Use custom token exchange that handles GitHub's form-encoded response
+      final token = await _exchangeCodeForToken(authorizationCode);
+
+      if (token != null) {
+        debugPrint('Successfully obtained access token');
+
+        // Create OAuth client with the token
+        _client = oauth2.Client(
+          oauth2.Credentials(token),
+          identifier: _clientId,
           secret: _clientSecret,
         );
-      }
-
-      debugPrint('Using OAuth library for token exchange...');
-
-      // Use the OAuth library's built-in token exchange (handles PKCE automatically)
-      _client = await _currentGrant!.handleAuthorizationResponse({
-        'code': authorizationCode,
-        'redirect_uri': _redirectUri,
-      });
-
-      if (_client != null) {
-        debugPrint('Successfully obtained access token');
 
         // Store credentials securely
         await _secureStorage.write(
@@ -273,6 +264,49 @@ class GitHubAuthService extends ChangeNotifier {
     }
   }
 
+  /// Custom token exchange that handles GitHub's form-encoded response
+  Future<String?> _exchangeCodeForToken(String authorizationCode) async {
+    try {
+      final response = await http.post(
+        Uri.parse(_tokenEndpoint),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'client_id': _clientId,
+          'client_secret': _clientSecret,
+          'code': authorizationCode,
+          'redirect_uri': _redirectUri,
+        },
+      );
+
+      debugPrint('Token exchange response status: ${response.statusCode}');
+      debugPrint('Token exchange response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseBody = response.body;
+
+        // Parse form-encoded response (GitHub's format)
+        final params = Uri.splitQueryString(responseBody);
+        final accessToken = params['access_token'];
+
+        if (accessToken != null) {
+          debugPrint('Access token obtained successfully');
+          return accessToken;
+        } else {
+          debugPrint('No access token found in response');
+          return null;
+        }
+      } else {
+        debugPrint('Token exchange failed with status: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error in token exchange: $e');
+      return null;
+    }
+  }
 
   /// Fetch current user data from GitHub API
   Future<GitHubUser?> _fetchUserData() async {
