@@ -12,7 +12,8 @@ class GitHubAuthService extends ChangeNotifier {
   static const String _clientId = GitHubOAuthConfig.clientId;
   static const String _clientSecret = GitHubOAuthConfig.clientSecret;
   static const String _redirectUri = GitHubOAuthConfig.redirectUri;
-  static const String _authorizationEndpoint = GitHubOAuthConfig.authorizationEndpoint;
+  static const String _authorizationEndpoint =
+      GitHubOAuthConfig.authorizationEndpoint;
   static const String _tokenEndpoint = GitHubOAuthConfig.tokenEndpoint;
   static const String _apiBaseUrl = GitHubOAuthConfig.apiBaseUrl;
 
@@ -77,7 +78,7 @@ class GitHubAuthService extends ChangeNotifier {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final random = DateTime.now().microsecondsSinceEpoch;
       final state = 'devpath_${timestamp}_$random';
-      
+
       final authUrl = Uri.parse(
         '$_authorizationEndpoint?'
         'response_type=code&'
@@ -85,7 +86,7 @@ class GitHubAuthService extends ChangeNotifier {
         'redirect_uri=${Uri.encodeComponent(_redirectUri)}&'
         'scope=${Uri.encodeComponent('user:email repo read:user')}&'
         'state=$state&'
-        '_cb=$timestamp$random'
+        '_cb=$timestamp$random',
       );
 
       debugPrint('Fresh authorization URL: $authUrl');
@@ -103,7 +104,7 @@ class GitHubAuthService extends ChangeNotifier {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final random = DateTime.now().microsecondsSinceEpoch;
       final state = 'devpath_${timestamp}_$random';
-      
+
       final authUrl = Uri.parse(
         '$_authorizationEndpoint?'
         'response_type=code&'
@@ -111,7 +112,7 @@ class GitHubAuthService extends ChangeNotifier {
         'redirect_uri=${Uri.encodeComponent(_redirectUri)}&'
         'scope=${Uri.encodeComponent('user:email repo read:user')}&'
         'state=$state&'
-        '_cb=$timestamp$random'
+        '_cb=$timestamp$random',
       );
 
       // Launch browser for authentication
@@ -141,7 +142,7 @@ class GitHubAuthService extends ChangeNotifier {
 
       if (token != null) {
         _accessToken = token;
-        
+
         // Store token securely
         await _secureStorage.write(key: _tokenKey, value: token);
 
@@ -232,7 +233,7 @@ class GitHubAuthService extends ChangeNotifier {
         try {
           final jsonResponse = jsonDecode(responseBody);
           final accessToken = jsonResponse['access_token'];
-          
+
           if (accessToken != null) {
             debugPrint('Access token obtained successfully from JSON');
             return accessToken;
@@ -337,7 +338,9 @@ class GitHubAuthService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final List<dynamic> reposData = jsonDecode(response.body);
-        return reposData.map((repo) => GitHubRepository.fromJson(repo)).toList();
+        return reposData
+            .map((repo) => GitHubRepository.fromJson(repo))
+            .toList();
       }
     } catch (e) {
       debugPrint('Error fetching user repositories: $e');

@@ -48,13 +48,21 @@ class GitHubInsightsService {
             week: weekDate,
           );
         }).toList();
+      } else if (response.statusCode == 202) {
+        // GitHub is calculating the data, return empty data for now
+        debugPrint('Commit activity data is being calculated by GitHub (202)');
+        return _generateEmptyCommitActivity();
+      } else if (response.statusCode == 204) {
+        // No commit activity data available
+        debugPrint('No commit activity data available (204)');
+        return _generateEmptyCommitActivity();
       } else {
         debugPrint('Failed to fetch commit activity: ${response.statusCode}');
-        return _generateMockCommitActivity();
+        return _generateEmptyCommitActivity();
       }
     } catch (e) {
       debugPrint('Error fetching commit activity: $e');
-      return _generateMockCommitActivity();
+      return _generateEmptyCommitActivity();
     }
   }
 
@@ -205,6 +213,16 @@ class GitHubInsightsService {
       final commits = 20 + (random % 30);
 
       return CommitActivityData(month: month, commits: commits, week: now);
+    }).toList();
+  }
+
+  /// Generate empty commit activity data when no data is available
+  static List<CommitActivityData> _generateEmptyCommitActivity() {
+    final now = DateTime.now();
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+
+    return months.map((month) {
+      return CommitActivityData(month: month, commits: 0, week: now);
     }).toList();
   }
 
