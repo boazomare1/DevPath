@@ -19,9 +19,9 @@ class RoadmapTimeline extends StatelessWidget {
       children: [
         // Roadmap header
         _buildRoadmapHeader(context),
-        
+
         const SizedBox(height: 24),
-        
+
         // Timeline
         _buildTimeline(context),
       ],
@@ -55,7 +55,9 @@ class RoadmapTimeline extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: _getDifficultyColor(roadmap.difficulty).withOpacity(0.1),
+                  color: _getDifficultyColor(
+                    roadmap.difficulty,
+                  ).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -68,18 +70,18 @@ class RoadmapTimeline extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           Text(
             roadmap.description,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Progress overview
           Row(
             children: [
@@ -163,13 +165,8 @@ class RoadmapTimeline extends StatelessWidget {
       itemBuilder: (context, index) {
         final module = roadmap.modules[index];
         final isLast = index == roadmap.modules.length - 1;
-        
-        return _buildTimelineItem(
-          context,
-          module,
-          index + 1,
-          isLast,
-        );
+
+        return _buildTimelineItem(context, module, index + 1, isLast);
       },
     );
   }
@@ -191,36 +188,39 @@ class RoadmapTimeline extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: module.isCompleted
-                    ? AppColors.success
-                    : module.progress > 0
+                color:
+                    module.isCompleted
+                        ? AppColors.success
+                        : module.progress > 0
                         ? AppColors.primary
-                        : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        : Theme.of(
+                          context,
+                        ).colorScheme.outline.withOpacity(0.3),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: module.isCompleted
-                      ? AppColors.success
-                      : AppColors.primary,
+                  color:
+                      module.isCompleted
+                          ? AppColors.success
+                          : AppColors.primary,
                   width: 2,
                 ),
               ),
               child: Center(
-                child: module.isCompleted
-                    ? const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 20,
-                      )
-                    : Text(
-                        stepNumber.toString(),
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                child:
+                    module.isCompleted
+                        ? const Icon(Icons.check, color: Colors.white, size: 20)
+                        : Text(
+                          stepNumber.toString(),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleSmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
               ),
             ),
-            
+
             // Timeline line
             if (!isLast)
               Container(
@@ -230,13 +230,11 @@ class RoadmapTimeline extends StatelessWidget {
               ),
           ],
         ),
-        
+
         const SizedBox(width: 16),
-        
+
         // Module content
-        Expanded(
-          child: _buildModuleCard(context, module),
-        ),
+        Expanded(child: _buildModuleCard(context, module)),
       ],
     );
   }
@@ -249,9 +247,10 @@ class RoadmapTimeline extends StatelessWidget {
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: module.isCompleted
-              ? AppColors.success.withOpacity(0.3)
-              : module.progress > 0
+          color:
+              module.isCompleted
+                  ? AppColors.success.withOpacity(0.3)
+                  : module.progress > 0
                   ? AppColors.primary.withOpacity(0.3)
                   : Theme.of(context).colorScheme.outline.withOpacity(0.2),
         ),
@@ -294,18 +293,18 @@ class RoadmapTimeline extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           Text(
             module.description,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Module details
           Row(
             children: [
@@ -331,9 +330,9 @@ class RoadmapTimeline extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Skills
           if (module.skills.isNotEmpty) ...[
             Text(
@@ -347,16 +346,21 @@ class RoadmapTimeline extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 4,
-              children: module.skills.map((skill) => _buildSkillChip(context, skill)).toList(),
+              children:
+                  module.skills
+                      .map((skill) => _buildSkillChip(context, skill))
+                      .toList(),
             ),
             const SizedBox(height: 16),
           ],
-          
+
           // Progress bar
           if (module.progress > 0 || module.isCompleted) ...[
             LinearProgressIndicator(
               value: module.progress,
-              backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.outline.withOpacity(0.2),
               valueColor: AlwaysStoppedAnimation<Color>(
                 module.isCompleted ? AppColors.success : AppColors.primary,
               ),
@@ -368,7 +372,9 @@ class RoadmapTimeline extends StatelessWidget {
                 Text(
                   '${(module.progress * 100).toInt()}% Complete',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.6),
                   ),
                 ),
                 if (module.isCompleted)
@@ -383,7 +389,7 @@ class RoadmapTimeline extends StatelessWidget {
             ),
             const SizedBox(height: 16),
           ],
-          
+
           // Action buttons
           Row(
             children: [
@@ -401,18 +407,20 @@ class RoadmapTimeline extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: module.isCompleted
-                      ? null
-                      : () => _startModule(context, module),
+                  onPressed:
+                      module.isCompleted
+                          ? null
+                          : () => _startModule(context, module),
                   icon: Icon(
                     module.isCompleted ? Icons.check : Icons.play_arrow,
                     size: 16,
                   ),
                   label: Text(module.isCompleted ? 'Completed' : 'Start'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: module.isCompleted
-                        ? AppColors.success
-                        : AppColors.primary,
+                    backgroundColor:
+                        module.isCompleted
+                            ? AppColors.success
+                            : AppColors.primary,
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -467,9 +475,7 @@ class RoadmapTimeline extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.primary.withOpacity(0.3),
-        ),
+        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
       ),
       child: Text(
         skill,
@@ -510,112 +516,123 @@ class RoadmapTimeline extends StatelessWidget {
   void _showModuleDetails(BuildContext context, LearningModule module) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(module.title),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                module.description,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 16),
-              
-              // Resources
-              Text(
-                'Learning Resources:',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              ...module.resources.map((resource) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    Icon(
-                      _getResourceIcon(resource.type),
-                      size: 16,
-                      color: AppColors.primary,
+      builder:
+          (context) => AlertDialog(
+            title: Text(module.title),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    module.description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Resources
+                  Text(
+                    'Learning Resources:',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  const SizedBox(height: 8),
+                  ...module.resources.map(
+                    (resource) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
                         children: [
-                          Text(
-                            resource.title,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                          Icon(
+                            _getResourceIcon(resource.type),
+                            size: 16,
+                            color: AppColors.primary,
                           ),
-                          Text(
-                            '${resource.estimatedMinutes} min • ${resource.type}',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  resource.title,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                Text(
+                                  '${resource.estimatedMinutes} min • ${resource.type}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface.withOpacity(0.6),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              )),
-              
-              const SizedBox(height: 16),
-              
-              // Tasks
-              Text(
-                'Learning Tasks:',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              ...module.tasks.map((task) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    Icon(
-                      _getTaskIcon(task.type),
-                      size: 16,
-                      color: AppColors.secondary,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Tasks
+                  Text(
+                    'Learning Tasks:',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  const SizedBox(height: 8),
+                  ...module.tasks.map(
+                    (task) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
                         children: [
-                          Text(
-                            task.title,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                          Icon(
+                            _getTaskIcon(task.type),
+                            size: 16,
+                            color: AppColors.secondary,
                           ),
-                          Text(
-                            '${task.estimatedMinutes} min • ${task.type}',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  task.title,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                Text(
+                                  '${task.estimatedMinutes} min • ${task.type}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface.withOpacity(0.6),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
     );
   }
 

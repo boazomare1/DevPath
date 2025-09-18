@@ -115,20 +115,20 @@ class LearningModule {
       estimatedHours: json['estimatedHours'],
       difficulty: json['difficulty'],
       type: json['type'],
-      resources: (json['resources'] as List)
-          .map((r) => LearningResource.fromJson(r))
-          .toList(),
-      tasks: (json['tasks'] as List)
-          .map((t) => LearningTask.fromJson(t))
-          .toList(),
+      resources:
+          (json['resources'] as List)
+              .map((r) => LearningResource.fromJson(r))
+              .toList(),
+      tasks:
+          (json['tasks'] as List).map((t) => LearningTask.fromJson(t)).toList(),
       isCompleted: json['isCompleted'] ?? false,
       progress: (json['progress'] ?? 0.0).toDouble(),
-      startedAt: json['startedAt'] != null
-          ? DateTime.parse(json['startedAt'])
-          : null,
-      completedAt: json['completedAt'] != null
-          ? DateTime.parse(json['completedAt'])
-          : null,
+      startedAt:
+          json['startedAt'] != null ? DateTime.parse(json['startedAt']) : null,
+      completedAt:
+          json['completedAt'] != null
+              ? DateTime.parse(json['completedAt'])
+              : null,
       notes: json['notes'],
     );
   }
@@ -235,9 +235,10 @@ class LearningTask {
       estimatedMinutes: json['estimatedMinutes'],
       isCompleted: json['isCompleted'] ?? false,
       instructions: json['instructions'],
-      deliverables: json['deliverables'] != null
-          ? List<String>.from(json['deliverables'])
-          : null,
+      deliverables:
+          json['deliverables'] != null
+              ? List<String>.from(json['deliverables'])
+              : null,
     );
   }
 }
@@ -324,15 +325,17 @@ class PersonalizedRoadmap {
       title: json['title'],
       description: json['description'],
       targetRole: json['targetRole'],
-      modules: (json['modules'] as List)
-          .map((m) => LearningModule.fromJson(m))
-          .toList(),
+      modules:
+          (json['modules'] as List)
+              .map((m) => LearningModule.fromJson(m))
+              .toList(),
       totalEstimatedHours: json['totalEstimatedHours'],
       difficulty: json['difficulty'],
       createdAt: DateTime.parse(json['createdAt']),
-      completedAt: json['completedAt'] != null
-          ? DateTime.parse(json['completedAt'])
-          : null,
+      completedAt:
+          json['completedAt'] != null
+              ? DateTime.parse(json['completedAt'])
+              : null,
       overallProgress: (json['overallProgress'] ?? 0.0).toDouble(),
       missingSkills: List<String>.from(json['missingSkills']),
       recommendedSkills: List<String>.from(json['recommendedSkills']),
@@ -342,12 +345,15 @@ class PersonalizedRoadmap {
 
 class AIAssistantService extends ChangeNotifier {
   // AI API Configuration - You can switch between different providers
-  static const String _openaiApiKey = 'your-openai-api-key'; // Replace with actual key
-  static const String _geminiApiKey = 'your-gemini-api-key'; // Replace with actual key
-  
+  static const String _openaiApiKey =
+      'your-openai-api-key'; // Replace with actual key
+  static const String _geminiApiKey =
+      'your-gemini-api-key'; // Replace with actual key
+
   static const String _openaiUrl = 'https://api.openai.com/v1/chat/completions';
-  static const String _geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
-  
+  static const String _geminiUrl =
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+
   // Use Gemini by default (free tier available)
   static const String _currentProvider = 'gemini';
 
@@ -374,7 +380,7 @@ class AIAssistantService extends ChangeNotifier {
       // Analyze current skills and repositories
       final skillAnalysis = _analyzeCurrentSkills(currentSkills);
       final repoAnalysis = await _analyzeRepositories(repositories);
-      
+
       // Generate AI-powered roadmap
       final roadmap = await _generateAIRoadmap(
         targetRole: targetRole,
@@ -399,13 +405,17 @@ class AIAssistantService extends ChangeNotifier {
 
   /// Analyze current skills to identify strengths and gaps
   Map<String, dynamic> _analyzeCurrentSkills(List<Skill> skills) {
-    final completedSkills = skills.where((s) => s.status == SkillStatus.completed).toList();
-    final inProgressSkills = skills.where((s) => s.status == SkillStatus.inProgress).toList();
-    final notStartedSkills = skills.where((s) => s.status == SkillStatus.notStarted).toList();
+    final completedSkills =
+        skills.where((s) => s.status == SkillStatus.completed).toList();
+    final inProgressSkills =
+        skills.where((s) => s.status == SkillStatus.inProgress).toList();
+    final notStartedSkills =
+        skills.where((s) => s.status == SkillStatus.notStarted).toList();
 
     final skillCategories = <String, int>{};
     for (final skill in completedSkills) {
-      skillCategories[skill.category.displayName] = (skillCategories[skill.category.displayName] ?? 0) + 1;
+      skillCategories[skill.category.displayName] =
+          (skillCategories[skill.category.displayName] ?? 0) + 1;
     }
 
     return {
@@ -421,7 +431,9 @@ class AIAssistantService extends ChangeNotifier {
   }
 
   /// Analyze GitHub repositories for insights
-  Future<Map<String, dynamic>> _analyzeRepositories(List<GitHubRepository> repositories) async {
+  Future<Map<String, dynamic>> _analyzeRepositories(
+    List<GitHubRepository> repositories,
+  ) async {
     if (repositories.isEmpty) {
       return {
         'totalRepos': 0,
@@ -461,8 +473,8 @@ class AIAssistantService extends ChangeNotifier {
     }
 
     // Sort languages by frequency
-    final sortedLanguages = languages.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+    final sortedLanguages =
+        languages.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
     final topLanguages = sortedLanguages.take(5).map((e) => e.key).toList();
 
     return {
@@ -471,30 +483,31 @@ class AIAssistantService extends ChangeNotifier {
       'topLanguages': topLanguages,
       'repoTypes': repoTypes,
       'recentActivity': hasRecentActivity,
-      'averageStars': repositories.isNotEmpty ? totalStars / repositories.length : 0.0,
+      'averageStars':
+          repositories.isNotEmpty ? totalStars / repositories.length : 0.0,
     };
   }
 
   /// Categorize repository by its characteristics
   String _categorizeRepository(GitHubRepository repo) {
-    if (repo.name.toLowerCase().contains('frontend') || 
+    if (repo.name.toLowerCase().contains('frontend') ||
         repo.name.toLowerCase().contains('ui') ||
         repo.name.toLowerCase().contains('web')) {
       return 'Frontend';
     } else if (repo.name.toLowerCase().contains('backend') ||
-               repo.name.toLowerCase().contains('api') ||
-               repo.name.toLowerCase().contains('server')) {
+        repo.name.toLowerCase().contains('api') ||
+        repo.name.toLowerCase().contains('server')) {
       return 'Backend';
     } else if (repo.name.toLowerCase().contains('mobile') ||
-               repo.name.toLowerCase().contains('app')) {
+        repo.name.toLowerCase().contains('app')) {
       return 'Mobile';
     } else if (repo.name.toLowerCase().contains('data') ||
-               repo.name.toLowerCase().contains('ml') ||
-               repo.name.toLowerCase().contains('ai')) {
+        repo.name.toLowerCase().contains('ml') ||
+        repo.name.toLowerCase().contains('ai')) {
       return 'Data Science';
     } else if (repo.name.toLowerCase().contains('devops') ||
-               repo.name.toLowerCase().contains('docker') ||
-               repo.name.toLowerCase().contains('kubernetes')) {
+        repo.name.toLowerCase().contains('docker') ||
+        repo.name.toLowerCase().contains('kubernetes')) {
       return 'DevOps';
     } else {
       return 'General';
@@ -524,7 +537,7 @@ class AIAssistantService extends ChangeNotifier {
     try {
       // Call AI API
       final aiResponse = await _callAIAPI(prompt);
-      
+
       // Parse AI response and create roadmap
       final roadmap = _parseAIResponse(
         aiResponse: aiResponse,
@@ -642,23 +655,21 @@ Format the response as JSON with this structure:
   Future<String> _callGeminiAPI(String prompt) async {
     final response = await http.post(
       Uri.parse('$_geminiUrl?key=$_geminiApiKey'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
             'parts': [
-              {'text': prompt}
-            ]
-          }
+              {'text': prompt},
+            ],
+          },
         ],
         'generationConfig': {
           'temperature': 0.7,
           'topK': 40,
           'topP': 0.95,
           'maxOutputTokens': 8192,
-        }
+        },
       }),
     );
 
@@ -666,7 +677,9 @@ Format the response as JSON with this structure:
       final data = jsonDecode(response.body);
       return data['candidates'][0]['content']['parts'][0]['text'];
     } else {
-      throw Exception('Gemini API error: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Gemini API error: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
@@ -683,12 +696,10 @@ Format the response as JSON with this structure:
         'messages': [
           {
             'role': 'system',
-            'content': 'You are an expert career advisor and learning path specialist. Always respond with valid JSON only.'
+            'content':
+                'You are an expert career advisor and learning path specialist. Always respond with valid JSON only.',
           },
-          {
-            'role': 'user',
-            'content': prompt
-          }
+          {'role': 'user', 'content': prompt},
         ],
         'temperature': 0.7,
         'max_tokens': 4000,
@@ -699,7 +710,9 @@ Format the response as JSON with this structure:
       final data = jsonDecode(response.body);
       return data['choices'][0]['message']['content'];
     } else {
-      throw Exception('OpenAI API error: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'OpenAI API error: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
@@ -728,55 +741,66 @@ Format the response as JSON with this structure:
       for (int i = 0; i < (data['modules'] as List).length; i++) {
         final moduleData = data['modules'][i];
         final moduleId = '${roadmapId}_module_$i';
-        
+
         final resources = <LearningResource>[];
         for (final resourceData in moduleData['resources']) {
-          resources.add(LearningResource(
-            title: resourceData['title'],
-            url: resourceData['url'],
-            type: resourceData['type'],
-            estimatedMinutes: resourceData['estimatedMinutes'],
-            description: resourceData['description'],
-          ));
+          resources.add(
+            LearningResource(
+              title: resourceData['title'],
+              url: resourceData['url'],
+              type: resourceData['type'],
+              estimatedMinutes: resourceData['estimatedMinutes'],
+              description: resourceData['description'],
+            ),
+          );
         }
 
         final tasks = <LearningTask>[];
         for (int j = 0; j < (moduleData['tasks'] as List).length; j++) {
           final taskData = moduleData['tasks'][j];
-          tasks.add(LearningTask(
-            id: '${moduleId}_task_$j',
-            title: taskData['title'],
-            description: taskData['description'],
-            type: taskData['type'],
-            estimatedMinutes: taskData['estimatedMinutes'],
-            instructions: taskData['instructions'],
-            deliverables: taskData['deliverables'] != null 
-                ? List<String>.from(taskData['deliverables'])
-                : null,
-          ));
+          tasks.add(
+            LearningTask(
+              id: '${moduleId}_task_$j',
+              title: taskData['title'],
+              description: taskData['description'],
+              type: taskData['type'],
+              estimatedMinutes: taskData['estimatedMinutes'],
+              instructions: taskData['instructions'],
+              deliverables:
+                  taskData['deliverables'] != null
+                      ? List<String>.from(taskData['deliverables'])
+                      : null,
+            ),
+          );
         }
 
-        modules.add(LearningModule(
-          id: moduleId,
-          title: moduleData['title'],
-          description: moduleData['description'],
-          category: moduleData['category'],
-          skills: List<String>.from(moduleData['skills']),
-          prerequisites: List<String>.from(moduleData['prerequisites']),
-          estimatedHours: moduleData['estimatedHours'],
-          difficulty: moduleData['difficulty'],
-          type: moduleData['type'],
-          resources: resources,
-          tasks: tasks,
-        ));
+        modules.add(
+          LearningModule(
+            id: moduleId,
+            title: moduleData['title'],
+            description: moduleData['description'],
+            category: moduleData['category'],
+            skills: List<String>.from(moduleData['skills']),
+            prerequisites: List<String>.from(moduleData['prerequisites']),
+            estimatedHours: moduleData['estimatedHours'],
+            difficulty: moduleData['difficulty'],
+            type: moduleData['type'],
+            resources: resources,
+            tasks: tasks,
+          ),
+        );
       }
 
-      final totalHours = modules.fold(0, (sum, module) => sum + module.estimatedHours);
+      final totalHours = modules.fold(
+        0,
+        (sum, module) => sum + module.estimatedHours,
+      );
 
       return PersonalizedRoadmap(
         id: roadmapId,
         title: 'Become a $targetRole - AI Personalized Path',
-        description: 'A personalized learning roadmap generated by AI based on your current skills and GitHub activity.',
+        description:
+            'A personalized learning roadmap generated by AI based on your current skills and GitHub activity.',
         targetRole: targetRole,
         modules: modules,
         totalEstimatedHours: totalHours,
@@ -808,12 +832,16 @@ Format the response as JSON with this structure:
     required String experienceLevel,
   }) {
     final modules = _getFallbackModules(targetRole, experienceLevel);
-    final totalHours = modules.fold(0, (sum, module) => sum + module.estimatedHours);
+    final totalHours = modules.fold(
+      0,
+      (sum, module) => sum + module.estimatedHours,
+    );
 
     return PersonalizedRoadmap(
       id: roadmapId,
       title: 'Become a $targetRole - Structured Path',
-      description: 'A structured learning roadmap based on industry best practices.',
+      description:
+          'A structured learning roadmap based on industry best practices.',
       targetRole: targetRole,
       modules: modules,
       totalEstimatedHours: totalHours,
@@ -826,7 +854,10 @@ Format the response as JSON with this structure:
   }
 
   /// Get fallback modules based on role
-  List<LearningModule> _getFallbackModules(String targetRole, String experienceLevel) {
+  List<LearningModule> _getFallbackModules(
+    String targetRole,
+    String experienceLevel,
+  ) {
     final roleModules = {
       'Frontend Developer': [
         LearningModule(
@@ -859,10 +890,12 @@ Format the response as JSON with this structure:
             LearningTask(
               id: 'build_landing_page',
               title: 'Build a Landing Page',
-              description: 'Create a responsive landing page using HTML and CSS',
+              description:
+                  'Create a responsive landing page using HTML and CSS',
               type: 'Project',
               estimatedMinutes: 240,
-              instructions: 'Design and code a modern landing page with navigation, hero section, and footer',
+              instructions:
+                  'Design and code a modern landing page with navigation, hero section, and footer',
               deliverables: ['HTML file', 'CSS file', 'Screenshots'],
             ),
           ],
@@ -883,7 +916,8 @@ Format the response as JSON with this structure:
       'Full Stack Developer': ['React', 'Node.js', 'MongoDB', 'Docker'],
     };
 
-    return roleSkills[targetRole] ?? ['Problem Solving', 'Git', 'Communication'];
+    return roleSkills[targetRole] ??
+        ['Problem Solving', 'Git', 'Communication'];
   }
 
   /// Get recommended skills for a role
@@ -894,16 +928,25 @@ Format the response as JSON with this structure:
       'Full Stack Developer': ['Docker', 'AWS', 'Testing', 'CI/CD'],
     };
 
-    return roleSkills[targetRole] ?? ['Project Management', 'Teamwork', 'Continuous Learning'];
+    return roleSkills[targetRole] ??
+        ['Project Management', 'Teamwork', 'Continuous Learning'];
   }
 
   /// Update module progress
-  Future<void> updateModuleProgress(String roadmapId, String moduleId, double progress) async {
+  Future<void> updateModuleProgress(
+    String roadmapId,
+    String moduleId,
+    double progress,
+  ) async {
     final roadmapIndex = _roadmaps.indexWhere((r) => r.id == roadmapId);
     if (roadmapIndex != -1) {
-      final moduleIndex = _roadmaps[roadmapIndex].modules.indexWhere((m) => m.id == moduleId);
+      final moduleIndex = _roadmaps[roadmapIndex].modules.indexWhere(
+        (m) => m.id == moduleId,
+      );
       if (moduleIndex != -1) {
-        final updatedModules = List<LearningModule>.from(_roadmaps[roadmapIndex].modules);
+        final updatedModules = List<LearningModule>.from(
+          _roadmaps[roadmapIndex].modules,
+        );
         updatedModules[moduleIndex] = updatedModules[moduleIndex].copyWith(
           progress: progress,
           isCompleted: progress >= 1.0,
@@ -923,7 +966,10 @@ Format the response as JSON with this structure:
   /// Calculate overall roadmap progress
   double _calculateOverallProgress(List<LearningModule> modules) {
     if (modules.isEmpty) return 0.0;
-    final totalProgress = modules.fold(0.0, (sum, module) => sum + module.progress);
+    final totalProgress = modules.fold(
+      0.0,
+      (sum, module) => sum + module.progress,
+    );
     return totalProgress / modules.length;
   }
 

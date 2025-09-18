@@ -168,7 +168,13 @@ class UserStats {
   final int skillsLearned;
   final int repositoriesContributed;
   final int streakDays;
+  final int dailyStreak;
+  final int weeklyStreak;
+  final int longestStreak;
   final DateTime lastActivity;
+  final int totalSessions;
+  final Map<String, int> categoryXP;
+  final List<String> recentActivities;
 
   UserStats({
     required this.totalXP,
@@ -178,8 +184,14 @@ class UserStats {
     required this.skillsLearned,
     required this.repositoriesContributed,
     required this.streakDays,
+    this.dailyStreak = 0,
+    this.weeklyStreak = 0,
+    this.longestStreak = 0,
     required this.lastActivity,
-  });
+    this.totalSessions = 0,
+    Map<String, int>? categoryXP,
+    this.recentActivities = const [],
+  }) : categoryXP = categoryXP ?? {};
 
   UserStats copyWith({
     int? totalXP,
@@ -189,7 +201,13 @@ class UserStats {
     int? skillsLearned,
     int? repositoriesContributed,
     int? streakDays,
+    int? dailyStreak,
+    int? weeklyStreak,
+    int? longestStreak,
     DateTime? lastActivity,
+    int? totalSessions,
+    Map<String, int>? categoryXP,
+    List<String>? recentActivities,
   }) {
     return UserStats(
       totalXP: totalXP ?? this.totalXP,
@@ -201,7 +219,13 @@ class UserStats {
       repositoriesContributed:
           repositoriesContributed ?? this.repositoriesContributed,
       streakDays: streakDays ?? this.streakDays,
+      dailyStreak: dailyStreak ?? this.dailyStreak,
+      weeklyStreak: weeklyStreak ?? this.weeklyStreak,
+      longestStreak: longestStreak ?? this.longestStreak,
       lastActivity: lastActivity ?? this.lastActivity,
+      totalSessions: totalSessions ?? this.totalSessions,
+      categoryXP: categoryXP ?? this.categoryXP,
+      recentActivities: recentActivities ?? this.recentActivities,
     );
   }
 
@@ -214,7 +238,13 @@ class UserStats {
       'skillsLearned': skillsLearned,
       'repositoriesContributed': repositoriesContributed,
       'streakDays': streakDays,
+      'dailyStreak': dailyStreak,
+      'weeklyStreak': weeklyStreak,
+      'longestStreak': longestStreak,
       'lastActivity': lastActivity.toIso8601String(),
+      'totalSessions': totalSessions,
+      'categoryXP': categoryXP,
+      'recentActivities': recentActivities,
     };
   }
 
@@ -227,7 +257,13 @@ class UserStats {
       skillsLearned: json['skillsLearned'],
       repositoriesContributed: json['repositoriesContributed'],
       streakDays: json['streakDays'],
+      dailyStreak: json['dailyStreak'] ?? 0,
+      weeklyStreak: json['weeklyStreak'] ?? 0,
+      longestStreak: json['longestStreak'] ?? 0,
       lastActivity: DateTime.parse(json['lastActivity']),
+      totalSessions: json['totalSessions'] ?? 0,
+      categoryXP: Map<String, int>.from(json['categoryXP'] ?? {}),
+      recentActivities: List<String>.from(json['recentActivities'] ?? []),
     );
   }
 }
@@ -265,6 +301,7 @@ class GamificationService extends ChangeNotifier {
     await _loadUserStats();
     await _loadBadges();
     await _loadAchievements();
+    _initializeDefaultBadges();
     _initializeDefaultAchievements();
   }
 
@@ -383,14 +420,35 @@ class GamificationService extends ChangeNotifier {
   }
 
   /// Add XP and check for level up
-  Future<void> addXP(int xp) async {
+  Future<void> addXP(int xp, {String? category, String? activity}) async {
     final newTotalXP = _userStats.totalXP + xp;
     final newLevel = _calculateLevel(newTotalXP);
+    
+    // Update streaks
+    await _updateStreaks();
+    
+    // Update category XP
+    final updatedCategoryXP = Map<String, int>.from(_userStats.categoryXP);
+    if (category != null) {
+      updatedCategoryXP[category] = (updatedCategoryXP[category] ?? 0) + xp;
+    }
+    
+    // Add to recent activities
+    final updatedActivities = List<String>.from(_userStats.recentActivities);
+    if (activity != null) {
+      updatedActivities.insert(0, activity);
+      if (updatedActivities.length > 10) {
+        updatedActivities.removeLast();
+      }
+    }
 
     _userStats = _userStats.copyWith(
       totalXP: newTotalXP,
       level: newLevel,
       lastActivity: DateTime.now(),
+      totalSessions: _userStats.totalSessions + 1,
+      categoryXP: updatedCategoryXP,
+      recentActivities: updatedActivities,
     );
 
     await _saveUserStats();
@@ -399,6 +457,84 @@ class GamificationService extends ChangeNotifier {
     // Check for level up
     if (newLevel > _userStats.level) {
       _showLevelUpNotification(newLevel);
+    }
+  }
+
+  /// Update daily and weekly streaks
+  Future<void> _updateStreaks() async {
+    final now = DateTime.now();
+    final lastActivity = _userStats.lastActivity;
+    
+    // Check if it's a new day
+    final daysDifference = now.difference(lastActivity).inDays;
+    final isNewDay = daysDifference >= 1;
+    final isNewWeek = now.difference(lastActivity).inDays >= 7;
+    
+    int newDailyStreak = _userStats.dailyStreak;
+    int newWeeklyStreak = _userStats.weeklyStreak;
+    int newLongestStreak = _userStats.longestStreak;
+    
+    if (isNewDay) {
+      if (daysDifference == 1) {
+        // Consecutive day - increment streak
+        newDailyStreak = _userStats.dailyStreak + 1;
+      } else {
+        // Streak broken - reset
+        newDailyStreak = 1;
+      }
+      
+      // Update longest streak
+      if (newDailyStreak > newLongestStreak) {
+        newLongestStreak = newDailyStreak;
+      }
+    }
+    
+    if (isNewWeek) {
+      if (daysDifference >= 7 && daysDifference < 14) {
+        // Consecutive week - increment streak
+        newWeeklyStreak = _userStats.weeklyStreak + 1;
+      } else {
+        // Weekly streak broken - reset
+        newWeeklyStreak = 1;
+      }
+    }
+
+    _userStats = _userStats.copyWith(
+      dailyStreak: newDailyStreak,
+      weeklyStreak: newWeeklyStreak,
+      longestStreak: newLongestStreak,
+    );
+  }
+
+  /// Get streak bonus XP
+  int _getStreakBonus() {
+    int bonus = 0;
+    
+    // Daily streak bonus
+    if (_userStats.dailyStreak >= 7) {
+      bonus += 50; // 7-day streak bonus
+    }
+    if (_userStats.dailyStreak >= 30) {
+      bonus += 100; // 30-day streak bonus
+    }
+    
+    // Weekly streak bonus
+    if (_userStats.weeklyStreak >= 4) {
+      bonus += 200; // 4-week streak bonus
+    }
+    
+    return bonus;
+  }
+
+  /// Add XP with streak bonus
+  Future<void> addXPWithStreakBonus(int baseXP, {String? category, String? activity}) async {
+    final streakBonus = _getStreakBonus();
+    final totalXP = baseXP + streakBonus;
+    
+    await addXP(totalXP, category: category, activity: activity);
+    
+    if (streakBonus > 0) {
+      debugPrint('🔥 Streak bonus: +$streakBonus XP!');
     }
   }
 
@@ -555,6 +691,177 @@ class GamificationService extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error saving achievements: $e');
     }
+  }
+
+  /// Initialize default badges
+  void _initializeDefaultBadges() {
+    if (_badges.isNotEmpty) return; // Don't reinitialize if badges already exist
+
+    _badges = [
+      // Skill-based badges
+      Badge(
+        id: 'first_skill',
+        name: 'First Steps',
+        description: 'Complete your first skill',
+        icon: '🎯',
+        category: 'Skills',
+        points: 50,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'frontend_pro',
+        name: 'Frontend Pro',
+        description: 'Master 5 frontend skills',
+        icon: '🎨',
+        category: 'Skills',
+        points: 200,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'backend_master',
+        name: 'Backend Master',
+        description: 'Master 5 backend skills',
+        icon: '⚙️',
+        category: 'Skills',
+        points: 200,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'database_explorer',
+        name: 'Database Explorer',
+        description: 'Learn 3 database technologies',
+        icon: '🗄️',
+        category: 'Skills',
+        points: 150,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'testing_guru',
+        name: 'Testing Guru',
+        description: 'Master testing frameworks',
+        icon: '🧪',
+        category: 'Skills',
+        points: 150,
+        earnedAt: DateTime.now(),
+      ),
+      
+      // Streak badges
+      Badge(
+        id: 'week_warrior',
+        name: 'Week Warrior',
+        description: '7-day learning streak',
+        icon: '🔥',
+        category: 'Streaks',
+        points: 100,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'month_master',
+        name: 'Month Master',
+        description: '30-day learning streak',
+        icon: '💪',
+        category: 'Streaks',
+        points: 500,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'consistency_king',
+        name: 'Consistency King',
+        description: '100-day learning streak',
+        icon: '👑',
+        category: 'Streaks',
+        points: 1000,
+        earnedAt: DateTime.now(),
+      ),
+      
+      // Level badges
+      Badge(
+        id: 'level_5',
+        name: 'Rising Star',
+        description: 'Reach level 5',
+        icon: '⭐',
+        category: 'Progression',
+        points: 200,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'level_10',
+        name: 'Code Warrior',
+        description: 'Reach level 10',
+        icon: '⚔️',
+        category: 'Progression',
+        points: 500,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'level_20',
+        name: 'Tech Legend',
+        description: 'Reach level 20',
+        icon: '🏆',
+        category: 'Progression',
+        points: 1000,
+        earnedAt: DateTime.now(),
+      ),
+      
+      // GitHub badges
+      Badge(
+        id: 'github_hero',
+        name: 'GitHub Hero',
+        description: 'Connect your GitHub account',
+        icon: '🐙',
+        category: 'GitHub',
+        points: 100,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'repo_manager',
+        name: 'Repo Manager',
+        description: 'Manage 10 repositories',
+        icon: '📁',
+        category: 'GitHub',
+        points: 200,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'commit_master',
+        name: 'Commit Master',
+        description: 'Track 100 commits',
+        icon: '📝',
+        category: 'GitHub',
+        points: 300,
+        earnedAt: DateTime.now(),
+      ),
+      
+      // Special badges
+      Badge(
+        id: 'early_bird',
+        name: 'Early Bird',
+        description: 'Complete a skill before 8 AM',
+        icon: '🌅',
+        category: 'Special',
+        points: 75,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'night_owl',
+        name: 'Night Owl',
+        description: 'Complete a skill after 10 PM',
+        icon: '🦉',
+        category: 'Special',
+        points: 75,
+        earnedAt: DateTime.now(),
+      ),
+      Badge(
+        id: 'weekend_warrior',
+        name: 'Weekend Warrior',
+        description: 'Learn on both weekend days',
+        icon: '🏃',
+        category: 'Special',
+        points: 100,
+        earnedAt: DateTime.now(),
+      ),
+    ];
+    _saveBadges();
   }
 
   /// Reset all gamification data

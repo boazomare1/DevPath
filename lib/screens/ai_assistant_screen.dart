@@ -90,7 +90,9 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                             children: [
                               CircularProgressIndicator(),
                               SizedBox(height: 16),
-                              Text('AI is analyzing your skills and generating a personalized roadmap...'),
+                              Text(
+                                'AI is analyzing your skills and generating a personalized roadmap...',
+                              ),
                             ],
                           ),
                         ),
@@ -107,9 +109,9 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                       delegate: SliverChildListDelegate([
                         // Roadmap selector
                         _buildRoadmapSelector(context, aiService.roadmaps),
-                        
+
                         const SizedBox(height: 24),
-                        
+
                         // Selected roadmap timeline
                         if (_selectedRoadmap != null)
                           RoadmapTimeline(
@@ -149,7 +151,9 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                 Icon(
                   Icons.auto_awesome,
                   size: 64,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.3),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -162,7 +166,9 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                 Text(
                   'Let our AI analyze your skills and GitHub activity to create a personalized learning path!',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -174,7 +180,10 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ],
@@ -185,7 +194,10 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
     );
   }
 
-  Widget _buildRoadmapSelector(BuildContext context, List<PersonalizedRoadmap> roadmaps) {
+  Widget _buildRoadmapSelector(
+    BuildContext context,
+    List<PersonalizedRoadmap> roadmaps,
+  ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -212,28 +224,32 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
               labelText: 'Select a roadmap to view',
               border: OutlineInputBorder(),
             ),
-            items: roadmaps.map((roadmap) {
-              return DropdownMenuItem(
-                value: roadmap,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      roadmap.title,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+            items:
+                roadmaps.map((roadmap) {
+                  return DropdownMenuItem(
+                    value: roadmap,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          roadmap.title,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                        Text(
+                          '${roadmap.modules.length} modules • ${roadmap.totalEstimatedHours}h • ${(roadmap.overallProgress * 100).toInt()}% complete',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.6),
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      '${roadmap.modules.length} modules • ${roadmap.totalEstimatedHours}h • ${(roadmap.overallProgress * 100).toInt()}% complete',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
             onChanged: (roadmap) {
               setState(() {
                 _selectedRoadmap = roadmap;
@@ -248,92 +264,98 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
   void _showCreateRoadmapDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Generate AI Learning Roadmap'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Our AI will analyze your current skills and GitHub activity to create a personalized learning path.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _roleController,
-                decoration: const InputDecoration(
-                  labelText: 'Target Role',
-                  hintText: 'e.g., Senior Frontend Developer',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedExperienceLevel,
-                decoration: const InputDecoration(
-                  labelText: 'Current Experience Level',
-                  border: OutlineInputBorder(),
-                ),
-                items: ['Beginner', 'Intermediate', 'Advanced']
-                    .map((level) => DropdownMenuItem(
-                          value: level,
-                          child: Text(level),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedExperienceLevel = value!;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.auto_awesome,
-                      color: AppColors.primary,
-                      size: 20,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Generate AI Learning Roadmap'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Our AI will analyze your current skills and GitHub activity to create a personalized learning path.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.7),
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'AI will analyze your skills and GitHub repositories to create the most relevant learning path.',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _roleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Target Role',
+                      hintText: 'e.g., Senior Frontend Developer',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: _selectedExperienceLevel,
+                    decoration: const InputDecoration(
+                      labelText: 'Current Experience Level',
+                      border: OutlineInputBorder(),
+                    ),
+                    items:
+                        ['Beginner', 'Intermediate', 'Advanced']
+                            .map(
+                              (level) => DropdownMenuItem(
+                                value: level,
+                                child: Text(level),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedExperienceLevel = value!;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.auto_awesome,
                           color: AppColors.primary,
+                          size: 20,
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'AI will analyze your skills and GitHub repositories to create the most relevant learning path.',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppColors.primary),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: _generateRoadmap,
+                child:
+                    _isGenerating
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Text('Generate'),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: _generateRoadmap,
-            child: _isGenerating
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Generate'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -371,7 +393,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
       if (roadmap != null) {
         // Award XP for generating roadmap
         await gamificationService.addXP(100);
-        
+
         // Update achievement progress
         await gamificationService.updateAchievementProgress('first_skill', 1);
 
