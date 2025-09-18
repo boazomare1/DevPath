@@ -372,11 +372,14 @@ class _InsightsScreenState extends State<InsightsScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
-                'Languages Breakdown',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
+              Expanded(
+                child: Text(
+                  'Languages Breakdown',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -439,11 +442,14 @@ class _InsightsScreenState extends State<InsightsScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
-                'Commit Activity (Last 6 Months)',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
+              Expanded(
+                child: Text(
+                  'Commit Activity (Last 6 Months)',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -516,11 +522,14 @@ class _InsightsScreenState extends State<InsightsScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
-                'Repository Statistics',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
+              Expanded(
+                child: Text(
+                  'Repository Statistics',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
