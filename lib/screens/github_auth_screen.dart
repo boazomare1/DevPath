@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/github_auth_service.dart';
 import '../models/github_user.dart';
 import '../models/github_repository.dart';
@@ -140,6 +141,51 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _getFreshAuthorizationCode() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final authService = context.read<GitHubAuthService>();
+      final authUrl = await authService.getFreshAuthorizationUrl();
+      
+      if (authUrl != null) {
+        if (await canLaunchUrl(authUrl)) {
+          await launchUrl(authUrl, mode: LaunchMode.platformDefault);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Fresh authorization URL opened! Complete authentication and copy the code.',
+                ),
+                backgroundColor: AppColors.primary,
+                duration: Duration(seconds: 5),
+              ),
+            );
+          }
+        } else {
+          setState(() {
+            _errorMessage = 'Failed to open browser. Please try again.';
+          });
+        }
+      } else {
+        setState(() {
+          _errorMessage = 'Failed to generate authorization URL. Please try again.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error getting fresh authorization code: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -314,7 +360,14 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'After completing authentication in the browser, you\'ll be redirected to a page showing JSON data. Look for "args" → "code" in the JSON structure and copy that value.',
+                    'IMPORTANT: You must get a FRESH authorization code each time!\n\n'
+                    'Steps:\n'
+                    '1. Click "Login with GitHub" to open browser\n'
+                    '2. Complete GitHub authentication\n'
+                    '3. You\'ll be redirected to a page showing JSON data\n'
+                    '4. Look for "args" → "code" in the JSON structure\n'
+                    '5. Copy the code value IMMEDIATELY (it expires quickly)\n'
+                    '6. Paste it here and click "Authenticate with Code"',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 8),
@@ -344,6 +397,22 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  
+                  // Get Fresh Code Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _isLoading ? null : _getFreshAuthorizationCode,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Get Fresh Authorization Code'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        side: BorderSide(color: AppColors.primary),
+                      ),
+                    ),
+                  ),
+                  
                   const SizedBox(height: 16),
                   TextField(
                     controller: _codeController,

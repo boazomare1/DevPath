@@ -12,7 +12,8 @@ class GitHubAuthService extends ChangeNotifier {
   static const String _clientId = GitHubOAuthConfig.clientId;
   static const String _clientSecret = GitHubOAuthConfig.clientSecret;
   static const String _redirectUri = GitHubOAuthConfig.redirectUri;
-  static const String _authorizationEndpoint = GitHubOAuthConfig.authorizationEndpoint;
+  static const String _authorizationEndpoint =
+      GitHubOAuthConfig.authorizationEndpoint;
   static const String _tokenEndpoint = GitHubOAuthConfig.tokenEndpoint;
   static const String _apiBaseUrl = GitHubOAuthConfig.apiBaseUrl;
 
@@ -27,6 +28,7 @@ class GitHubAuthService extends ChangeNotifier {
   );
 
   oauth2.Client? _client;
+  oauth2.AuthorizationCodeGrant? _currentGrant;
   GitHubUser? _currentUser;
   List<GitHubRepository> _repositories = [];
 
@@ -35,10 +37,38 @@ class GitHubAuthService extends ChangeNotifier {
   GitHubUser? get currentUser => _currentUser;
   List<GitHubRepository> get repositories => _repositories;
   bool get isAuthenticated => _client != null && _currentUser != null;
+  bool get hasActiveGrant => _currentGrant != null;
 
   // Get access token for API calls
   Future<String?> getAccessToken() async {
     return _client?.credentials.accessToken;
+  }
+
+  /// Get a fresh authorization URL (useful for debugging)
+  Future<Uri?> getFreshAuthorizationUrl() async {
+    try {
+      // Clear any existing grant first
+      _currentGrant = null;
+      
+      // Create new OAuth client and store it
+      _currentGrant = oauth2.AuthorizationCodeGrant(
+        _clientId,
+        Uri.parse(_authorizationEndpoint),
+        Uri.parse(_tokenEndpoint),
+        secret: _clientSecret,
+      );
+
+      final authUrl = _currentGrant!.getAuthorizationUrl(
+        Uri.parse(_redirectUri),
+        scopes: ['user:email', 'repo', 'read:user'],
+      );
+
+      debugPrint('Fresh authorization URL: $authUrl');
+      return authUrl;
+    } catch (e) {
+      debugPrint('Error creating fresh authorization URL: $e');
+      return null;
+    }
   }
 
   // Stream controllers for reactive updates
@@ -88,15 +118,18 @@ class GitHubAuthService extends ChangeNotifier {
   /// Start the OAuth 2.0 authentication flow
   Future<bool> authenticate() async {
     try {
-      // Create new OAuth client
-      final grant = oauth2.AuthorizationCodeGrant(
+      // Clear any existing grant first
+      _currentGrant = null;
+      
+      // Create new OAuth client and store it
+      _currentGrant = oauth2.AuthorizationCodeGrant(
         _clientId,
         Uri.parse(_authorizationEndpoint),
         Uri.parse(_tokenEndpoint),
         secret: _clientSecret,
       );
 
-      final authUrl = grant.getAuthorizationUrl(
+      final authUrl = _currentGrant!.getAuthorizationUrl(
         Uri.parse(_redirectUri),
         scopes: ['user:email', 'repo', 'read:user'],
       );
@@ -109,6 +142,7 @@ class GitHubAuthService extends ChangeNotifier {
         debugPrint(
           'Please complete authentication in the browser and return to the app',
         );
+        debugPrint('Authorization URL: $authUrl');
         return true; // Return true to indicate the browser was launched
       }
 
@@ -182,14 +216,19 @@ class GitHubAuthService extends ChangeNotifier {
       debugPrint('Client ID: $_clientId');
       debugPrint('Redirect URI: $_redirectUri');
 
-      final grant = oauth2.AuthorizationCodeGrant(
-        _clientId,
-        Uri.parse(_authorizationEndpoint),
-        Uri.parse(_tokenEndpoint),
-        secret: _clientSecret,
-      );
+      // Check if we have a current grant, if not create one
+      if (_currentGrant == null) {
+        debugPrint('No current grant found, creating new one...');
+        _currentGrant = oauth2.AuthorizationCodeGrant(
+          _clientId,
+          Uri.parse(_authorizationEndpoint),
+          Uri.parse(_tokenEndpoint),
+          secret: _clientSecret,
+        );
+      }
 
-      _client = await grant.handleAuthorizationResponse({
+      debugPrint('Using existing grant for token exchange...');
+      _client = await _currentGrant!.handleAuthorizationResponse({
         'code': authorizationCode,
         'redirect_uri': _redirectUri,
       });
@@ -208,6 +247,9 @@ class GitHubAuthService extends ChangeNotifier {
 
         _authStateController.add(true);
         notifyListeners();
+        
+        // Clear the grant after successful authentication
+        _currentGrant = null;
         return true;
       }
 
@@ -220,6 +262,7 @@ class GitHubAuthService extends ChangeNotifier {
         debugPrint(
           'The authorization code may have expired or been used already',
         );
+        debugPrint('Try getting a fresh authorization code from the browser');
       }
       return false;
     }
@@ -316,6 +359,7 @@ class GitHubAuthService extends ChangeNotifier {
 
       // Clear in-memory data
       _client = null;
+      _currentGrant = null; // Clear the grant
       _currentUser = null;
       _repositories.clear();
 
@@ -323,6 +367,7 @@ class GitHubAuthService extends ChangeNotifier {
       _authStateController.add(false);
       _userController.add(null);
       _reposController.add([]);
+      notifyListeners();
     } catch (e) {
       debugPrint('Error during logout: $e');
     }
