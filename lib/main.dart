@@ -5,6 +5,9 @@ import 'services/storage_service.dart';
 import 'services/github_auth_service.dart';
 import 'services/repo_status_service.dart';
 import 'services/reminder_service.dart';
+import 'services/ai_roadmap_service.dart';
+import 'services/gamification_service.dart';
+import 'services/career_goals_service.dart';
 import 'screens/splash_screen.dart';
 import 'screens/main_screen.dart';
 
@@ -32,6 +35,15 @@ class DevPathApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<GitHubAuthService>(
           create: (_) => GitHubAuthService(),
+        ),
+        ChangeNotifierProvider<AIRoadmapService>(
+          create: (_) => AIRoadmapService(),
+        ),
+        ChangeNotifierProvider<GamificationService>(
+          create: (_) => GamificationService(),
+        ),
+        ChangeNotifierProvider<CareerGoalsService>(
+          create: (_) => CareerGoalsService(),
         ),
       ],
       child: MaterialApp(

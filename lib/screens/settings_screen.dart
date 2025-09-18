@@ -36,6 +36,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  Future<void> _testNotification() async {
+    try {
+      await ReminderService.showTestNotification();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Test notification sent!'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to send test notification: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -91,6 +114,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _buildNotificationToggle(context),
                         const SizedBox(height: 16),
                         _buildFrequencySelector(context),
+                        const SizedBox(height: 16),
+                        _buildTestNotificationButton(context),
                         const SizedBox(height: 16),
                         _buildReminderInfo(context),
                       ],
@@ -409,6 +434,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.error,
           side: BorderSide(color: AppColors.error),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTestNotificationButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: _testNotification,
+        icon: const Icon(Icons.notifications_active),
+        label: const Text('Test Notification'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 12),
         ),
       ),

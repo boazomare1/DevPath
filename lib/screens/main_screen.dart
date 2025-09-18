@@ -7,6 +7,9 @@ import 'github_auth_screen.dart';
 import 'repos_screen.dart';
 import 'settings_screen.dart';
 import 'insights_screen.dart';
+import 'roadmap_screen.dart';
+import 'gamification_screen.dart';
+import 'career_goals_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -23,6 +26,9 @@ class _MainScreenState extends State<MainScreen> {
     const SkillsScreen(),
     const ReposScreen(),
     const InsightsScreen(),
+    const RoadmapScreen(),
+    const GamificationScreen(),
+    const CareerGoalsScreen(),
     const GitHubAuthScreen(),
     const SettingsScreen(),
   ];
@@ -74,9 +80,24 @@ class _MainScreenState extends State<MainScreen> {
                     icon: Icons.analytics,
                     label: 'Insights',
                   ),
-                  _buildNavItem(index: 4, icon: Icons.code, label: 'GitHub'),
+                  _buildNavItem(
+                    index: 4,
+                    icon: Icons.route,
+                    label: 'Roadmap',
+                  ),
                   _buildNavItem(
                     index: 5,
+                    icon: Icons.emoji_events,
+                    label: 'Gamify',
+                  ),
+                  _buildNavItem(
+                    index: 6,
+                    icon: Icons.work,
+                    label: 'Goals',
+                  ),
+                  _buildNavItem(index: 7, icon: Icons.code, label: 'GitHub'),
+                  _buildNavItem(
+                    index: 8,
                     icon: Icons.settings,
                     label: 'Settings',
                   ),

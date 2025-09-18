@@ -244,6 +244,41 @@ class ReminderService {
     return prefs.getBool(_notificationsEnabledKey) ?? true;
   }
 
+  /// Show a test notification
+  static Future<void> showTestNotification() async {
+    const title = 'DevPath Test Notification';
+    const body = 'This is a test notification from DevPath! 🎉';
+
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'devpath_test',
+      'DevPath Test Notifications',
+      channelDescription: 'Test notifications for DevPath',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: true,
+    );
+
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _notificationsPlugin.show(
+      9999, // Use a different ID for test notifications
+      title,
+      body,
+      notificationDetails,
+      payload: 'test_notification',
+    );
+  }
+
   /// Get available reminder frequencies
   static List<ReminderFrequency> getAvailableFrequencies() {
     return [

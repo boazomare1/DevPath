@@ -159,7 +159,6 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
     }
   }
 
-
   Future<void> _handleClearCacheAndLogin() async {
     setState(() {
       _isLoading = true;
