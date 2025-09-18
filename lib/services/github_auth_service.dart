@@ -301,12 +301,25 @@ class GitHubAuthService extends ChangeNotifier {
       if (response.statusCode == 200) {
         final responseBody = response.body;
 
-        // Parse form-encoded response (GitHub's format)
+        // Try to parse as JSON first (GitHub sometimes returns JSON)
+        try {
+          final jsonResponse = jsonDecode(responseBody);
+          final accessToken = jsonResponse['access_token'];
+          
+          if (accessToken != null) {
+            debugPrint('Access token obtained successfully from JSON');
+            return accessToken;
+          }
+        } catch (e) {
+          debugPrint('Not JSON, trying form-encoded parsing...');
+        }
+
+        // Fallback to form-encoded response parsing
         final params = Uri.splitQueryString(responseBody);
         final accessToken = params['access_token'];
 
         if (accessToken != null) {
-          debugPrint('Access token obtained successfully');
+          debugPrint('Access token obtained successfully from form-encoded');
           return accessToken;
         } else {
           debugPrint('No access token found in response');
