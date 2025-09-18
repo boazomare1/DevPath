@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
 class MentorInvitationDialog extends StatefulWidget {
-  final Function(String mentorEmail, String mentorName, String message) onInvite;
+  final Function(String mentorEmail, String mentorName, String message)
+  onInvite;
 
-  const MentorInvitationDialog({
-    super.key,
-    required this.onInvite,
-  });
+  const MentorInvitationDialog({super.key, required this.onInvite});
 
   @override
   State<MentorInvitationDialog> createState() => _MentorInvitationDialogState();
@@ -57,7 +55,9 @@ class _MentorInvitationDialogState extends State<MentorInvitationDialog> {
                   if (value?.isEmpty == true) {
                     return 'Please enter mentor email';
                   }
-                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                  if (!RegExp(
+                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                  ).hasMatch(value!)) {
                     return 'Please enter a valid email';
                   }
                   return null;
@@ -88,7 +88,8 @@ class _MentorInvitationDialogState extends State<MentorInvitationDialog> {
                 controller: _messageController,
                 decoration: const InputDecoration(
                   labelText: 'Message (Optional)',
-                  hintText: 'I would like to share my learning progress with you...',
+                  hintText:
+                      'I would like to share my learning progress with you...',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.message),
                 ),
@@ -107,7 +108,11 @@ class _MentorInvitationDialogState extends State<MentorInvitationDialog> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: AppColors.primary, size: 20),
+                    Icon(
+                      Icons.info_outline,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(

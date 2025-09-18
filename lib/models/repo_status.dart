@@ -1,65 +1,17 @@
 import 'package:hive/hive.dart';
+import 'github_repository.dart';
 
 part 'repo_status.g.dart';
 
-@HiveType(typeId: 6)
 enum ProjectStatus {
-  @HiveField(0)
-  inProgress,
-
-  @HiveField(1)
-  onHold,
-
-  @HiveField(2)
-  completed,
-
-  @HiveField(3)
   notStarted,
+  inProgress,
+  onHold,
+  completed,
 }
 
-extension ProjectStatusExtension on ProjectStatus {
-  String get displayName {
-    switch (this) {
-      case ProjectStatus.inProgress:
-        return 'In Progress';
-      case ProjectStatus.onHold:
-        return 'On Hold';
-      case ProjectStatus.completed:
-        return 'Completed';
-      case ProjectStatus.notStarted:
-        return 'Not Started';
-    }
-  }
-
-  String get emoji {
-    switch (this) {
-      case ProjectStatus.inProgress:
-        return '✅';
-      case ProjectStatus.onHold:
-        return '⏸️';
-      case ProjectStatus.completed:
-        return '🏁';
-      case ProjectStatus.notStarted:
-        return '📋';
-    }
-  }
-
-  String get description {
-    switch (this) {
-      case ProjectStatus.inProgress:
-        return 'Active development';
-      case ProjectStatus.onHold:
-        return 'Paused temporarily';
-      case ProjectStatus.completed:
-        return 'Project finished';
-      case ProjectStatus.notStarted:
-        return 'Not yet started';
-    }
-  }
-}
-
-@HiveType(typeId: 7)
-class RepoStatus {
+@HiveType(typeId: 4)
+class RepoStatus extends HiveObject {
   @HiveField(0)
   final int repoId;
 
@@ -73,13 +25,13 @@ class RepoStatus {
   final String? notes;
 
   @HiveField(4)
-  final bool isStale;
-
-  @HiveField(5)
   final int openIssuesCount;
 
+  @HiveField(5)
+  final DateTime? lastActivity;
+
   @HiveField(6)
-  final DateTime? lastCommitDate;
+  final bool isStale;
 
   @HiveField(7)
   final bool hasRecentActivity;
@@ -89,33 +41,30 @@ class RepoStatus {
     required this.status,
     required this.lastUpdated,
     this.notes,
-    required this.isStale,
-    required this.openIssuesCount,
-    this.lastCommitDate,
-    required this.hasRecentActivity,
+    this.openIssuesCount = 0,
+    this.lastActivity,
+    this.isStale = false,
+    this.hasRecentActivity = false,
   });
 
-  factory RepoStatus.fromRepository({
-    required int repoId,
-    required DateTime lastCommitDate,
-    required int openIssuesCount,
-    ProjectStatus status = ProjectStatus.notStarted,
-    String? notes,
+  factory RepoStatus.fromRepository(
+    GitHubRepository repository, {
+    ProjectStatus? newStatus,
   }) {
     final now = DateTime.now();
-    final daysSinceLastCommit = now.difference(lastCommitDate).inDays;
-    final isStale = daysSinceLastCommit > 30;
-    final hasRecentActivity = daysSinceLastCommit <= 7;
-
+    final lastActivity = repository.updatedAt;
+    final daysSinceActivity = lastActivity != null 
+        ? now.difference(lastActivity).inDays 
+        : 30;
+    
     return RepoStatus(
-      repoId: repoId,
-      status: status,
+      repoId: repository.id,
+      status: newStatus ?? ProjectStatus.notStarted,
       lastUpdated: now,
-      notes: notes,
-      isStale: isStale,
-      openIssuesCount: openIssuesCount,
-      lastCommitDate: lastCommitDate,
-      hasRecentActivity: hasRecentActivity,
+      openIssuesCount: repository.openIssuesCount ?? 0,
+      lastActivity: lastActivity,
+      isStale: daysSinceActivity > 30,
+      hasRecentActivity: daysSinceActivity <= 7,
     );
   }
 
@@ -124,9 +73,9 @@ class RepoStatus {
     ProjectStatus? status,
     DateTime? lastUpdated,
     String? notes,
-    bool? isStale,
     int? openIssuesCount,
-    DateTime? lastCommitDate,
+    DateTime? lastActivity,
+    bool? isStale,
     bool? hasRecentActivity,
   }) {
     return RepoStatus(
@@ -134,47 +83,16 @@ class RepoStatus {
       status: status ?? this.status,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       notes: notes ?? this.notes,
-      isStale: isStale ?? this.isStale,
       openIssuesCount: openIssuesCount ?? this.openIssuesCount,
-      lastCommitDate: lastCommitDate ?? this.lastCommitDate,
+      lastActivity: lastActivity ?? this.lastActivity,
+      isStale: isStale ?? this.isStale,
       hasRecentActivity: hasRecentActivity ?? this.hasRecentActivity,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'repoId': repoId,
-      'status': status.index,
-      'lastUpdated': lastUpdated.toIso8601String(),
-      'notes': notes,
-      'isStale': isStale,
-      'openIssuesCount': openIssuesCount,
-      'lastCommitDate': lastCommitDate?.toIso8601String(),
-      'hasRecentActivity': hasRecentActivity,
-    };
-  }
-
-  factory RepoStatus.fromJson(Map<String, dynamic> json) {
-    return RepoStatus(
-      repoId: json['repoId'] ?? 0,
-      status: ProjectStatus.values[json['status'] ?? 0],
-      lastUpdated: DateTime.parse(
-        json['lastUpdated'] ?? DateTime.now().toIso8601String(),
-      ),
-      notes: json['notes'],
-      isStale: json['isStale'] ?? false,
-      openIssuesCount: json['openIssuesCount'] ?? 0,
-      lastCommitDate:
-          json['lastCommitDate'] != null
-              ? DateTime.parse(json['lastCommitDate'])
-              : null,
-      hasRecentActivity: json['hasRecentActivity'] ?? false,
     );
   }
 
   @override
   String toString() {
-    return 'RepoStatus(repoId: $repoId, status: ${status.displayName}, isStale: $isStale, openIssues: $openIssuesCount)';
+    return 'RepoStatus(repoId: $repoId, status: $status, lastUpdated: $lastUpdated)';
   }
 
   @override

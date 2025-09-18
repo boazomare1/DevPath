@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'services/storage_service.dart';
 import 'services/github_auth_service.dart';
@@ -12,11 +14,19 @@ import 'services/career_goals_service.dart';
 import 'services/enhanced_career_goals_service.dart';
 import 'services/analytics_service.dart';
 import 'services/social_sharing_service.dart';
+import 'services/firebase_auth_service.dart';
+import 'services/minimal_cloud_sync.dart';
 import 'screens/splash_screen.dart';
 import 'screens/main_screen.dart';
+import 'screens/cloud_auth_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Initialize Hive
   await StorageService.init();
@@ -30,13 +40,16 @@ void main() async {
   // Initialize Enhanced Career Goals Service
   await EnhancedCareerGoalsService().init();
 
-        // Initialize Analytics Service
-        await AnalyticsService().init();
+  // Initialize Analytics Service
+  await AnalyticsService().init();
 
-        // Initialize Social Sharing Service
-        await SocialSharingService().init();
+  // Initialize Social Sharing Service
+  await SocialSharingService().init();
 
-        runApp(const DevPathApp());
+  // Initialize Cloud Sync Service
+  await MinimalCloudSync().initialize();
+
+  runApp(const DevPathApp());
 }
 
 class DevPathApp extends StatelessWidget {
@@ -70,6 +83,12 @@ class DevPathApp extends StatelessWidget {
         ChangeNotifierProvider<SocialSharingService>(
           create: (_) => SocialSharingService(),
         ),
+        ChangeNotifierProvider<FirebaseAuthService>(
+          create: (_) => FirebaseAuthService(),
+        ),
+        ChangeNotifierProvider<MinimalCloudSync>(
+          create: (_) => MinimalCloudSync(),
+        ),
       ],
       child: MaterialApp(
         title: 'DevPath',
@@ -78,7 +97,10 @@ class DevPathApp extends StatelessWidget {
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.dark, // Dark mode first (developer preference)
         home: const SplashScreen(),
-        routes: {'/main': (context) => const MainScreen()},
+        routes: {
+          '/main': (context) => const MainScreen(),
+          '/cloud-auth': (context) => const CloudAuthScreen(),
+        },
       ),
     );
   }

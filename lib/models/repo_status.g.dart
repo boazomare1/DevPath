@@ -8,7 +8,7 @@ part of 'repo_status.dart';
 
 class RepoStatusAdapter extends TypeAdapter<RepoStatus> {
   @override
-  final int typeId = 7;
+  final int typeId = 4;
 
   @override
   RepoStatus read(BinaryReader reader) {
@@ -21,9 +21,9 @@ class RepoStatusAdapter extends TypeAdapter<RepoStatus> {
       status: fields[1] as ProjectStatus,
       lastUpdated: fields[2] as DateTime,
       notes: fields[3] as String?,
-      isStale: fields[4] as bool,
-      openIssuesCount: fields[5] as int,
-      lastCommitDate: fields[6] as DateTime?,
+      openIssuesCount: fields[4] as int,
+      lastActivity: fields[5] as DateTime?,
+      isStale: fields[6] as bool,
       hasRecentActivity: fields[7] as bool,
     );
   }
@@ -41,11 +41,11 @@ class RepoStatusAdapter extends TypeAdapter<RepoStatus> {
       ..writeByte(3)
       ..write(obj.notes)
       ..writeByte(4)
-      ..write(obj.isStale)
-      ..writeByte(5)
       ..write(obj.openIssuesCount)
+      ..writeByte(5)
+      ..write(obj.lastActivity)
       ..writeByte(6)
-      ..write(obj.lastCommitDate)
+      ..write(obj.isStale)
       ..writeByte(7)
       ..write(obj.hasRecentActivity);
   }
@@ -57,55 +57,6 @@ class RepoStatusAdapter extends TypeAdapter<RepoStatus> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is RepoStatusAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class ProjectStatusAdapter extends TypeAdapter<ProjectStatus> {
-  @override
-  final int typeId = 6;
-
-  @override
-  ProjectStatus read(BinaryReader reader) {
-    switch (reader.readByte()) {
-      case 0:
-        return ProjectStatus.inProgress;
-      case 1:
-        return ProjectStatus.onHold;
-      case 2:
-        return ProjectStatus.completed;
-      case 3:
-        return ProjectStatus.notStarted;
-      default:
-        return ProjectStatus.inProgress;
-    }
-  }
-
-  @override
-  void write(BinaryWriter writer, ProjectStatus obj) {
-    switch (obj) {
-      case ProjectStatus.inProgress:
-        writer.writeByte(0);
-        break;
-      case ProjectStatus.onHold:
-        writer.writeByte(1);
-        break;
-      case ProjectStatus.completed:
-        writer.writeByte(2);
-        break;
-      case ProjectStatus.notStarted:
-        writer.writeByte(3);
-        break;
-    }
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ProjectStatusAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

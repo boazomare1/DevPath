@@ -43,6 +43,9 @@ class Skill extends HiveObject {
   @HiveField(11)
   final List<SkillProject>? projects;
 
+  @HiveField(12)
+  final DateTime updatedAt;
+
   Skill({
     required this.id,
     required this.name,
@@ -56,7 +59,8 @@ class Skill extends HiveObject {
     this.priority = 3,
     this.tags = const [],
     this.projects,
-  });
+    DateTime? updatedAt,
+  }) : updatedAt = updatedAt ?? DateTime.now();
 
   Skill copyWith({
     String? id,
@@ -71,6 +75,7 @@ class Skill extends HiveObject {
     int? priority,
     List<String>? tags,
     List<SkillProject>? projects,
+    DateTime? updatedAt,
   }) {
     return Skill(
       id: id ?? this.id,
@@ -85,12 +90,51 @@ class Skill extends HiveObject {
       priority: priority ?? this.priority,
       tags: tags ?? this.tags,
       projects: projects ?? this.projects,
+      updatedAt: updatedAt ?? DateTime.now(),
     );
   }
 
   bool get isCompleted => status == SkillStatus.completed;
   bool get isInProgress => status == SkillStatus.inProgress;
   bool get isNotStarted => status == SkillStatus.notStarted;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'category': category.index,
+      'status': status.index,
+      'notes': notes,
+      'resources': resources,
+      'createdAt': createdAt.toIso8601String(),
+      'completedAt': completedAt?.toIso8601String(),
+      'priority': priority,
+      'tags': tags,
+      'projects': projects?.map((p) => p.toJson()).toList(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
+
+  factory Skill.fromJson(Map<String, dynamic> json) {
+    return Skill(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      category: SkillCategory.values[json['category']],
+      status: SkillStatus.values[json['status']],
+      notes: json['notes'],
+      resources: List<String>.from(json['resources'] ?? []),
+      createdAt: DateTime.parse(json['createdAt']),
+      completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt']) : null,
+      priority: json['priority'] ?? 3,
+      tags: List<String>.from(json['tags'] ?? []),
+      projects: json['projects'] != null 
+          ? (json['projects'] as List).map((p) => SkillProject.fromJson(p)).toList()
+          : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : DateTime.now(),
+    );
+  }
 
   @override
   String toString() {

@@ -29,13 +29,14 @@ class SkillAdapter extends TypeAdapter<Skill> {
       priority: fields[9] as int,
       tags: (fields[10] as List).cast<String>(),
       projects: (fields[11] as List?)?.cast<SkillProject>(),
+      updatedAt: fields[12] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Skill obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class SkillAdapter extends TypeAdapter<Skill> {
       ..writeByte(10)
       ..write(obj.tags)
       ..writeByte(11)
-      ..write(obj.projects);
+      ..write(obj.projects)
+      ..writeByte(12)
+      ..write(obj.updatedAt);
   }
 
   @override

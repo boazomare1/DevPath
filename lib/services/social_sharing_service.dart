@@ -114,7 +114,10 @@ class MentorInvitation {
       shareableLink: json['shareableLink'],
       sentAt: DateTime.parse(json['sentAt']),
       isAccepted: json['isAccepted'] ?? false,
-      acceptedAt: json['acceptedAt'] != null ? DateTime.parse(json['acceptedAt']) : null,
+      acceptedAt:
+          json['acceptedAt'] != null
+              ? DateTime.parse(json['acceptedAt'])
+              : null,
     );
   }
 }
@@ -179,7 +182,8 @@ class SocialSharingService extends ChangeNotifier {
   static const String _shareableProgressKey = 'shareable_progress';
   static const String _mentorInvitationsKey = 'mentor_invitations';
   static const String _communityUsersKey = 'community_users';
-  static const String _baseUrl = 'https://devpath.app/share'; // Replace with actual domain
+  static const String _baseUrl =
+      'https://devpath.app/share'; // Replace with actual domain
 
   final Uuid _uuid = const Uuid();
 
@@ -206,9 +210,10 @@ class SocialSharingService extends ChangeNotifier {
       final progressJson = prefs.getString(_shareableProgressKey);
       if (progressJson != null) {
         final progressData = jsonDecode(progressJson) as List;
-        _shareableProgress = progressData
-            .map((progress) => ShareableProgress.fromJson(progress))
-            .toList();
+        _shareableProgress =
+            progressData
+                .map((progress) => ShareableProgress.fromJson(progress))
+                .toList();
       }
     } catch (e) {
       debugPrint('Error loading shareable progress: $e');
@@ -222,9 +227,10 @@ class SocialSharingService extends ChangeNotifier {
       final invitationsJson = prefs.getString(_mentorInvitationsKey);
       if (invitationsJson != null) {
         final invitationsData = jsonDecode(invitationsJson) as List;
-        _mentorInvitations = invitationsData
-            .map((invitation) => MentorInvitation.fromJson(invitation))
-            .toList();
+        _mentorInvitations =
+            invitationsData
+                .map((invitation) => MentorInvitation.fromJson(invitation))
+                .toList();
       }
     } catch (e) {
       debugPrint('Error loading mentor invitations: $e');
@@ -238,9 +244,8 @@ class SocialSharingService extends ChangeNotifier {
       final usersJson = prefs.getString(_communityUsersKey);
       if (usersJson != null) {
         final usersData = jsonDecode(usersJson) as List;
-        _communityUsers = usersData
-            .map((user) => CommunityUser.fromJson(user))
-            .toList();
+        _communityUsers =
+            usersData.map((user) => CommunityUser.fromJson(user)).toList();
       }
     } catch (e) {
       debugPrint('Error loading community users: $e');
@@ -300,9 +305,12 @@ class SocialSharingService extends ChangeNotifier {
       'skillTrends': skillTrends.take(7).toList(), // Last 7 days
       'skills': {
         'total': skills.length,
-        'completed': skills.where((s) => s.status == SkillStatus.completed).length,
-        'inProgress': skills.where((s) => s.status == SkillStatus.inProgress).length,
-        'notStarted': skills.where((s) => s.status == SkillStatus.notStarted).length,
+        'completed':
+            skills.where((s) => s.status == SkillStatus.completed).length,
+        'inProgress':
+            skills.where((s) => s.status == SkillStatus.inProgress).length,
+        'notStarted':
+            skills.where((s) => s.status == SkillStatus.notStarted).length,
         'categories': _getSkillsByCategory(skills),
       },
       'gamification': {
@@ -335,9 +343,7 @@ class SocialSharingService extends ChangeNotifier {
   }
 
   /// Export progress as PNG (placeholder - would need proper screenshot implementation)
-  Future<String?> exportProgressAsPNG({
-    required String fileName,
-  }) async {
+  Future<String?> exportProgressAsPNG({required String fileName}) async {
     try {
       // For now, return null - would need proper screenshot implementation
       debugPrint('PNG export not implemented yet');
@@ -355,11 +361,7 @@ class SocialSharingService extends ChangeNotifier {
     required String message,
   }) async {
     try {
-      await Share.shareXFiles(
-        [XFile(filePath)],
-        text: message,
-        subject: title,
-      );
+      await Share.shareXFiles([XFile(filePath)], text: message, subject: title);
     } catch (e) {
       debugPrint('Error sharing progress: $e');
     }
@@ -373,7 +375,7 @@ class SocialSharingService extends ChangeNotifier {
     required String shareableLink,
   }) async {
     final invitationId = _uuid.v4();
-    
+
     final invitation = MentorInvitation(
       id: invitationId,
       mentorEmail: mentorEmail,
@@ -406,7 +408,7 @@ class SocialSharingService extends ChangeNotifier {
   List<CommunityUser> getCommunityLeaderboard({int limit = 10}) {
     final sortedUsers = List<CommunityUser>.from(_communityUsers)
       ..sort((a, b) => b.totalXP.compareTo(a.totalXP));
-    
+
     return sortedUsers.take(limit).toList();
   }
 
@@ -422,7 +424,7 @@ class SocialSharingService extends ChangeNotifier {
     bool isPublic = false,
   }) async {
     final userId = _uuid.v4();
-    
+
     final user = CommunityUser(
       id: userId,
       name: name,
@@ -451,9 +453,11 @@ class SocialSharingService extends ChangeNotifier {
     return categoryCount;
   }
 
-  Future<Uint8List> _generateProgressPDF(Map<String, dynamic> progressData) async {
+  Future<Uint8List> _generateProgressPDF(
+    Map<String, dynamic> progressData,
+  ) async {
     final pdf = pw.Document();
-    
+
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
@@ -472,7 +476,7 @@ class SocialSharingService extends ChangeNotifier {
         },
       ),
     );
-    
+
     return pdf.save();
   }
 
@@ -484,9 +488,7 @@ class SocialSharingService extends ChangeNotifier {
       width: 400,
       height: 600,
       color: Colors.white,
-      child: const Center(
-        child: Text('Progress Screenshot'),
-      ),
+      child: const Center(child: Text('Progress Screenshot')),
     );
   }
 
@@ -501,7 +503,8 @@ class SocialSharingService extends ChangeNotifier {
   Future<void> _saveShareableProgress() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final progressJson = _shareableProgress.map((progress) => progress.toJson()).toList();
+      final progressJson =
+          _shareableProgress.map((progress) => progress.toJson()).toList();
       await prefs.setString(_shareableProgressKey, jsonEncode(progressJson));
     } catch (e) {
       debugPrint('Error saving shareable progress: $e');
@@ -511,7 +514,8 @@ class SocialSharingService extends ChangeNotifier {
   Future<void> _saveMentorInvitations() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final invitationsJson = _mentorInvitations.map((invitation) => invitation.toJson()).toList();
+      final invitationsJson =
+          _mentorInvitations.map((invitation) => invitation.toJson()).toList();
       await prefs.setString(_mentorInvitationsKey, jsonEncode(invitationsJson));
     } catch (e) {
       debugPrint('Error saving mentor invitations: $e');

@@ -59,6 +59,34 @@ class SkillProject {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'difficulty': difficulty,
+      'isCompleted': isCompleted,
+      'completedAt': completedAt?.toIso8601String(),
+      'requirements': requirements,
+      'notes': notes,
+      'estimatedHours': estimatedHours,
+    };
+  }
+
+  factory SkillProject.fromJson(Map<String, dynamic> json) {
+    return SkillProject(
+      id: json['id'],
+      title: json['title'],
+      description: json['description'],
+      difficulty: json['difficulty'],
+      isCompleted: json['isCompleted'] ?? false,
+      completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt']) : null,
+      requirements: List<String>.from(json['requirements'] ?? []),
+      notes: json['notes'],
+      estimatedHours: json['estimatedHours'] ?? 0,
+    );
+  }
+
   @override
   String toString() {
     return 'SkillProject(id: $id, title: $title, isCompleted: $isCompleted)';

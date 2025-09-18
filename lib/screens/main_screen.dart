@@ -92,11 +92,7 @@ class _MainScreenState extends State<MainScreen> {
                     icon: Icons.bar_chart,
                     label: 'Analytics',
                   ),
-                  _buildNavItem(
-                    index: 5,
-                    icon: Icons.share,
-                    label: 'Social',
-                  ),
+                  _buildNavItem(index: 5, icon: Icons.share, label: 'Social'),
                   _buildNavItem(
                     index: 6,
                     icon: Icons.auto_awesome,

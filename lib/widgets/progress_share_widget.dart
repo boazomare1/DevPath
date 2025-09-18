@@ -87,11 +87,7 @@ class ProgressShareWidget extends StatelessWidget {
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(
-              Icons.school,
-              color: Colors.white,
-              size: 24,
-            ),
+            child: const Icon(Icons.school, color: Colors.white, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -119,7 +115,10 @@ class ProgressShareWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryStats(BuildContext context, Map<String, dynamic> summary) {
+  Widget _buildSummaryStats(
+    BuildContext context,
+    Map<String, dynamic> summary,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -217,9 +216,9 @@ class ProgressShareWidget extends StatelessWidget {
           ),
           Text(
             label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -227,7 +226,10 @@ class ProgressShareWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildCareerGoalsSection(BuildContext context, List<Map<String, dynamic>> careerProgress) {
+  Widget _buildCareerGoalsSection(
+    BuildContext context,
+    List<Map<String, dynamic>> careerProgress,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -246,36 +248,49 @@ class ProgressShareWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          ...careerProgress.take(3).map((goal) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    goal['goalTitle'],
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[800],
-                    ),
+          ...careerProgress
+              .take(3)
+              .map(
+                (goal) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          goal['goalTitle'],
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getProgressColor(
+                            goal['readinessPercentage'] as double,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${(goal['readinessPercentage'] as double).toStringAsFixed(1)}%',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getProgressColor(goal['readinessPercentage'] as double),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${(goal['readinessPercentage'] as double).toStringAsFixed(1)}%',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )),
+              ),
         ],
       ),
     );
@@ -379,9 +394,9 @@ class ProgressShareWidget extends StatelessWidget {
           ),
           Text(
             label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -399,11 +414,7 @@ class ProgressShareWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.info_outline,
-            color: AppColors.primary,
-            size: 20,
-          ),
+          Icon(Icons.info_outline, color: AppColors.primary, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

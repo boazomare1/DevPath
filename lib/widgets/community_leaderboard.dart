@@ -5,10 +5,7 @@ import '../theme/app_colors.dart';
 class CommunityLeaderboard extends StatelessWidget {
   final List<CommunityUser> users;
 
-  const CommunityLeaderboard({
-    super.key,
-    required this.users,
-  });
+  const CommunityLeaderboard({super.key, required this.users});
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +109,11 @@ class CommunityLeaderboard extends StatelessWidget {
     );
   }
 
-  Widget _buildLeaderboardItem(BuildContext context, CommunityUser user, int rank) {
+  Widget _buildLeaderboardItem(
+    BuildContext context,
+    CommunityUser user,
+    int rank,
+  ) {
     final isTopThree = rank <= 3;
     final rankColor = _getRankColor(rank);
 
@@ -122,15 +123,21 @@ class CommunityLeaderboard extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isTopThree ? rankColor.withOpacity(0.3) : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color:
+              isTopThree
+                  ? rankColor.withOpacity(0.3)
+                  : Theme.of(context).colorScheme.outline.withOpacity(0.2),
         ),
-        boxShadow: isTopThree ? [
-          BoxShadow(
-            color: rankColor.withOpacity(0.1),
-            blurRadius: 8,
-            spreadRadius: 2,
-          ),
-        ] : null,
+        boxShadow:
+            isTopThree
+                ? [
+                  BoxShadow(
+                    color: rankColor.withOpacity(0.1),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                  ),
+                ]
+                : null,
       ),
       child: Row(
         children: [
@@ -139,14 +146,20 @@ class CommunityLeaderboard extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isTopThree ? rankColor : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              color:
+                  isTopThree
+                      ? rankColor
+                      : Theme.of(context).colorScheme.outline.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Text(
                 rank.toString(),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: isTopThree ? Colors.white : Theme.of(context).colorScheme.onSurface,
+                  color:
+                      isTopThree
+                          ? Colors.white
+                          : Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -158,18 +171,20 @@ class CommunityLeaderboard extends StatelessWidget {
           CircleAvatar(
             radius: 24,
             backgroundColor: AppColors.primary.withOpacity(0.1),
-            backgroundImage: user.profileImageUrl != null 
-                ? NetworkImage(user.profileImageUrl!)
-                : null,
-            child: user.profileImageUrl == null
-                ? Text(
-                    user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                : null,
+            backgroundImage:
+                user.profileImageUrl != null
+                    ? NetworkImage(user.profileImageUrl!)
+                    : null,
+            child:
+                user.profileImageUrl == null
+                    ? Text(
+                      user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                    : null,
           ),
           const SizedBox(width: 16),
 
@@ -189,7 +204,9 @@ class CommunityLeaderboard extends StatelessWidget {
                 Text(
                   'Level ${user.level} • ${user.badgesEarned} badges',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
               ],
@@ -218,7 +235,9 @@ class CommunityLeaderboard extends StatelessWidget {
               Text(
                 '${user.skillsCompleted} skills',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
             ],

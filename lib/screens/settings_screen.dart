@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/reminder_service.dart';
 import '../services/github_auth_service.dart';
+import '../services/firebase_auth_service.dart';
+import '../services/minimal_cloud_sync.dart';
+import '../widgets/cloud_sync_status.dart';
 import '../theme/app_colors.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -123,6 +126,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                     const SizedBox(height: 32),
 
+                    // Cloud Sync Section
+                    _buildSettingsSection(
+                      context,
+                      'Cloud Sync',
+                      Icons.cloud_sync,
+                      [
+                        const CloudSyncStatus(),
+                        const SizedBox(height: 16),
+                        _buildCloudSyncActions(context),
+                      ],
+                    ),
+
+                    const SizedBox(height: 32),
+
                     // Account Settings Section
                     _buildSettingsSection(
                       context,
@@ -130,6 +147,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Icons.account_circle,
                       [
                         _buildGitHubStatus(context),
+                        const SizedBox(height: 16),
+                        _buildCloudAuthStatus(context),
                         const SizedBox(height: 16),
                         _buildLogoutButton(context),
                       ],
@@ -451,6 +470,170 @@ class _SettingsScreenState extends State<SettingsScreen> {
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 12),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCloudSyncActions(BuildContext context) {
+    return Consumer<MinimalCloudSync>(
+      builder: (context, cloudSyncService, child) {
+        return Row(
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: cloudSyncService.isOnline && !cloudSyncService.isSyncing
+                    ? () => cloudSyncService.forceSync()
+                    : null,
+                icon: cloudSyncService.isSyncing
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.sync),
+                label: Text(
+                  cloudSyncService.isSyncing
+                      ? 'Syncing...'
+                      : cloudSyncService.isOnline
+                          ? 'Sync Now'
+                          : 'Offline',
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: cloudSyncService.isOnline
+                      ? AppColors.primary
+                      : AppColors.error,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: cloudSyncService.isOnline
+                    ? () => _showSyncOptions(context, cloudSyncService)
+                    : null,
+                icon: const Icon(Icons.settings),
+                label: const Text('Options'),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildCloudAuthStatus(BuildContext context) {
+    return Consumer<FirebaseAuthService>(
+      builder: (context, authService, child) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: authService.isAuthenticated
+                ? AppColors.success.withOpacity(0.1)
+                : AppColors.warning.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: authService.isAuthenticated
+                  ? AppColors.success.withOpacity(0.3)
+                  : AppColors.warning.withOpacity(0.3),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                authService.isAuthenticated ? Icons.cloud_done : Icons.cloud_off,
+                color: authService.isAuthenticated ? AppColors.success : AppColors.warning,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      authService.isAuthenticated ? 'Cloud Account Connected' : 'Cloud Account Not Connected',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    if (authService.userProfile != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        authService.userProfile!.email,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              if (!authService.isAuthenticated)
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/cloud-auth');
+                  },
+                  child: const Text('Connect'),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showSyncOptions(BuildContext context, MinimalCloudSync cloudSyncService) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Sync Options',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            ListTile(
+              leading: const Icon(Icons.upload),
+              title: const Text('Upload to Cloud'),
+              subtitle: const Text('Upload local changes to cloud'),
+              onTap: () {
+                Navigator.pop(context);
+                cloudSyncService.uploadToCloud();
+              },
+            ),
+            
+            ListTile(
+              leading: const Icon(Icons.download),
+              title: const Text('Download from Cloud'),
+              subtitle: const Text('Download latest changes from cloud'),
+              onTap: () {
+                Navigator.pop(context);
+                cloudSyncService.downloadFromCloud();
+              },
+            ),
+            
+            ListTile(
+              leading: const Icon(Icons.sync),
+              title: const Text('Force Sync'),
+              subtitle: const Text('Sync all data both ways'),
+              onTap: () {
+                Navigator.pop(context);
+                cloudSyncService.forceSync();
+              },
+            ),
+          ],
         ),
       ),
     );

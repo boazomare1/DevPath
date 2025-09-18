@@ -54,7 +54,10 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
 
               // Tab bar
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
@@ -66,7 +69,9 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
                     borderRadius: BorderRadius.circular(12),
                   ),
                   labelColor: Colors.white,
-                  unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                  unselectedLabelColor: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
                   tabs: const [
                     Tab(text: 'Share Progress'),
                     Tab(text: 'Mentors'),
@@ -113,7 +118,9 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
                 Text(
                   'Share your progress with mentors and peers',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
               ],
@@ -125,11 +132,7 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
               color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(
-              Icons.share,
-              size: 32,
-              color: AppColors.primary,
-            ),
+            child: Icon(Icons.share, size: 32, color: AppColors.primary),
           ),
         ],
       ),
@@ -137,14 +140,32 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
   }
 
   Widget _buildShareProgressTab(BuildContext context) {
-    return Consumer4<SocialSharingService, AnalyticsService, EnhancedCareerGoalsService, GamificationService>(
-      builder: (context, socialService, analyticsService, careerGoalsService, gamificationService, child) {
+    return Consumer4<
+      SocialSharingService,
+      AnalyticsService,
+      EnhancedCareerGoalsService,
+      GamificationService
+    >(
+      builder: (
+        context,
+        socialService,
+        analyticsService,
+        careerGoalsService,
+        gamificationService,
+        child,
+      ) {
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               // Quick share options
-              _buildQuickShareOptions(context, socialService, analyticsService, careerGoalsService, gamificationService),
+              _buildQuickShareOptions(
+                context,
+                socialService,
+                analyticsService,
+                careerGoalsService,
+                gamificationService,
+              ),
 
               const SizedBox(height: 24),
 
@@ -245,7 +266,13 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
                   'PDF Report',
                   Icons.picture_as_pdf,
                   AppColors.error,
-                  () => _shareAsPDF(context, socialService, analyticsService, careerGoalsService, gamificationService),
+                  () => _shareAsPDF(
+                    context,
+                    socialService,
+                    analyticsService,
+                    careerGoalsService,
+                    gamificationService,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -269,7 +296,13 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
                   'Share Link',
                   Icons.link,
                   AppColors.success,
-                  () => _createShareableLink(context, socialService, analyticsService, careerGoalsService, gamificationService),
+                  () => _createShareableLink(
+                    context,
+                    socialService,
+                    analyticsService,
+                    careerGoalsService,
+                    gamificationService,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -323,7 +356,10 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
     );
   }
 
-  Widget _buildShareHistory(BuildContext context, SocialSharingService socialService) {
+  Widget _buildShareHistory(
+    BuildContext context,
+    SocialSharingService socialService,
+  ) {
     final shareableProgress = socialService.shareableProgress;
 
     if (shareableProgress.isEmpty) {
@@ -355,7 +391,9 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
               Text(
                 'Share your progress to track your sharing history',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -385,105 +423,133 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
             ),
           ),
           const SizedBox(height: 16),
-          ...shareableProgress.take(5).map((progress) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          progress.title,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
+          ...shareableProgress
+              .take(5)
+              .map(
+                (progress) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withOpacity(0.2),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                progress.title,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color:
+                                    progress.isPublic
+                                        ? AppColors.success
+                                        : AppColors.primary,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                progress.isPublic ? 'Public' : 'Private',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          progress.description,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.7),
                           ),
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: progress.isPublic ? AppColors.success : AppColors.primary,
-                          borderRadius: BorderRadius.circular(12),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.access_time,
+                              size: 16,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Created ${_formatDate(progress.createdAt)}',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacity(0.6),
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              'Expires ${_formatDate(progress.expiresAt)}',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacity(0.6),
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          progress.isPublic ? 'Public' : 'Private',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    progress.description,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 16,
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Created ${_formatDate(progress.createdAt)}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        'Expires ${_formatDate(progress.expiresAt)}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ),
-          )),
         ],
       ),
     );
   }
 
-  Widget _buildInviteMentorButton(BuildContext context, SocialSharingService socialService) {
+  Widget _buildInviteMentorButton(
+    BuildContext context,
+    SocialSharingService socialService,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.warning.withOpacity(0.3),
-        ),
+        border: Border.all(color: AppColors.warning.withOpacity(0.3)),
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.person_add,
-            size: 48,
-            color: AppColors.warning,
-          ),
+          Icon(Icons.person_add, size: 48, color: AppColors.warning),
           const SizedBox(height: 16),
           Text(
             'Invite a Mentor',
@@ -502,7 +568,8 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            onPressed: () => _showMentorInvitationDialog(context, socialService),
+            onPressed:
+                () => _showMentorInvitationDialog(context, socialService),
             icon: const Icon(Icons.add),
             label: const Text('Invite Mentor'),
             style: ElevatedButton.styleFrom(
@@ -516,7 +583,10 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
     );
   }
 
-  Widget _buildMentorInvitationsList(BuildContext context, SocialSharingService socialService) {
+  Widget _buildMentorInvitationsList(
+    BuildContext context,
+    SocialSharingService socialService,
+  ) {
     final invitations = socialService.mentorInvitations;
 
     if (invitations.isEmpty) {
@@ -548,7 +618,9 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
               Text(
                 'Invite mentors to view your progress',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -578,94 +650,112 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
             ),
           ),
           const SizedBox(height: 16),
-          ...invitations.map((invitation) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: invitation.isAccepted ? AppColors.success : AppColors.primary,
+          ...invitations.map(
+            (invitation) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color:
+                        invitation.isAccepted
+                            ? AppColors.success
+                            : AppColors.primary,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            invitation.mentorName,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                invitation.isAccepted
+                                    ? AppColors.success
+                                    : AppColors.primary,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            invitation.isAccepted ? 'Accepted' : 'Pending',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      invitation.mentorEmail,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      invitation.message,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.8),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Sent ${_formatDate(invitation.sentAt)}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          invitation.mentorName,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: invitation.isAccepted ? AppColors.success : AppColors.primary,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          invitation.isAccepted ? 'Accepted' : 'Pending',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    invitation.mentorEmail,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    invitation.message,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Sent ${_formatDate(invitation.sentAt)}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                    ),
-                  ),
-                ],
-              ),
             ),
-          )),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildJoinCommunitySection(BuildContext context, SocialSharingService socialService) {
+  Widget _buildJoinCommunitySection(
+    BuildContext context,
+    SocialSharingService socialService,
+  ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.secondary.withOpacity(0.3),
-        ),
+        border: Border.all(color: AppColors.secondary.withOpacity(0.3)),
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.groups,
-            size: 48,
-            color: AppColors.secondary,
-          ),
+          Icon(Icons.groups, size: 48, color: AppColors.secondary),
           const SizedBox(height: 16),
           Text(
             'Join the Community',
@@ -714,7 +804,8 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
         skills: [], // You would get this from your skills service
       );
 
-      final fileName = 'DevPath_Progress_${DateTime.now().millisecondsSinceEpoch}';
+      final fileName =
+          'DevPath_Progress_${DateTime.now().millisecondsSinceEpoch}';
       final filePath = await socialService.exportProgressAsPDF(
         progressData: progressData,
         fileName: fileName,
@@ -739,9 +830,13 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
     }
   }
 
-  Future<void> _shareAsPNG(BuildContext context, SocialSharingService socialService) async {
+  Future<void> _shareAsPNG(
+    BuildContext context,
+    SocialSharingService socialService,
+  ) async {
     try {
-      final fileName = 'DevPath_Progress_${DateTime.now().millisecondsSinceEpoch}';
+      final fileName =
+          'DevPath_Progress_${DateTime.now().millisecondsSinceEpoch}';
       final filePath = await socialService.exportProgressAsPNG(
         fileName: fileName,
       );
@@ -809,33 +904,40 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
     }
   }
 
-  void _showMentorInvitationDialog(BuildContext context, SocialSharingService socialService) {
+  void _showMentorInvitationDialog(
+    BuildContext context,
+    SocialSharingService socialService,
+  ) {
     showDialog(
       context: context,
-      builder: (context) => MentorInvitationDialog(
-        onInvite: (mentorEmail, mentorName, message) async {
-          // Create shareable link first
-          final shareableLink = await socialService.createShareableProgress(
-            title: 'My DevPath Progress',
-            description: 'Shared with mentor: $mentorName',
-            userName: 'Current User',
-            isPublic: false,
-            sharedWith: [mentorEmail],
-            progressData: {},
-          );
+      builder:
+          (context) => MentorInvitationDialog(
+            onInvite: (mentorEmail, mentorName, message) async {
+              // Create shareable link first
+              final shareableLink = await socialService.createShareableProgress(
+                title: 'My DevPath Progress',
+                description: 'Shared with mentor: $mentorName',
+                userName: 'Current User',
+                isPublic: false,
+                sharedWith: [mentorEmail],
+                progressData: {},
+              );
 
-          await socialService.inviteMentor(
-            mentorEmail: mentorEmail,
-            mentorName: mentorName,
-            message: message,
-            shareableLink: shareableLink,
-          );
-        },
-      ),
+              await socialService.inviteMentor(
+                mentorEmail: mentorEmail,
+                mentorName: mentorName,
+                message: message,
+                shareableLink: shareableLink,
+              );
+            },
+          ),
     );
   }
 
-  Future<void> _joinCommunity(BuildContext context, SocialSharingService socialService) async {
+  Future<void> _joinCommunity(
+    BuildContext context,
+    SocialSharingService socialService,
+  ) async {
     // In a real app, you would get user data from authentication
     await socialService.addToCommunity(
       name: 'Current User',
@@ -860,7 +962,7 @@ class _SocialSharingScreenState extends State<SocialSharingScreen>
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date).inDays;
-    
+
     if (difference == 0) return 'Today';
     if (difference == 1) return 'Yesterday';
     if (difference < 7) return '$difference days ago';
