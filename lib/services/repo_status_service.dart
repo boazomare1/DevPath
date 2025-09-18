@@ -32,14 +32,11 @@ class RepoStatusService {
     String? notes,
   }) async {
     final existingStatus = getRepoStatus(repository.id);
-    final lastCommitDate = repository.pushedAt ?? repository.updatedAt;
 
     final status = RepoStatus.fromRepository(
-      repoId: repository.id,
-      lastCommitDate: lastCommitDate,
-      openIssuesCount: repository.openIssuesCount,
-      status: newStatus ?? existingStatus?.status ?? ProjectStatus.notStarted,
-      notes: notes ?? existingStatus?.notes,
+      repository,
+      newStatus:
+          newStatus ?? existingStatus?.status ?? ProjectStatus.notStarted,
     );
 
     await updateRepoStatus(status);

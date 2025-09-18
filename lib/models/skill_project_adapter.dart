@@ -13,7 +13,10 @@ class SkillProjectAdapter extends TypeAdapter<SkillProject> {
       description: reader.readString(),
       difficulty: reader.readString(),
       isCompleted: reader.readBool(),
-      completedAt: reader.readBool() ? DateTime.fromMillisecondsSinceEpoch(reader.readInt()) : null,
+      completedAt:
+          reader.readBool()
+              ? DateTime.fromMillisecondsSinceEpoch(reader.readInt())
+              : null,
       requirements: (reader.readList() as List).cast<String>(),
       notes: reader.readBool() ? reader.readString() : null,
       estimatedHours: reader.readInt(),

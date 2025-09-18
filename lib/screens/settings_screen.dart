@@ -482,30 +482,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: cloudSyncService.isOnline && !cloudSyncService.isSyncing
-                    ? () => cloudSyncService.forceSync()
-                    : null,
-                icon: cloudSyncService.isSyncing
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.sync),
+                onPressed:
+                    cloudSyncService.isOnline && !cloudSyncService.isSyncing
+                        ? () => cloudSyncService.forceSync()
+                        : null,
+                icon:
+                    cloudSyncService.isSyncing
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                        : const Icon(Icons.sync),
                 label: Text(
                   cloudSyncService.isSyncing
                       ? 'Syncing...'
                       : cloudSyncService.isOnline
-                          ? 'Sync Now'
-                          : 'Offline',
+                      ? 'Sync Now'
+                      : 'Offline',
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: cloudSyncService.isOnline
-                      ? AppColors.primary
-                      : AppColors.error,
+                  backgroundColor:
+                      cloudSyncService.isOnline
+                          ? AppColors.primary
+                          : AppColors.error,
                   foregroundColor: Colors.white,
                 ),
               ),
@@ -513,9 +516,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: cloudSyncService.isOnline
-                    ? () => _showSyncOptions(context, cloudSyncService)
-                    : null,
+                onPressed:
+                    cloudSyncService.isOnline
+                        ? () => _showSyncOptions(context, cloudSyncService)
+                        : null,
                 icon: const Icon(Icons.settings),
                 label: const Text('Options'),
               ),
@@ -532,21 +536,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: authService.isAuthenticated
-                ? AppColors.success.withOpacity(0.1)
-                : AppColors.warning.withOpacity(0.1),
+            color:
+                authService.isAuthenticated
+                    ? AppColors.success.withOpacity(0.1)
+                    : AppColors.warning.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: authService.isAuthenticated
-                  ? AppColors.success.withOpacity(0.3)
-                  : AppColors.warning.withOpacity(0.3),
+              color:
+                  authService.isAuthenticated
+                      ? AppColors.success.withOpacity(0.3)
+                      : AppColors.warning.withOpacity(0.3),
             ),
           ),
           child: Row(
             children: [
               Icon(
-                authService.isAuthenticated ? Icons.cloud_done : Icons.cloud_off,
-                color: authService.isAuthenticated ? AppColors.success : AppColors.warning,
+                authService.isAuthenticated
+                    ? Icons.cloud_done
+                    : Icons.cloud_off,
+                color:
+                    authService.isAuthenticated
+                        ? AppColors.success
+                        : AppColors.warning,
                 size: 20,
               ),
               const SizedBox(width: 12),
@@ -555,7 +566,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      authService.isAuthenticated ? 'Cloud Account Connected' : 'Cloud Account Not Connected',
+                      authService.isAuthenticated
+                          ? 'Cloud Account Connected'
+                          : 'Cloud Account Not Connected',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -566,7 +579,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Text(
                         authService.userProfile!.email,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -587,55 +602,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showSyncOptions(BuildContext context, MinimalCloudSync cloudSyncService) {
+  void _showSyncOptions(
+    BuildContext context,
+    MinimalCloudSync cloudSyncService,
+  ) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Sync Options',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Sync Options',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+
+                ListTile(
+                  leading: const Icon(Icons.upload),
+                  title: const Text('Upload to Cloud'),
+                  subtitle: const Text('Upload local changes to cloud'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    cloudSyncService.uploadToCloud();
+                  },
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.download),
+                  title: const Text('Download from Cloud'),
+                  subtitle: const Text('Download latest changes from cloud'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    cloudSyncService.downloadFromCloud();
+                  },
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.sync),
+                  title: const Text('Force Sync'),
+                  subtitle: const Text('Sync all data both ways'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    cloudSyncService.forceSync();
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            
-            ListTile(
-              leading: const Icon(Icons.upload),
-              title: const Text('Upload to Cloud'),
-              subtitle: const Text('Upload local changes to cloud'),
-              onTap: () {
-                Navigator.pop(context);
-                cloudSyncService.uploadToCloud();
-              },
-            ),
-            
-            ListTile(
-              leading: const Icon(Icons.download),
-              title: const Text('Download from Cloud'),
-              subtitle: const Text('Download latest changes from cloud'),
-              onTap: () {
-                Navigator.pop(context);
-                cloudSyncService.downloadFromCloud();
-              },
-            ),
-            
-            ListTile(
-              leading: const Icon(Icons.sync),
-              title: const Text('Force Sync'),
-              subtitle: const Text('Sync all data both ways'),
-              onTap: () {
-                Navigator.pop(context);
-                cloudSyncService.forceSync();
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 

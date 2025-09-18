@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import '../models/github_repository.dart';
 import '../models/repo_status.dart';
-import '../services/repo_status_service.dart';
 import '../theme/app_colors.dart';
 
 class RepoCard extends StatelessWidget {
   final GitHubRepository repository;
+  final RepoStatus? status;
+  final Function(ProjectStatus)? onStatusChanged;
   final VoidCallback? onTap;
 
-  const RepoCard({super.key, required this.repository, this.onTap});
+  const RepoCard({
+    super.key,
+    required this.repository,
+    this.status,
+    this.onStatusChanged,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final repoStatus = RepoStatusService.getRepoStatusWithData(
-      repository.id,
-      repository,
-    );
+    final repoStatus = status;
 
     return GestureDetector(
       onTap: onTap,

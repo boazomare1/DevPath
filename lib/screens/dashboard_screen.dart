@@ -4,7 +4,7 @@ import '../theme/app_colors.dart';
 import '../models/skill.dart';
 import '../models/skill_category.dart';
 import '../models/progress_summary.dart';
-import '../services/storage_service.dart';
+import '../services/simple_storage_service.dart';
 import '../widgets/progress_card.dart';
 import '../widgets/category_progress_card.dart';
 import '../widgets/skill_status_chart.dart';
@@ -26,8 +26,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _loadSkills();
   }
 
-  void _loadSkills() {
-    final skills = StorageService.getAllSkills();
+  Future<void> _loadSkills() async {
+    final skills = await SimpleStorageService.getAllSkills();
     setState(() {
       _skills = skills;
       _progressSummary = ProgressSummary.fromSkills(skills);
@@ -358,7 +358,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 icon: Icons.add,
                 label: 'Add Skill',
                 onTap: () {
-                  // TODO: Navigate to add skill
+                  _showAddSkillDialog();
                 },
               ),
             ),
@@ -368,13 +368,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 icon: Icons.list,
                 label: 'View All',
                 onTap: () {
-                  // TODO: Navigate to skills list
+                  // Navigate to main screen (which will show skills tab)
+                  Navigator.of(context).pushReplacementNamed('/main');
                 },
               ),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  void _showAddSkillDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add New Skill'),
+          content: const Text(
+            'This feature is coming soon! You can add skills through the Skills tab.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Navigate to main screen and switch to skills tab
+                Navigator.of(context).pushReplacementNamed('/main');
+              },
+              child: const Text('Go to Skills'),
+            ),
+          ],
+        );
+      },
     );
   }
 

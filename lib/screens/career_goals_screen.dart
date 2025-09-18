@@ -306,7 +306,6 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
   }
 
   void _showCreateGoalDialog() {
-    final roleController = TextEditingController();
     final titleController = TextEditingController();
     final descriptionController = TextEditingController();
     final salaryController = TextEditingController();

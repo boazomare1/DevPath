@@ -9,13 +9,13 @@ import '../models/skill_status.dart';
 import '../models/github_repository.dart';
 import '../models/github_user.dart';
 import '../models/user_profile.dart';
-import '../services/storage_service.dart';
+import '../services/simple_storage_service.dart';
 
 class CloudSyncService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Connectivity _connectivity = Connectivity();
-  
+
   bool _isOnline = false;
   bool _isSyncing = false;
   DateTime? _lastSyncTime;
@@ -31,16 +31,16 @@ class CloudSyncService extends ChangeNotifier {
   }
 
   void _initializeConnectivity() {
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
-      (ConnectivityResult result) {
-        _isOnline = result != ConnectivityResult.none;
-        notifyListeners();
-        
-        if (_isOnline) {
-          _syncData();
-        }
-      },
-    );
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((
+      ConnectivityResult result,
+    ) {
+      _isOnline = result != ConnectivityResult.none;
+      notifyListeners();
+
+      if (_isOnline) {
+        _syncData();
+      }
+    });
   }
 
   @override
@@ -55,7 +55,7 @@ class CloudSyncService extends ChangeNotifier {
       // Check initial connectivity
       final connectivityResult = await _connectivity.checkConnectivity();
       _isOnline = connectivityResult != ConnectivityResult.none;
-      
+
       if (_isOnline) {
         await _syncData();
       }
@@ -67,7 +67,7 @@ class CloudSyncService extends ChangeNotifier {
   /// Sync all data with cloud
   Future<void> _syncData() async {
     if (!_isOnline || _isSyncing) return;
-    
+
     try {
       _isSyncing = true;
       notifyListeners();
@@ -77,22 +77,22 @@ class CloudSyncService extends ChangeNotifier {
 
       // Sync skills
       await _syncSkills(user.uid);
-      
+
       // Sync GitHub data
       await _syncGitHubData(user.uid);
-      
+
       // Sync user profile
       await _syncUserProfile(user.uid);
-      
+
       // Sync analytics data
       await _syncAnalyticsData(user.uid);
-      
+
       // Sync gamification data
       await _syncGamificationData(user.uid);
-      
+
       // Sync career goals
       await _syncCareerGoals(user.uid);
-      
+
       // Sync social sharing data
       await _syncSocialSharingData(user.uid);
 
@@ -109,27 +109,27 @@ class CloudSyncService extends ChangeNotifier {
   Future<void> _syncSkills(String userId) async {
     try {
       // Get local skills
-      final localSkills = StorageService.getAllSkills();
-      
-      // Get cloud skills
-      final skillsSnapshot = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('skills')
-          .get();
+      final localSkills = await SimpleStorageService.getAllSkills();
 
-      final cloudSkills = skillsSnapshot.docs
-          .map((doc) => Skill.fromJson(doc.data()))
-          .toList();
+      // Get cloud skills
+      final skillsSnapshot =
+          await _firestore
+              .collection('users')
+              .doc(userId)
+              .collection('skills')
+              .get();
+
+      final cloudSkills =
+          skillsSnapshot.docs.map((doc) => Skill.fromJson(doc.data())).toList();
 
       // Merge and resolve conflicts
       final mergedSkills = _mergeSkills(localSkills, cloudSkills);
-      
+
       // Update local storage
       for (final skill in mergedSkills) {
-        await StorageService.updateSkill(skill);
+        await SimpleStorageService.updateSkill(skill);
       }
-      
+
       // Update cloud storage
       final batch = _firestore.batch();
       for (final skill in mergedSkills) {
@@ -150,28 +150,30 @@ class CloudSyncService extends ChangeNotifier {
   Future<void> _syncGitHubData(String userId) async {
     try {
       // Get local GitHub data
-      final localRepos = StorageService.getAllRepositories();
-      final localUser = StorageService.getCurrentUser();
-      
-      // Get cloud GitHub data
-      final reposSnapshot = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('repositories')
-          .get();
+      final localRepos = await SimpleStorageService.getAllRepositories();
+      final localUser = await SimpleStorageService.getCurrentUser();
 
-      final cloudRepos = reposSnapshot.docs
-          .map((doc) => GitHubRepository.fromJson(doc.data()))
-          .toList();
+      // Get cloud GitHub data
+      final reposSnapshot =
+          await _firestore
+              .collection('users')
+              .doc(userId)
+              .collection('repositories')
+              .get();
+
+      final cloudRepos =
+          reposSnapshot.docs
+              .map((doc) => GitHubRepository.fromJson(doc.data()))
+              .toList();
 
       // Merge repositories
       final mergedRepos = _mergeRepositories(localRepos, cloudRepos);
-      
+
       // Update local storage
       for (final repo in mergedRepos) {
-        await StorageService.updateRepository(repo);
+        await SimpleStorageService.updateRepository(repo);
       }
-      
+
       // Update cloud storage
       final batch = _firestore.batch();
       for (final repo in mergedRepos) {
@@ -191,10 +193,7 @@ class CloudSyncService extends ChangeNotifier {
   /// Sync user profile
   Future<void> _syncUserProfile(String userId) async {
     try {
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userId)
-          .get();
+      final userDoc = await _firestore.collection('users').doc(userId).get();
 
       if (userDoc.exists) {
         final cloudProfile = UserProfile.fromJson(userDoc.data()!);
@@ -249,12 +248,12 @@ class CloudSyncService extends ChangeNotifier {
   /// Merge skills with conflict resolution
   List<Skill> _mergeSkills(List<Skill> localSkills, List<Skill> cloudSkills) {
     final Map<String, Skill> skillMap = {};
-    
+
     // Add local skills
     for (final skill in localSkills) {
       skillMap[skill.id] = skill;
     }
-    
+
     // Merge cloud skills
     for (final skill in cloudSkills) {
       if (skillMap.containsKey(skill.id)) {
@@ -267,7 +266,7 @@ class CloudSyncService extends ChangeNotifier {
         skillMap[skill.id] = skill;
       }
     }
-    
+
     return skillMap.values.toList();
   }
 
@@ -277,12 +276,12 @@ class CloudSyncService extends ChangeNotifier {
     List<GitHubRepository> cloudRepos,
   ) {
     final Map<int, GitHubRepository> repoMap = {};
-    
+
     // Add local repositories
     for (final repo in localRepos) {
       repoMap[repo.id] = repo;
     }
-    
+
     // Merge cloud repositories
     for (final repo in cloudRepos) {
       if (repoMap.containsKey(repo.id)) {
@@ -295,7 +294,7 @@ class CloudSyncService extends ChangeNotifier {
         repoMap[repo.id] = repo;
       }
     }
-    
+
     return repoMap.values.toList();
   }
 
@@ -312,7 +311,7 @@ class CloudSyncService extends ChangeNotifier {
     if (!_isOnline) {
       throw Exception('No internet connection');
     }
-    
+
     final user = _auth.currentUser;
     if (user == null) return;
 
@@ -324,7 +323,7 @@ class CloudSyncService extends ChangeNotifier {
       await _uploadSkills(user.uid);
       await _uploadRepositories(user.uid);
       await _uploadUserProfile(user.uid);
-      
+
       _lastSyncTime = DateTime.now();
     } catch (e) {
       debugPrint('Upload to cloud error: $e');
@@ -340,7 +339,7 @@ class CloudSyncService extends ChangeNotifier {
     if (!_isOnline) {
       throw Exception('No internet connection');
     }
-    
+
     final user = _auth.currentUser;
     if (user == null) return;
 
@@ -352,7 +351,7 @@ class CloudSyncService extends ChangeNotifier {
       await _downloadSkills(user.uid);
       await _downloadRepositories(user.uid);
       await _downloadUserProfile(user.uid);
-      
+
       _lastSyncTime = DateTime.now();
     } catch (e) {
       debugPrint('Download from cloud error: $e');
@@ -365,9 +364,9 @@ class CloudSyncService extends ChangeNotifier {
 
   /// Upload skills to cloud
   Future<void> _uploadSkills(String userId) async {
-    final skills = StorageService.getAllSkills();
+    final skills = await SimpleStorageService.getAllSkills();
     final batch = _firestore.batch();
-    
+
     for (final skill in skills) {
       final skillRef = _firestore
           .collection('users')
@@ -376,15 +375,15 @@ class CloudSyncService extends ChangeNotifier {
           .doc(skill.id);
       batch.set(skillRef, skill.toJson());
     }
-    
+
     await batch.commit();
   }
 
   /// Upload repositories to cloud
   Future<void> _uploadRepositories(String userId) async {
-    final repos = StorageService.getAllRepositories();
+    final repos = await SimpleStorageService.getAllRepositories();
     final batch = _firestore.batch();
-    
+
     for (final repo in repos) {
       final repoRef = _firestore
           .collection('users')
@@ -393,7 +392,7 @@ class CloudSyncService extends ChangeNotifier {
           .doc(repo.id.toString());
       batch.set(repoRef, repo.toJson());
     }
-    
+
     await batch.commit();
   }
 
@@ -405,29 +404,31 @@ class CloudSyncService extends ChangeNotifier {
 
   /// Download skills from cloud
   Future<void> _downloadSkills(String userId) async {
-    final skillsSnapshot = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('skills')
-        .get();
+    final skillsSnapshot =
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('skills')
+            .get();
 
     for (final doc in skillsSnapshot.docs) {
       final skill = Skill.fromJson(doc.data());
-      await StorageService.updateSkill(skill);
+      await SimpleStorageService.updateSkill(skill);
     }
   }
 
   /// Download repositories from cloud
   Future<void> _downloadRepositories(String userId) async {
-    final reposSnapshot = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('repositories')
-        .get();
+    final reposSnapshot =
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('repositories')
+            .get();
 
     for (final doc in reposSnapshot.docs) {
       final repo = GitHubRepository.fromJson(doc.data());
-      await StorageService.updateRepository(repo);
+      await SimpleStorageService.updateRepository(repo);
     }
   }
 

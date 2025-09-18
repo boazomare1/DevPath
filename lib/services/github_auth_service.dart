@@ -62,13 +62,21 @@ class GitHubAuthService extends ChangeNotifier {
         await _fetchUserData();
         await _fetchRepositories();
         _authStateController.add(true);
+        notifyListeners();
       } else {
         _authStateController.add(false);
+        notifyListeners();
       }
     } catch (e) {
       debugPrint('Error initializing GitHub auth: $e');
       _authStateController.add(false);
+      notifyListeners();
     }
+  }
+
+  /// Force refresh the authentication state
+  Future<void> refreshAuthState() async {
+    await initialize();
   }
 
   /// Get a fresh authorization URL (useful for debugging)
@@ -186,6 +194,8 @@ class GitHubAuthService extends ChangeNotifier {
         await _fetchUserData();
         await _fetchRepositories();
 
+        debugPrint('✅ Authentication completed successfully');
+        debugPrint('✅ Final auth state: isAuthenticated = ${isAuthenticated}');
         _authStateController.add(true);
         notifyListeners();
         return true;
@@ -265,7 +275,12 @@ class GitHubAuthService extends ChangeNotifier {
 
   /// Fetch current user data from GitHub API
   Future<GitHubUser?> _fetchUserData() async {
-    if (_accessToken == null) return null;
+    if (_accessToken == null) {
+      _currentUser = null;
+      _userController.add(_currentUser);
+      notifyListeners();
+      return null;
+    }
 
     try {
       final response = await http.get(
@@ -279,23 +294,39 @@ class GitHubAuthService extends ChangeNotifier {
       if (response.statusCode == 200) {
         final userData = jsonDecode(response.body);
         _currentUser = GitHubUser.fromJson(userData);
+        debugPrint(
+          '✅ GitHub user data fetched successfully: ${_currentUser?.login}',
+        );
+        debugPrint(
+          '✅ User authenticated state: $_accessToken != null && _currentUser != null = ${_accessToken != null && _currentUser != null}',
+        );
 
         // Store user data securely
         await _secureStorage.write(key: _userKey, value: jsonEncode(userData));
-
-        _userController.add(_currentUser);
-        return _currentUser;
+      } else {
+        debugPrint('❌ Error fetching user data: ${response.statusCode}');
+        debugPrint('❌ Response body: ${response.body}');
+        _currentUser = null;
       }
     } catch (e) {
       debugPrint('Error fetching user data: $e');
+      _currentUser = null;
     }
 
-    return null;
+    // Always emit the current state and notify listeners
+    _userController.add(_currentUser);
+    notifyListeners();
+    return _currentUser;
   }
 
   /// Fetch user repositories from GitHub API
   Future<List<GitHubRepository>> _fetchRepositories() async {
-    if (_accessToken == null) return [];
+    if (_accessToken == null) {
+      _repositories = [];
+      _reposController.add(_repositories);
+      notifyListeners();
+      return [];
+    }
 
     try {
       final response = await http.get(
@@ -310,15 +341,19 @@ class GitHubAuthService extends ChangeNotifier {
         final List<dynamic> reposData = jsonDecode(response.body);
         _repositories =
             reposData.map((repo) => GitHubRepository.fromJson(repo)).toList();
-
-        _reposController.add(_repositories);
-        return _repositories;
+      } else {
+        debugPrint('Error fetching repositories: ${response.statusCode}');
+        _repositories = [];
       }
     } catch (e) {
       debugPrint('Error fetching repositories: $e');
+      _repositories = [];
     }
 
-    return [];
+    // Always emit the current state and notify listeners
+    _reposController.add(_repositories);
+    notifyListeners();
+    return _repositories;
   }
 
   /// Fetch repositories for a specific user

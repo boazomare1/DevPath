@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
 import '../models/skill.dart';
 import '../models/skill_project.dart';
-import '../services/storage_service.dart';
+import '../services/simple_storage_service.dart';
 import '../widgets/project_card.dart';
 
 class SkillDetailsScreen extends StatefulWidget {
@@ -24,7 +24,10 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
     _skill = widget.skill;
   }
 
-  void _updateProjectStatus(SkillProject project, bool isCompleted) {
+  Future<void> _updateProjectStatus(
+    SkillProject project,
+    bool isCompleted,
+  ) async {
     final currentProjects = _skill.projects ?? [];
     final updatedProjects =
         currentProjects.map<SkillProject>((p) {
@@ -38,7 +41,7 @@ class _SkillDetailsScreenState extends State<SkillDetailsScreen> {
         }).toList();
 
     final updatedSkill = _skill.copyWith(projects: updatedProjects);
-    StorageService.updateSkill(updatedSkill);
+    await SimpleStorageService.updateSkill(updatedSkill);
 
     setState(() {
       _skill = updatedSkill;

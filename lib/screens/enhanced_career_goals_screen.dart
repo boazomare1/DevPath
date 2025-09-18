@@ -92,6 +92,7 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "career_goals_fab",
         onPressed: () => _showCreateGoalDialog(context),
         icon: const Icon(Icons.add),
         label: const Text('New Goal'),

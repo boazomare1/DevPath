@@ -48,6 +48,9 @@ dependencies:
   # UI components
   google_fonts: ^6.2.1
   glassmorphism: ^3.0.0
+  
+  # Deep linking
+  app_links: ^3.4.5
   flutter_svg: ^2.0.10+1
   
   # Utilities

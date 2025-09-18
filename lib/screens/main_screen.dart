@@ -9,7 +9,6 @@ import 'settings_screen.dart';
 import 'insights_screen.dart';
 import 'roadmap_screen.dart';
 import 'gamification_screen.dart';
-import 'career_goals_screen.dart';
 import 'enhanced_career_goals_screen.dart';
 import 'advanced_analytics_screen.dart';
 import 'social_sharing_screen.dart';

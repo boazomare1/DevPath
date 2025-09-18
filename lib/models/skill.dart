@@ -126,13 +126,22 @@ class Skill extends HiveObject {
       notes: json['notes'],
       resources: List<String>.from(json['resources'] ?? []),
       createdAt: DateTime.parse(json['createdAt']),
-      completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt']) : null,
+      completedAt:
+          json['completedAt'] != null
+              ? DateTime.parse(json['completedAt'])
+              : null,
       priority: json['priority'] ?? 3,
       tags: List<String>.from(json['tags'] ?? []),
-      projects: json['projects'] != null 
-          ? (json['projects'] as List).map((p) => SkillProject.fromJson(p)).toList()
-          : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : DateTime.now(),
+      projects:
+          json['projects'] != null
+              ? (json['projects'] as List)
+                  .map((p) => SkillProject.fromJson(p))
+                  .toList()
+              : null,
+      updatedAt:
+          json['updatedAt'] != null
+              ? DateTime.parse(json['updatedAt'])
+              : DateTime.now(),
     );
   }
 

@@ -77,7 +77,10 @@ class UserProfile {
       photoUrl: json['photoUrl'],
       createdAt: DateTime.parse(json['createdAt']),
       lastLoginAt: DateTime.parse(json['lastLoginAt']),
-      lastSyncAt: json['lastSyncAt'] != null ? DateTime.parse(json['lastSyncAt']) : null,
+      lastSyncAt:
+          json['lastSyncAt'] != null
+              ? DateTime.parse(json['lastSyncAt'])
+              : null,
       preferences: Map<String, dynamic>.from(json['preferences'] ?? {}),
       devices: List<String>.from(json['devices'] ?? []),
       timezone: json['timezone'],

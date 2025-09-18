@@ -4,7 +4,7 @@ import '../theme/app_colors.dart';
 import '../models/skill.dart';
 import '../models/skill_category.dart';
 import '../models/skill_status.dart';
-import '../services/storage_service.dart';
+import '../services/simple_storage_service.dart';
 import '../widgets/skill_card.dart';
 import '../widgets/category_header.dart';
 import 'skill_details_screen.dart';
@@ -28,9 +28,10 @@ class _SkillsScreenState extends State<SkillsScreen> {
     _loadSkills();
   }
 
-  void _loadSkills() {
+  Future<void> _loadSkills() async {
+    final skills = await SimpleStorageService.getAllSkills();
     setState(() {
-      _skills = StorageService.getAllSkills();
+      _skills = skills;
     });
   }
 
@@ -117,6 +118,7 @@ class _SkillsScreenState extends State<SkillsScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: "skills_fab",
         onPressed: _showAddSkillDialog,
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
@@ -396,13 +398,13 @@ class _SkillsScreenState extends State<SkillsScreen> {
     );
   }
 
-  void _updateSkillStatus(Skill skill, SkillStatus newStatus) {
+  Future<void> _updateSkillStatus(Skill skill, SkillStatus newStatus) async {
     final updatedSkill = skill.copyWith(
       status: newStatus,
       completedAt: newStatus == SkillStatus.completed ? DateTime.now() : null,
     );
 
-    StorageService.updateSkill(updatedSkill);
-    _loadSkills();
+    await SimpleStorageService.updateSkill(updatedSkill);
+    await _loadSkills();
   }
 }

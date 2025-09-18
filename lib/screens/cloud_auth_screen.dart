@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/firebase_auth_service.dart';
 import '../services/cloud_sync_service.dart';
+import '../services/minimal_cloud_sync.dart';
 import '../theme/app_colors.dart';
 
 class CloudAuthScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _CloudAuthScreenState extends State<CloudAuthScreen> {
   final _passwordController = TextEditingController();
   final _displayNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _isSignUp = false;
   bool _isLoading = false;
 
@@ -51,19 +52,19 @@ class _CloudAuthScreenState extends State<CloudAuthScreen> {
                 children: [
                   // Logo and title
                   _buildHeader(context),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   // Auth form
                   _buildAuthForm(context),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Social auth buttons
                   _buildSocialAuth(context),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Toggle sign in/up
                   _buildToggleAuth(context),
                 ],
@@ -91,11 +92,7 @@ class _CloudAuthScreenState extends State<CloudAuthScreen> {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.cloud_sync,
-            size: 48,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.cloud_sync, size: 48, color: Colors.white),
         ),
         const SizedBox(height: 24),
         Text(
@@ -165,7 +162,9 @@ class _CloudAuthScreenState extends State<CloudAuthScreen> {
                 if (value?.isEmpty == true) {
                   return 'Please enter your email';
                 }
-                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                if (!RegExp(
+                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                ).hasMatch(value!)) {
                   return 'Please enter a valid email';
                 }
                 return null;
@@ -203,16 +202,17 @@ class _CloudAuthScreenState extends State<CloudAuthScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : Text(_isSignUp ? 'Sign Up' : 'Sign In'),
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                        : Text(_isSignUp ? 'Sign Up' : 'Sign In'),
               ),
             ),
           ],
@@ -271,9 +271,7 @@ class _CloudAuthScreenState extends State<CloudAuthScreen> {
       label: Text(label),
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -314,8 +312,11 @@ class _CloudAuthScreenState extends State<CloudAuthScreen> {
     });
 
     try {
-      final authService = Provider.of<FirebaseAuthService>(context, listen: false);
-      
+      final authService = Provider.of<FirebaseAuthService>(
+        context,
+        listen: false,
+      );
+
       if (_isSignUp) {
         await authService.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
@@ -330,7 +331,10 @@ class _CloudAuthScreenState extends State<CloudAuthScreen> {
       }
 
       // Initialize cloud sync
-      final cloudSyncService = Provider.of<CloudSyncService>(context, listen: false);
+      final cloudSyncService = Provider.of<CloudSyncService>(
+        context,
+        listen: false,
+      );
       await cloudSyncService.initialize();
 
       if (mounted) {
@@ -360,12 +364,14 @@ class _CloudAuthScreenState extends State<CloudAuthScreen> {
     });
 
     try {
-      final authService = Provider.of<FirebaseAuthService>(context, listen: false);
+      final authService = Provider.of<FirebaseAuthService>(
+        context,
+        listen: false,
+      );
       await authService.signInWithGoogle();
 
-      // Initialize cloud sync
-      final cloudSyncService = Provider.of<CloudSyncService>(context, listen: false);
-      await cloudSyncService.initialize();
+      // Cloud sync is already initialized in main.dart via MinimalCloudSync
+      // No need to initialize it again here
 
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/main');

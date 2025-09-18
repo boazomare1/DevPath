@@ -6,7 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/github_repository.dart';
 import '../models/repo_status.dart';
-import 'repo_status_service.dart';
+import 'simple_repo_status_service.dart';
 
 class ReminderService {
   static const String _reminderFrequencyKey = 'reminder_frequency_days';
@@ -126,7 +126,7 @@ class ReminderService {
   static Future<List<GitHubRepository>> _getInactiveInProgressRepos(
     int reminderDays,
   ) async {
-    final allStatuses = RepoStatusService.getAllRepoStatuses();
+    final allStatuses = await SimpleRepoStatusService.getAllRepoStatuses();
     final inactiveRepos = <GitHubRepository>[];
 
     for (final status in allStatuses) {
@@ -291,7 +291,7 @@ class ReminderService {
   /// Check for inactive repositories and return them
   static Future<List<InactiveRepoInfo>> checkInactiveRepositories() async {
     final reminderDays = await getReminderFrequency();
-    final allStatuses = RepoStatusService.getAllRepoStatuses();
+    final allStatuses = await SimpleRepoStatusService.getAllRepoStatuses();
     final inactiveRepos = <InactiveRepoInfo>[];
 
     for (final status in allStatuses) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../services/github_auth_service.dart';
+import '../services/auth_code_storage.dart';
 import '../models/github_user.dart';
 import '../models/github_repository.dart';
 import '../theme/app_colors.dart';
@@ -24,10 +24,63 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize the GitHub auth service
+    // Initialize the GitHub auth service and check for pending auth codes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GitHubAuthService>().initialize();
+      _checkForPendingAuthCode();
     });
+  }
+
+  /// Check for and process any pending auth code from deep link
+  Future<void> _checkForPendingAuthCode() async {
+    debugPrint('🔍 Checking for pending auth code...');
+    final pendingCode = await AuthCodeStorage.getAndClearPendingAuthCode();
+    debugPrint('📋 Pending code result: $pendingCode');
+    if (pendingCode != null) {
+      debugPrint('✅ Processing pending auth code: $pendingCode');
+      await _authenticateWithCode(pendingCode);
+    } else {
+      debugPrint('❌ No pending auth code found');
+    }
+  }
+
+  /// Authenticate with the provided code
+  Future<void> _authenticateWithCode(String code) async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final authService = context.read<GitHubAuthService>();
+      final success = await authService.authenticateWithCode(code);
+
+      if (success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Successfully authenticated with GitHub!'),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          _errorMessage =
+              'Authentication failed. The code may have expired or been used already. Please try getting a new code.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Authentication error: $e';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -227,24 +280,47 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Header
-                Text(
-                  'GitHub Integration',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Connect your GitHub account to sync repositories and track your development progress',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.7),
-                  ),
-                  textAlign: TextAlign.center,
+                // Header with refresh button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'GitHub Integration',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Connect your GitHub account to sync repositories and track your development progress',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        await context
+                            .read<GitHubAuthService>()
+                            .refreshAuthState();
+                      },
+                      icon: const Icon(Icons.refresh),
+                      tooltip: 'Refresh',
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 32),
 
@@ -292,11 +368,34 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
             child: StreamBuilder<List<GitHubRepository>>(
               stream: context.watch<GitHubAuthService>().reposStream,
               builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text('Loading repositories...'),
+                      ],
+                    ),
+                  );
+                }
+
                 final repos = snapshot.data ?? [];
                 if (repos.isNotEmpty) {
                   return GitHubRepoList(repositories: repos);
+                } else {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.folder_open, size: 64, color: Colors.grey),
+                        SizedBox(height: 16),
+                        Text('No repositories found'),
+                      ],
+                    ),
+                  );
                 }
-                return const Center(child: CircularProgressIndicator());
               },
             ),
           ),

@@ -25,13 +25,14 @@ class RepoStatusAdapter extends TypeAdapter<RepoStatus> {
       lastActivity: fields[5] as DateTime?,
       isStale: fields[6] as bool,
       hasRecentActivity: fields[7] as bool,
+      lastCommitDate: fields[8] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RepoStatus obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.repoId)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class RepoStatusAdapter extends TypeAdapter<RepoStatus> {
       ..writeByte(6)
       ..write(obj.isStale)
       ..writeByte(7)
-      ..write(obj.hasRecentActivity);
+      ..write(obj.hasRecentActivity)
+      ..writeByte(8)
+      ..write(obj.lastCommitDate);
   }
 
   @override

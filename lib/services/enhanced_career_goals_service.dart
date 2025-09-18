@@ -55,7 +55,10 @@ class Company {
       description: json['description'],
       logoUrl: json['logoUrl'],
       roleRequirements: Map<String, List<String>>.from(
-        json['roleRequirements'],
+        (json['roleRequirements'] as Map).map(
+          (key, value) =>
+              MapEntry(key.toString(), List<String>.from(value as List)),
+        ),
       ),
       salaryRanges: Map<String, int>.from(json['salaryRanges']),
       benefits: List<String>.from(json['benefits']),

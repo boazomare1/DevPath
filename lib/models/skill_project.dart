@@ -80,7 +80,10 @@ class SkillProject {
       description: json['description'],
       difficulty: json['difficulty'],
       isCompleted: json['isCompleted'] ?? false,
-      completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt']) : null,
+      completedAt:
+          json['completedAt'] != null
+              ? DateTime.parse(json['completedAt'])
+              : null,
       requirements: List<String>.from(json['requirements'] ?? []),
       notes: json['notes'],
       estimatedHours: json['estimatedHours'] ?? 0,

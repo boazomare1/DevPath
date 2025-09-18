@@ -98,6 +98,7 @@ class _AdvancedAnalyticsScreenState extends State<AdvancedAnalyticsScreen>
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "analytics_fab",
         onPressed: () => _showExportDialog(context),
         icon: const Icon(Icons.download),
         label: const Text('Export PDF'),
