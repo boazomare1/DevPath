@@ -20,7 +20,7 @@ This guide will help you set up GitHub OAuth authentication for the DevPath app.
      - For development: `http://localhost:8080`
      - For production: `https://your-domain.com`
    - **Application description**: `A developer skill tracking app`
-   - **Authorization callback URL**: `https://httpbin.org/anything`
+   - **Authorization callback URL**: `https://httpbin.org/get`
 
 3. **Create the OAuth App**
    - Click "Register application"

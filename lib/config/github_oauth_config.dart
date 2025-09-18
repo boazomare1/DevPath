@@ -11,7 +11,7 @@ class GitHubOAuthConfig {
 
   static const String clientId = 'Ov23liUw25rI3TkTlt69';
   static const String clientSecret = '4a906bc86f6df6868015a902ceca7faf42c01b0d';
-  static const String redirectUri = 'https://httpbin.org/anything';
+  static const String redirectUri = 'https://httpbin.org/get';
 
   // GitHub API Configuration
   static const String authorizationEndpoint =

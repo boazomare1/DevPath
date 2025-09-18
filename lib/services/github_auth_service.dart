@@ -67,7 +67,7 @@ class GitHubAuthService extends ChangeNotifier {
         scopes: ['user:email', 'repo', 'read:user'],
         state: 'devpath_${timestamp}_$random', // Add unique state parameter
       );
-      
+
       // Add additional cache-busting parameter
       final authUrl = Uri.parse('$baseUrl&_cb=$timestamp$random');
 
@@ -145,7 +145,7 @@ class GitHubAuthService extends ChangeNotifier {
         scopes: ['user:email', 'repo', 'read:user'],
         state: 'devpath_${timestamp}_$random', // Add unique state parameter
       );
-      
+
       // Add additional cache-busting parameter
       final authUrl = Uri.parse('$baseUrl&_cb=$timestamp$random');
 
