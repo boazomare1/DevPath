@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:oauth2/oauth2.dart' as oauth2;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import '../models/github_user.dart';
@@ -13,8 +12,7 @@ class GitHubAuthService extends ChangeNotifier {
   static const String _clientId = GitHubOAuthConfig.clientId;
   static const String _clientSecret = GitHubOAuthConfig.clientSecret;
   static const String _redirectUri = GitHubOAuthConfig.redirectUri;
-  static const String _authorizationEndpoint =
-      GitHubOAuthConfig.authorizationEndpoint;
+  static const String _authorizationEndpoint = GitHubOAuthConfig.authorizationEndpoint;
   static const String _tokenEndpoint = GitHubOAuthConfig.tokenEndpoint;
   static const String _apiBaseUrl = GitHubOAuthConfig.apiBaseUrl;
 
@@ -28,55 +26,18 @@ class GitHubAuthService extends ChangeNotifier {
     ),
   );
 
-  oauth2.Client? _client;
-  oauth2.AuthorizationCodeGrant? _currentGrant;
+  String? _accessToken;
   GitHubUser? _currentUser;
   List<GitHubRepository> _repositories = [];
 
   // Getters
-  oauth2.Client? get client => _client;
   GitHubUser? get currentUser => _currentUser;
   List<GitHubRepository> get repositories => _repositories;
-  bool get isAuthenticated => _client != null && _currentUser != null;
-  bool get hasActiveGrant => _currentGrant != null;
+  bool get isAuthenticated => _accessToken != null && _currentUser != null;
 
   // Get access token for API calls
   Future<String?> getAccessToken() async {
-    return _client?.credentials.accessToken;
-  }
-
-  /// Get a fresh authorization URL (useful for debugging)
-  Future<Uri?> getFreshAuthorizationUrl() async {
-    try {
-      // Clear any existing grant first
-      _currentGrant = null;
-
-      // Create new OAuth client and store it (OAuth library handles PKCE automatically)
-      _currentGrant = oauth2.AuthorizationCodeGrant(
-        _clientId,
-        Uri.parse(_authorizationEndpoint),
-        Uri.parse(_tokenEndpoint),
-        secret: _clientSecret,
-      );
-
-      // Add cache-busting parameter to force fresh authentication
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final random = DateTime.now().microsecondsSinceEpoch;
-      final baseUrl = _currentGrant!.getAuthorizationUrl(
-        Uri.parse(_redirectUri),
-        scopes: ['user:email', 'repo', 'read:user'],
-        state: 'devpath_${timestamp}_$random', // Add unique state parameter
-      );
-
-      // Add additional cache-busting parameter
-      final authUrl = Uri.parse('$baseUrl&_cb=$timestamp$random');
-
-      debugPrint('Fresh authorization URL: $authUrl');
-      return authUrl;
-    } catch (e) {
-      debugPrint('Error creating fresh authorization URL: $e');
-      return null;
-    }
+    return _accessToken;
   }
 
   // Stream controllers for reactive updates
@@ -91,29 +52,15 @@ class GitHubAuthService extends ChangeNotifier {
   Stream<GitHubUser?> get userStream => _userController.stream;
   Stream<List<GitHubRepository>> get reposStream => _reposController.stream;
 
-  /// Initialize the service and check for existing authentication
+  /// Initialize the authentication service
   Future<void> initialize() async {
     try {
-      final token = await _secureStorage.read(key: _tokenKey);
-      if (token != null) {
-        _client = oauth2.Client(
-          oauth2.Credentials(token),
-          identifier: _clientId,
-          secret: _clientSecret,
-        );
-
-        // Load user data from secure storage
-        final userData = await _secureStorage.read(key: _userKey);
-        if (userData != null) {
-          _currentUser = GitHubUser.fromJson(jsonDecode(userData));
-          _userController.add(_currentUser);
-        }
-
-        _authStateController.add(true);
-
-        // Fetch fresh user data and repositories
+      final storedToken = await _secureStorage.read(key: _tokenKey);
+      if (storedToken != null) {
+        _accessToken = storedToken;
         await _fetchUserData();
         await _fetchRepositories();
+        _authStateController.add(true);
       } else {
         _authStateController.add(false);
       }
@@ -123,31 +70,49 @@ class GitHubAuthService extends ChangeNotifier {
     }
   }
 
+  /// Get a fresh authorization URL (useful for debugging)
+  Future<Uri?> getFreshAuthorizationUrl() async {
+    try {
+      // Create a simple authorization URL without PKCE
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final random = DateTime.now().microsecondsSinceEpoch;
+      final state = 'devpath_${timestamp}_$random';
+      
+      final authUrl = Uri.parse(
+        '$_authorizationEndpoint?'
+        'response_type=code&'
+        'client_id=$_clientId&'
+        'redirect_uri=${Uri.encodeComponent(_redirectUri)}&'
+        'scope=${Uri.encodeComponent('user:email repo read:user')}&'
+        'state=$state&'
+        '_cb=$timestamp$random'
+      );
+
+      debugPrint('Fresh authorization URL: $authUrl');
+      return authUrl;
+    } catch (e) {
+      debugPrint('Error creating fresh authorization URL: $e');
+      return null;
+    }
+  }
+
   /// Start the OAuth 2.0 authentication flow
   Future<bool> authenticate() async {
     try {
-      // Clear any existing grant first
-      _currentGrant = null;
-
-      // Create new OAuth client and store it (OAuth library handles PKCE automatically)
-      _currentGrant = oauth2.AuthorizationCodeGrant(
-        _clientId,
-        Uri.parse(_authorizationEndpoint),
-        Uri.parse(_tokenEndpoint),
-        secret: _clientSecret,
-      );
-
-      // Add cache-busting parameter to force fresh authentication
+      // Create a simple authorization URL without PKCE
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final random = DateTime.now().microsecondsSinceEpoch;
-      final baseUrl = _currentGrant!.getAuthorizationUrl(
-        Uri.parse(_redirectUri),
-        scopes: ['user:email', 'repo', 'read:user'],
-        state: 'devpath_${timestamp}_$random', // Add unique state parameter
+      final state = 'devpath_${timestamp}_$random';
+      
+      final authUrl = Uri.parse(
+        '$_authorizationEndpoint?'
+        'response_type=code&'
+        'client_id=$_clientId&'
+        'redirect_uri=${Uri.encodeComponent(_redirectUri)}&'
+        'scope=${Uri.encodeComponent('user:email repo read:user')}&'
+        'state=$state&'
+        '_cb=$timestamp$random'
       );
-
-      // Add additional cache-busting parameter
-      final authUrl = Uri.parse('$baseUrl&_cb=$timestamp$random');
 
       // Launch browser for authentication
       if (await canLaunchUrl(authUrl)) {
@@ -171,23 +136,14 @@ class GitHubAuthService extends ChangeNotifier {
   /// Handle the OAuth callback with authorization code
   Future<bool> handleCallback(String authorizationCode) async {
     try {
-      if (_currentGrant == null) {
-        debugPrint('No current grant found for callback');
-        return false;
-      }
+      // Use custom token exchange
+      final token = await _exchangeCodeForToken(authorizationCode);
 
-      // Exchange authorization code for access token using the stored grant
-      _client = await _currentGrant!.handleAuthorizationResponse({
-        'code': authorizationCode,
-        'redirect_uri': _redirectUri,
-      });
-
-      if (_client != null) {
-        // Store credentials securely
-        await _secureStorage.write(
-          key: _tokenKey,
-          value: _client!.credentials.toJson(),
-        );
+      if (token != null) {
+        _accessToken = token;
+        
+        // Store token securely
+        await _secureStorage.write(key: _tokenKey, value: token);
 
         // Fetch user data and repositories
         await _fetchUserData();
@@ -195,27 +151,9 @@ class GitHubAuthService extends ChangeNotifier {
 
         _authStateController.add(true);
         notifyListeners();
-
-        // Clear the grant after successful authentication
-        _currentGrant = null;
         return true;
       }
 
-      return false;
-    } catch (e) {
-      debugPrint('Error handling OAuth callback: $e');
-      return false;
-    }
-  }
-
-  /// Handle the OAuth callback (simplified for demo)
-  Future<bool> _handleCallback(oauth2.AuthorizationCodeGrant grant) async {
-    try {
-      // In a real app, you'd get the authorization code from the deep link
-      // For demo purposes, we'll show instructions to the user
-      debugPrint(
-        'Please complete authentication in the browser and copy the authorization code',
-      );
       return false;
     } catch (e) {
       debugPrint('Error handling callback: $e');
@@ -232,24 +170,16 @@ class GitHubAuthService extends ChangeNotifier {
       debugPrint('Client ID: $_clientId');
       debugPrint('Redirect URI: $_redirectUri');
 
-      // Use custom token exchange that handles GitHub's form-encoded response
+      // Use custom token exchange
       final token = await _exchangeCodeForToken(authorizationCode);
 
       if (token != null) {
         debugPrint('Successfully obtained access token');
 
-        // Create OAuth client with the token
-        _client = oauth2.Client(
-          oauth2.Credentials(token),
-          identifier: _clientId,
-          secret: _clientSecret,
-        );
+        _accessToken = token;
 
-        // Store credentials securely
-        await _secureStorage.write(
-          key: _tokenKey,
-          value: _client!.credentials.toJson(),
-        );
+        // Store token securely
+        await _secureStorage.write(key: _tokenKey, value: token);
 
         // Fetch user data
         await _fetchUserData();
@@ -257,9 +187,6 @@ class GitHubAuthService extends ChangeNotifier {
 
         _authStateController.add(true);
         notifyListeners();
-
-        // Clear the grant after successful authentication
-        _currentGrant = null;
         return true;
       }
 
@@ -278,7 +205,7 @@ class GitHubAuthService extends ChangeNotifier {
     }
   }
 
-  /// Custom token exchange that handles GitHub's form-encoded response
+  /// Custom token exchange that handles GitHub's response
   Future<String?> _exchangeCodeForToken(String authorizationCode) async {
     try {
       final response = await http.post(
@@ -337,10 +264,16 @@ class GitHubAuthService extends ChangeNotifier {
 
   /// Fetch current user data from GitHub API
   Future<GitHubUser?> _fetchUserData() async {
-    if (_client == null) return null;
+    if (_accessToken == null) return null;
 
     try {
-      final response = await _client!.get(Uri.parse('$_apiBaseUrl/user'));
+      final response = await http.get(
+        Uri.parse('$_apiBaseUrl/user'),
+        headers: {
+          'Authorization': 'Bearer $_accessToken',
+          'Accept': 'application/vnd.github.v3+json',
+        },
+      );
 
       if (response.statusCode == 200) {
         final userData = jsonDecode(response.body);
@@ -361,11 +294,15 @@ class GitHubAuthService extends ChangeNotifier {
 
   /// Fetch user repositories from GitHub API
   Future<List<GitHubRepository>> _fetchRepositories() async {
-    if (_client == null) return [];
+    if (_accessToken == null) return [];
 
     try {
-      final response = await _client!.get(
+      final response = await http.get(
         Uri.parse('$_apiBaseUrl/user/repos?sort=updated&per_page=100'),
+        headers: {
+          'Authorization': 'Bearer $_accessToken',
+          'Accept': 'application/vnd.github.v3+json',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -383,22 +320,24 @@ class GitHubAuthService extends ChangeNotifier {
     return [];
   }
 
-  /// Fetch public repositories for a specific user
+  /// Fetch repositories for a specific user
   Future<List<GitHubRepository>> fetchUserRepositories(String username) async {
-    if (_client == null) return [];
+    if (_accessToken == null) return [];
 
     try {
-      final response = await _client!.get(
+      final response = await http.get(
         Uri.parse(
           '$_apiBaseUrl/users/$username/repos?sort=updated&per_page=100',
         ),
+        headers: {
+          'Authorization': 'Bearer $_accessToken',
+          'Accept': 'application/vnd.github.v3+json',
+        },
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> reposData = jsonDecode(response.body);
-        return reposData
-            .map((repo) => GitHubRepository.fromJson(repo))
-            .toList();
+        return reposData.map((repo) => GitHubRepository.fromJson(repo)).toList();
       }
     } catch (e) {
       debugPrint('Error fetching user repositories: $e');
@@ -407,17 +346,7 @@ class GitHubAuthService extends ChangeNotifier {
     return [];
   }
 
-  /// Refresh repositories
-  Future<void> refreshRepositories() async {
-    await _fetchRepositories();
-  }
-
-  /// Refresh user data
-  Future<void> refreshUserData() async {
-    await _fetchUserData();
-  }
-
-  /// Logout and clear stored data
+  /// Log out from GitHub
   Future<void> logout() async {
     try {
       // Clear secure storage
@@ -425,8 +354,7 @@ class GitHubAuthService extends ChangeNotifier {
       await _secureStorage.delete(key: _userKey);
 
       // Clear in-memory data
-      _client = null;
-      _currentGrant = null; // Clear the grant
+      _accessToken = null;
       _currentUser = null;
       _repositories.clear();
 
@@ -440,38 +368,13 @@ class GitHubAuthService extends ChangeNotifier {
     }
   }
 
-  /// Get repository by name
-  GitHubRepository? getRepositoryByName(String name) {
-    try {
-      return _repositories.firstWhere((repo) => repo.name == name);
-    } catch (e) {
-      return null;
+  /// Filter repositories based on search query
+  List<GitHubRepository> filterRepositories(String searchQuery) {
+    if (searchQuery.isEmpty) {
+      return _repositories;
     }
-  }
 
-  /// Get repositories by language
-  List<GitHubRepository> getRepositoriesByLanguage(String language) {
-    return _repositories.where((repo) => repo.language == language).toList();
-  }
-
-  /// Get starred repositories
-  List<GitHubRepository> getStarredRepositories() {
-    return _repositories.where((repo) => repo.stars > 0).toList();
-  }
-
-  /// Get private repositories
-  List<GitHubRepository> getPrivateRepositories() {
-    return _repositories.where((repo) => repo.isPrivate).toList();
-  }
-
-  /// Get public repositories
-  List<GitHubRepository> getPublicRepositories() {
-    return _repositories.where((repo) => !repo.isPrivate).toList();
-  }
-
-  /// Search repositories
-  List<GitHubRepository> searchRepositories(String query) {
-    final lowercaseQuery = query.toLowerCase();
+    final lowercaseQuery = searchQuery.toLowerCase();
     return _repositories.where((repo) {
       return repo.name.toLowerCase().contains(lowercaseQuery) ||
           repo.description.toLowerCase().contains(lowercaseQuery) ||
