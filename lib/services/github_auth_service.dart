@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:oauth2/oauth2.dart' as oauth2;
@@ -30,6 +32,7 @@ class GitHubAuthService extends ChangeNotifier {
 
   oauth2.Client? _client;
   oauth2.AuthorizationCodeGrant? _currentGrant;
+  String? _codeVerifier;
   GitHubUser? _currentUser;
   List<GitHubRepository> _repositories = [];
 
@@ -45,12 +48,33 @@ class GitHubAuthService extends ChangeNotifier {
     return _client?.credentials.accessToken;
   }
 
+  /// Generate a PKCE code verifier
+  String _generateCodeVerifier() {
+    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+    final random = Random.secure();
+    return List.generate(128, (_) => charset[random.nextInt(charset.length)]).join();
+  }
+
+  /// Generate a PKCE code challenge from code verifier
+  String _generateCodeChallenge(String codeVerifier) {
+    final bytes = utf8.encode(codeVerifier);
+    final digest = sha256.convert(bytes);
+    return base64Url.encode(digest.bytes).replaceAll('=', '');
+  }
+
   /// Get a fresh authorization URL (useful for debugging)
   Future<Uri?> getFreshAuthorizationUrl() async {
     try {
       // Clear any existing grant first
       _currentGrant = null;
-
+      
+      // Generate PKCE parameters
+      _codeVerifier = _generateCodeVerifier();
+      final codeChallenge = _generateCodeChallenge(_codeVerifier!);
+      
+      debugPrint('Generated code verifier: ${_codeVerifier!.substring(0, 8)}...');
+      debugPrint('Generated code challenge: ${codeChallenge.substring(0, 8)}...');
+      
       // Create new OAuth client and store it
       _currentGrant = oauth2.AuthorizationCodeGrant(
         _clientId,
@@ -121,7 +145,14 @@ class GitHubAuthService extends ChangeNotifier {
     try {
       // Clear any existing grant first
       _currentGrant = null;
-
+      
+      // Generate PKCE parameters
+      _codeVerifier = _generateCodeVerifier();
+      final codeChallenge = _generateCodeChallenge(_codeVerifier!);
+      
+      debugPrint('Generated code verifier: ${_codeVerifier!.substring(0, 8)}...');
+      debugPrint('Generated code challenge: ${codeChallenge.substring(0, 8)}...');
+      
       // Create new OAuth client and store it
       _currentGrant = oauth2.AuthorizationCodeGrant(
         _clientId,
@@ -231,14 +262,25 @@ class GitHubAuthService extends ChangeNotifier {
 
       debugPrint('Using existing grant for token exchange...');
       
-      // Use the OAuth library's token exchange which handles PKCE properly
-      _client = await _currentGrant!.handleAuthorizationResponse({
-        'code': authorizationCode,
-        'redirect_uri': _redirectUri,
-      });
-
-      if (_client != null) {
+      // Use the stored code verifier for PKCE
+      if (_codeVerifier == null) {
+        debugPrint('No code verifier found, generating new one...');
+        _codeVerifier = _generateCodeVerifier();
+      }
+      debugPrint('Code verifier: ${_codeVerifier!.substring(0, 8)}...');
+      
+      // Use custom token exchange that handles GitHub's form-encoded response
+      final token = await _exchangeCodeForTokenWithPKCE(authorizationCode, _codeVerifier!);
+      
+      if (token != null) {
         debugPrint('Successfully obtained access token');
+        
+        // Create OAuth client with the token
+        _client = oauth2.Client(
+          oauth2.Credentials(token),
+          identifier: _clientId,
+          secret: _clientSecret,
+        );
         
         // Store credentials securely
         await _secureStorage.write(
@@ -273,6 +315,50 @@ class GitHubAuthService extends ChangeNotifier {
     }
   }
 
+  /// Custom token exchange with PKCE support for GitHub
+  Future<String?> _exchangeCodeForTokenWithPKCE(String authorizationCode, String codeVerifier) async {
+    try {
+      final response = await http.post(
+        Uri.parse(_tokenEndpoint),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'client_id': _clientId,
+          'client_secret': _clientSecret,
+          'code': authorizationCode,
+          'redirect_uri': _redirectUri,
+          'code_verifier': codeVerifier, // Add PKCE code verifier
+        },
+      );
+
+      debugPrint('Token exchange response status: ${response.statusCode}');
+      debugPrint('Token exchange response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseBody = response.body;
+        
+        // Parse form-encoded response (GitHub's format)
+        final params = Uri.splitQueryString(responseBody);
+        final accessToken = params['access_token'];
+        
+        if (accessToken != null) {
+          debugPrint('Access token obtained successfully');
+          return accessToken;
+        } else {
+          debugPrint('No access token found in response');
+          return null;
+        }
+      } else {
+        debugPrint('Token exchange failed with status: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error in token exchange: $e');
+      return null;
+    }
+  }
 
   /// Fetch current user data from GitHub API
   Future<GitHubUser?> _fetchUserData() async {
@@ -366,6 +452,7 @@ class GitHubAuthService extends ChangeNotifier {
       // Clear in-memory data
       _client = null;
       _currentGrant = null; // Clear the grant
+      _codeVerifier = null; // Clear the code verifier
       _currentUser = null;
       _repositories.clear();
 
