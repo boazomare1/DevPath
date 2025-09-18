@@ -28,9 +28,9 @@ class _InsightsScreenState extends State<InsightsScreen> {
     super.didChangeDependencies();
     // Only load if not already loading and not already loaded
     final authService = context.watch<GitHubAuthService>();
-    if (authService.isAuthenticated && 
-        authService.repositories.isNotEmpty && 
-        !_isLoading && 
+    if (authService.isAuthenticated &&
+        authService.repositories.isNotEmpty &&
+        !_isLoading &&
         !_hasLoaded) {
       _loadInsights();
     }

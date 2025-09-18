@@ -31,6 +31,19 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Listen for authentication state changes and reset loading
+    final authService = context.watch<GitHubAuthService>();
+    if (authService.isAuthenticated && _isLoading) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = null;
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _codeController.dispose();
     super.dispose();
@@ -44,7 +57,15 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
 
     try {
       final authService = context.read<GitHubAuthService>();
-      final success = await authService.authenticate();
+      
+      // Add timeout to prevent infinite loading
+      final success = await authService.authenticate().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          debugPrint('Authentication timed out after 10 seconds');
+          return false;
+        },
+      );
 
       if (success) {
         // Show instructions to user
@@ -69,9 +90,11 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
         _errorMessage = 'Authentication error: $e';
       });
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -204,8 +227,14 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
       // Wait a moment for logout to complete
       await Future.delayed(const Duration(milliseconds: 500));
 
-      // Start fresh authentication
-      final success = await authService.authenticate();
+      // Start fresh authentication with timeout
+      final success = await authService.authenticate().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          debugPrint('Clear cache and login timed out after 10 seconds');
+          return false;
+        },
+      );
 
       if (success) {
         if (mounted) {
@@ -230,9 +259,11 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
         _errorMessage = 'Error clearing cache and starting login: $e';
       });
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
