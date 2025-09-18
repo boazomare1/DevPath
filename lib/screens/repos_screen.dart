@@ -266,83 +266,89 @@ class _ReposScreenState extends State<ReposScreen> {
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-              ),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.folder_open,
-                  size: 64,
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withOpacity(0.3),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  _searchQuery.isNotEmpty ||
-                          _selectedLanguage != 'All' ||
-                          _showActiveOnly ||
-                          _showArchivedOnly
-                      ? 'No repositories match your filters'
-                      : 'No repositories found',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.7),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
                   ),
-                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  _searchQuery.isNotEmpty ||
-                          _selectedLanguage != 'All' ||
-                          _showActiveOnly ||
-                          _showArchivedOnly
-                      ? 'Try adjusting your search or filter criteria'
-                      : 'Connect your GitHub account to view your repositories',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.5),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                if (_searchQuery.isNotEmpty ||
-                    _selectedLanguage != 'All' ||
-                    _showActiveOnly ||
-                    _showArchivedOnly) ...[
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _searchQuery = '';
-                        _selectedLanguage = 'All';
-                        _showActiveOnly = true;
-                        _showArchivedOnly = false;
-                      });
-                    },
-                    icon: const Icon(Icons.clear),
-                    label: const Text('Clear Filters'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.folder_open,
+                      size: 48,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.3),
                     ),
-                  ),
-                ],
-              ],
-            ),
+                    const SizedBox(height: 12),
+                    Text(
+                      _searchQuery.isNotEmpty ||
+                              _selectedLanguage != 'All' ||
+                              _showActiveOnly ||
+                              _showArchivedOnly
+                          ? 'No repositories match your filters'
+                          : 'No repositories found',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.7),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _searchQuery.isNotEmpty ||
+                              _selectedLanguage != 'All' ||
+                              _showActiveOnly ||
+                              _showArchivedOnly
+                          ? 'Try adjusting your search or filter criteria'
+                          : 'Connect your GitHub account to view your repositories',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.5),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (_searchQuery.isNotEmpty ||
+                        _selectedLanguage != 'All' ||
+                        _showActiveOnly ||
+                        _showArchivedOnly) ...[
+                      const SizedBox(height: 12),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _searchQuery = '';
+                            _selectedLanguage = 'All';
+                            _showActiveOnly = true;
+                            _showArchivedOnly = false;
+                          });
+                        },
+                        icon: const Icon(Icons.clear),
+                        label: const Text('Clear Filters'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
