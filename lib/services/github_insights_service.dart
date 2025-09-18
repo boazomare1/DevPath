@@ -5,12 +5,35 @@ import '../models/github_repository.dart';
 
 class GitHubInsightsService {
   static const String _apiBaseUrl = 'https://api.github.com';
+  
+  // Cache to avoid repeated API calls
+  static final Map<String, List<CommitActivityData>> _commitActivityCache = {};
+  static final Map<String, DateTime> _lastFetchTime = {};
+  static const Duration _cacheExpiry = Duration(hours: 1);
+  
+  /// Clear the commit activity cache
+  static void clearCache() {
+    _commitActivityCache.clear();
+    _lastFetchTime.clear();
+    debugPrint('Commit activity cache cleared');
+  }
 
   /// Get commit activity for a repository over the last 6 months
   static Future<List<CommitActivityData>> getCommitActivity(
     String accessToken,
     GitHubRepository repository,
   ) async {
+    final cacheKey = repository.fullName;
+    final now = DateTime.now();
+    
+    // Check cache first
+    if (_commitActivityCache.containsKey(cacheKey) &&
+        _lastFetchTime.containsKey(cacheKey) &&
+        now.difference(_lastFetchTime[cacheKey]!) < _cacheExpiry) {
+      debugPrint('Using cached commit activity for ${repository.fullName}');
+      return _commitActivityCache[cacheKey]!;
+    }
+    
     try {
       final url =
           '$_apiBaseUrl/repos/${repository.fullName}/stats/commit_activity';
@@ -30,7 +53,7 @@ class GitHubInsightsService {
         final last6Months =
             data.length >= 24 ? data.sublist(data.length - 24) : data;
 
-        return last6Months.asMap().entries.map((entry) {
+        final commitData = last6Months.asMap().entries.map((entry) {
           final weekIndex = entry.key;
           final weekData = entry.value;
           final totalCommits = weekData['total'] as int;
@@ -48,21 +71,39 @@ class GitHubInsightsService {
             week: weekDate,
           );
         }).toList();
+        
+        // Cache the result
+        _commitActivityCache[cacheKey] = commitData;
+        _lastFetchTime[cacheKey] = now;
+        
+        return commitData;
       } else if (response.statusCode == 202) {
         // GitHub is calculating the data, return empty data for now
-        debugPrint('Commit activity data is being calculated by GitHub (202)');
-        return _generateEmptyCommitActivity();
+        debugPrint('Commit activity data is being calculated by GitHub (202) - using empty data');
+        final emptyData = _generateEmptyCommitActivity();
+        _commitActivityCache[cacheKey] = emptyData;
+        _lastFetchTime[cacheKey] = now;
+        return emptyData;
       } else if (response.statusCode == 204) {
         // No commit activity data available
-        debugPrint('No commit activity data available (204)');
-        return _generateEmptyCommitActivity();
+        debugPrint('No commit activity data available (204) - using empty data');
+        final emptyData = _generateEmptyCommitActivity();
+        _commitActivityCache[cacheKey] = emptyData;
+        _lastFetchTime[cacheKey] = now;
+        return emptyData;
       } else {
-        debugPrint('Failed to fetch commit activity: ${response.statusCode}');
-        return _generateEmptyCommitActivity();
+        debugPrint('Failed to fetch commit activity: ${response.statusCode} - using empty data');
+        final emptyData = _generateEmptyCommitActivity();
+        _commitActivityCache[cacheKey] = emptyData;
+        _lastFetchTime[cacheKey] = now;
+        return emptyData;
       }
     } catch (e) {
-      debugPrint('Error fetching commit activity: $e');
-      return _generateEmptyCommitActivity();
+      debugPrint('Error fetching commit activity: $e - using empty data');
+      final emptyData = _generateEmptyCommitActivity();
+      _commitActivityCache[cacheKey] = emptyData;
+      _lastFetchTime[cacheKey] = now;
+      return emptyData;
     }
   }
 
@@ -72,16 +113,25 @@ class GitHubInsightsService {
     List<GitHubRepository> repositories,
   ) async {
     try {
-      // Aggregate commit activity from all repositories
+      // Limit to top 10 repositories to avoid too many API calls
+      final limitedRepos = repositories.take(10).toList();
+      debugPrint('Processing commit activity for ${limitedRepos.length} repositories (limited from ${repositories.length})');
+      
+      // Aggregate commit activity from limited repositories
       final Map<String, int> monthlyCommits = {};
 
-      for (final repo in repositories) {
-        final activity = await getCommitActivity(accessToken, repo);
+      for (final repo in limitedRepos) {
+        try {
+          final activity = await getCommitActivity(accessToken, repo);
 
-        for (final data in activity) {
-          final monthKey = data.month;
-          monthlyCommits[monthKey] =
-              (monthlyCommits[monthKey] ?? 0) + data.commits;
+          for (final data in activity) {
+            final monthKey = data.month;
+            monthlyCommits[monthKey] =
+                (monthlyCommits[monthKey] ?? 0) + data.commits;
+          }
+        } catch (e) {
+          debugPrint('Error processing commit activity for ${repo.fullName}: $e');
+          // Continue with other repositories
         }
       }
 
@@ -111,7 +161,7 @@ class GitHubInsightsService {
       }).toList();
     } catch (e) {
       debugPrint('Error aggregating commit activity: $e');
-      return _generateMockCommitActivity();
+      return _generateEmptyCommitActivity();
     }
   }
 
