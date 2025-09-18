@@ -61,11 +61,15 @@ class GitHubAuthService extends ChangeNotifier {
 
       // Add cache-busting parameter to force fresh authentication
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final authUrl = _currentGrant!.getAuthorizationUrl(
+      final random = DateTime.now().microsecondsSinceEpoch;
+      final baseUrl = _currentGrant!.getAuthorizationUrl(
         Uri.parse(_redirectUri),
         scopes: ['user:email', 'repo', 'read:user'],
-        state: 'devpath_$timestamp', // Add unique state parameter
+        state: 'devpath_${timestamp}_$random', // Add unique state parameter
       );
+      
+      // Add additional cache-busting parameter
+      final authUrl = Uri.parse('$baseUrl&_cb=$timestamp$random');
 
       debugPrint('Fresh authorization URL: $authUrl');
       return authUrl;
@@ -135,11 +139,15 @@ class GitHubAuthService extends ChangeNotifier {
 
       // Add cache-busting parameter to force fresh authentication
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final authUrl = _currentGrant!.getAuthorizationUrl(
+      final random = DateTime.now().microsecondsSinceEpoch;
+      final baseUrl = _currentGrant!.getAuthorizationUrl(
         Uri.parse(_redirectUri),
         scopes: ['user:email', 'repo', 'read:user'],
-        state: 'devpath_$timestamp', // Add unique state parameter
+        state: 'devpath_${timestamp}_$random', // Add unique state parameter
       );
+      
+      // Add additional cache-busting parameter
+      final authUrl = Uri.parse('$baseUrl&_cb=$timestamp$random');
 
       // Launch browser for authentication
       if (await canLaunchUrl(authUrl)) {

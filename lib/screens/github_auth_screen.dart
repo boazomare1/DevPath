@@ -221,7 +221,8 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
         }
       } else {
         setState(() {
-          _errorMessage = 'Failed to start fresh authentication. Please try again.';
+          _errorMessage =
+              'Failed to start fresh authentication. Please try again.';
         });
       }
     } catch (e) {
@@ -377,28 +378,28 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
 
             const SizedBox(height: 32),
 
-                  // Login Button
-                  GitHubAuthButton(
-                    onPressed: _isLoading ? null : _handleGitHubLogin,
-                    isLoading: _isLoading,
-                  ),
+            // Login Button
+            GitHubAuthButton(
+              onPressed: _isLoading ? null : _handleGitHubLogin,
+              isLoading: _isLoading,
+            ),
 
-                  const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-                  // Clear Cache & Login Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _isLoading ? null : _handleClearCacheAndLogin,
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Clear Cache & Login'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.warning,
-                        side: BorderSide(color: AppColors.warning),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
-                  ),
+            // Clear Cache & Login Button
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _isLoading ? null : _handleClearCacheAndLogin,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Clear Cache & Login'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.warning,
+                  side: BorderSide(color: AppColors.warning),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
 
             const SizedBox(height: 24),
 
