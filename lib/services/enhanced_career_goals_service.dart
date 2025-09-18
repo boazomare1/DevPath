@@ -54,7 +54,9 @@ class Company {
       industry: json['industry'],
       description: json['description'],
       logoUrl: json['logoUrl'],
-      roleRequirements: Map<String, List<String>>.from(json['roleRequirements']),
+      roleRequirements: Map<String, List<String>>.from(
+        json['roleRequirements'],
+      ),
       salaryRanges: Map<String, int>.from(json['salaryRanges']),
       benefits: List<String>.from(json['benefits']),
       location: json['location'],
@@ -291,7 +293,8 @@ class EnhancedCareerGoal {
       'createdAt': createdAt.toIso8601String(),
       'completedAt': completedAt?.toIso8601String(),
       'skillGaps': skillGaps.map((gap) => gap.toJson()).toList(),
-      'aiRecommendations': aiRecommendations.map((rec) => rec.toJson()).toList(),
+      'aiRecommendations':
+          aiRecommendations.map((rec) => rec.toJson()).toList(),
       'notes': notes,
     };
   }
@@ -315,13 +318,18 @@ class EnhancedCareerGoal {
       readinessPercentage: (json['readinessPercentage'] ?? 0.0).toDouble(),
       isActive: json['isActive'] ?? true,
       createdAt: DateTime.parse(json['createdAt']),
-      completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt']) : null,
-      skillGaps: (json['skillGaps'] as List? ?? [])
-          .map((gap) => SkillGap.fromJson(gap))
-          .toList(),
-      aiRecommendations: (json['aiRecommendations'] as List? ?? [])
-          .map((rec) => AIRecommendation.fromJson(rec))
-          .toList(),
+      completedAt:
+          json['completedAt'] != null
+              ? DateTime.parse(json['completedAt'])
+              : null,
+      skillGaps:
+          (json['skillGaps'] as List? ?? [])
+              .map((gap) => SkillGap.fromJson(gap))
+              .toList(),
+      aiRecommendations:
+          (json['aiRecommendations'] as List? ?? [])
+              .map((rec) => AIRecommendation.fromJson(rec))
+              .toList(),
       notes: json['notes'],
     );
   }
@@ -338,7 +346,8 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
 
   // Getters
   List<EnhancedCareerGoal> get careerGoals => _careerGoals;
-  List<EnhancedCareerGoal> get activeGoals => _careerGoals.where((goal) => goal.isActive).toList();
+  List<EnhancedCareerGoal> get activeGoals =>
+      _careerGoals.where((goal) => goal.isActive).toList();
   List<Company> get companies => _companies;
   List<SkillGap> get skillGaps => _skillGaps;
 
@@ -357,7 +366,8 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
       final goalsJson = prefs.getString(_goalsKey);
       if (goalsJson != null) {
         final goalsData = jsonDecode(goalsJson) as List;
-        _careerGoals = goalsData.map((goal) => EnhancedCareerGoal.fromJson(goal)).toList();
+        _careerGoals =
+            goalsData.map((goal) => EnhancedCareerGoal.fromJson(goal)).toList();
       }
     } catch (e) {
       debugPrint('Error loading career goals: $e');
@@ -371,7 +381,8 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
       final companiesJson = prefs.getString(_companiesKey);
       if (companiesJson != null) {
         final companiesData = jsonDecode(companiesJson) as List;
-        _companies = companiesData.map((company) => Company.fromJson(company)).toList();
+        _companies =
+            companiesData.map((company) => Company.fromJson(company)).toList();
       }
     } catch (e) {
       debugPrint('Error loading companies: $e');
@@ -401,20 +412,41 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
         id: 'google',
         name: 'Google',
         industry: 'Technology',
-        description: 'A multinational technology company specializing in Internet-related services and products.',
+        description:
+            'A multinational technology company specializing in Internet-related services and products.',
         logoUrl: 'https://logo.clearbit.com/google.com',
         roleRequirements: {
           'Senior Software Engineer': [
-            'Python', 'Java', 'C++', 'Go', 'System Design', 'Algorithms',
-            'Data Structures', 'Machine Learning', 'Distributed Systems'
+            'Python',
+            'Java',
+            'C++',
+            'Go',
+            'System Design',
+            'Algorithms',
+            'Data Structures',
+            'Machine Learning',
+            'Distributed Systems',
           ],
           'Frontend Engineer': [
-            'JavaScript', 'TypeScript', 'React', 'Angular', 'Vue.js',
-            'HTML', 'CSS', 'Web Performance', 'Accessibility'
+            'JavaScript',
+            'TypeScript',
+            'React',
+            'Angular',
+            'Vue.js',
+            'HTML',
+            'CSS',
+            'Web Performance',
+            'Accessibility',
           ],
           'Backend Engineer': [
-            'Python', 'Java', 'Go', 'Microservices', 'Databases',
-            'APIs', 'Cloud Computing', 'DevOps'
+            'Python',
+            'Java',
+            'Go',
+            'Microservices',
+            'Databases',
+            'APIs',
+            'Cloud Computing',
+            'DevOps',
           ],
         },
         salaryRanges: {
@@ -422,7 +454,13 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
           'Frontend Engineer': 150000,
           'Backend Engineer': 160000,
         },
-        benefits: ['Health Insurance', '401k', 'Stock Options', 'Free Meals', 'Gym'],
+        benefits: [
+          'Health Insurance',
+          '401k',
+          'Stock Options',
+          'Free Meals',
+          'Gym',
+        ],
         location: 'Mountain View, CA',
         website: 'https://careers.google.com',
       ),
@@ -430,23 +468,42 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
         id: 'microsoft',
         name: 'Microsoft',
         industry: 'Technology',
-        description: 'A multinational technology corporation that develops, manufactures, licenses, supports and sells computer software, consumer electronics, personal computers, and related services.',
+        description:
+            'A multinational technology corporation that develops, manufactures, licenses, supports and sells computer software, consumer electronics, personal computers, and related services.',
         logoUrl: 'https://logo.clearbit.com/microsoft.com',
         roleRequirements: {
           'Senior Software Engineer': [
-            'C#', 'C++', 'Python', 'Azure', 'System Design', 'Algorithms',
-            'Data Structures', 'Cloud Computing', 'Microservices'
+            'C#',
+            'C++',
+            'Python',
+            'Azure',
+            'System Design',
+            'Algorithms',
+            'Data Structures',
+            'Cloud Computing',
+            'Microservices',
           ],
           'Full Stack Developer': [
-            'C#', 'JavaScript', 'React', 'Angular', 'SQL Server',
-            'Azure', 'REST APIs', 'Git'
+            'C#',
+            'JavaScript',
+            'React',
+            'Angular',
+            'SQL Server',
+            'Azure',
+            'REST APIs',
+            'Git',
           ],
         },
         salaryRanges: {
           'Senior Software Engineer': 170000,
           'Full Stack Developer': 140000,
         },
-        benefits: ['Health Insurance', '401k', 'Stock Options', 'Flexible Work'],
+        benefits: [
+          'Health Insurance',
+          '401k',
+          'Stock Options',
+          'Flexible Work',
+        ],
         location: 'Redmond, WA',
         website: 'https://careers.microsoft.com',
       ),
@@ -454,16 +511,27 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
         id: 'meta',
         name: 'Meta',
         industry: 'Technology',
-        description: 'A social media and technology company that develops products to help people connect and share with friends and family.',
+        description:
+            'A social media and technology company that develops products to help people connect and share with friends and family.',
         logoUrl: 'https://logo.clearbit.com/meta.com',
         roleRequirements: {
           'Software Engineer': [
-            'Python', 'PHP', 'JavaScript', 'React', 'GraphQL',
-            'System Design', 'Algorithms', 'Machine Learning'
+            'Python',
+            'PHP',
+            'JavaScript',
+            'React',
+            'GraphQL',
+            'System Design',
+            'Algorithms',
+            'Machine Learning',
           ],
           'Frontend Engineer': [
-            'JavaScript', 'React', 'TypeScript', 'GraphQL',
-            'Web Performance', 'Mobile Development'
+            'JavaScript',
+            'React',
+            'TypeScript',
+            'GraphQL',
+            'Web Performance',
+            'Mobile Development',
           ],
         },
         salaryRanges: {
@@ -478,18 +546,28 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
         id: 'netflix',
         name: 'Netflix',
         industry: 'Entertainment',
-        description: 'A streaming entertainment service with 200+ million paid memberships in over 190 countries.',
+        description:
+            'A streaming entertainment service with 200+ million paid memberships in over 190 countries.',
         logoUrl: 'https://logo.clearbit.com/netflix.com',
         roleRequirements: {
           'Senior Software Engineer': [
-            'Java', 'Python', 'Go', 'System Design', 'Microservices',
-            'Cloud Computing', 'Data Engineering', 'Machine Learning'
+            'Java',
+            'Python',
+            'Go',
+            'System Design',
+            'Microservices',
+            'Cloud Computing',
+            'Data Engineering',
+            'Machine Learning',
           ],
         },
-        salaryRanges: {
-          'Senior Software Engineer': 200000,
-        },
-        benefits: ['Health Insurance', '401k', 'Stock Options', 'Unlimited PTO'],
+        salaryRanges: {'Senior Software Engineer': 200000},
+        benefits: [
+          'Health Insurance',
+          '401k',
+          'Stock Options',
+          'Unlimited PTO',
+        ],
         location: 'Los Gatos, CA',
         website: 'https://jobs.netflix.com',
       ),
@@ -510,10 +588,10 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
     List<Skill>? currentSkills,
   }) async {
     final goalId = 'goal_${DateTime.now().millisecondsSinceEpoch}';
-    
+
     // Get role requirements from company or default
     final roleRequirements = _getRoleRequirements(targetRole, targetCompany);
-    
+
     final goal = EnhancedCareerGoal(
       id: goalId,
       title: title,
@@ -533,15 +611,21 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
     // Analyze skill gaps if current skills provided
     if (currentSkills != null) {
       final skillGaps = await _analyzeSkillGaps(goal, currentSkills);
-      final readinessPercentage = _calculateReadinessPercentage(goal, currentSkills);
-      final aiRecommendations = await _generateAIRecommendations(goal, skillGaps);
-      
+      final readinessPercentage = _calculateReadinessPercentage(
+        goal,
+        currentSkills,
+      );
+      final aiRecommendations = await _generateAIRecommendations(
+        goal,
+        skillGaps,
+      );
+
       final updatedGoal = goal.copyWith(
         skillGaps: skillGaps,
         readinessPercentage: readinessPercentage,
         aiRecommendations: aiRecommendations,
       );
-      
+
       _careerGoals.add(updatedGoal);
     } else {
       _careerGoals.add(goal);
@@ -553,7 +637,10 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
   }
 
   /// Get role requirements from company or default
-  Map<String, List<String>> _getRoleRequirements(String targetRole, String targetCompany) {
+  Map<String, List<String>> _getRoleRequirements(
+    String targetRole,
+    String targetCompany,
+  ) {
     final company = _companies.firstWhere(
       (c) => c.name.toLowerCase() == targetCompany.toLowerCase(),
       orElse: () => _companies.first,
@@ -576,63 +663,97 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
   Map<String, List<String>> _getDefaultRoleRequirements(String targetRole) {
     final roleRequirements = {
       'Senior Software Engineer': {
-        'required': ['Programming Languages', 'System Design', 'Algorithms', 'Databases', 'Git'],
-        'recommended': ['Cloud Computing', 'Microservices', 'Testing', 'DevOps'],
+        'required': [
+          'Programming Languages',
+          'System Design',
+          'Algorithms',
+          'Databases',
+          'Git',
+        ],
+        'recommended': [
+          'Cloud Computing',
+          'Microservices',
+          'Testing',
+          'DevOps',
+        ],
         'niceToHave': ['Machine Learning', 'Leadership', 'Mentoring'],
       },
       'Frontend Engineer': {
         'required': ['JavaScript', 'HTML', 'CSS', 'React', 'Git'],
-        'recommended': ['TypeScript', 'Testing', 'Web Performance', 'Accessibility'],
+        'recommended': [
+          'TypeScript',
+          'Testing',
+          'Web Performance',
+          'Accessibility',
+        ],
         'niceToHave': ['Mobile Development', 'Design Systems', 'Animation'],
       },
       'Backend Engineer': {
-        'required': ['Programming Languages', 'Databases', 'APIs', 'Git', 'System Design'],
-        'recommended': ['Cloud Computing', 'Microservices', 'Caching', 'Security'],
+        'required': [
+          'Programming Languages',
+          'Databases',
+          'APIs',
+          'Git',
+          'System Design',
+        ],
+        'recommended': [
+          'Cloud Computing',
+          'Microservices',
+          'Caching',
+          'Security',
+        ],
         'niceToHave': ['Machine Learning', 'DevOps', 'Monitoring'],
       },
     };
 
-    return roleRequirements[targetRole] ?? {
-      'required': ['Programming', 'Problem Solving', 'Communication'],
-      'recommended': ['Teamwork', 'Project Management'],
-      'niceToHave': ['Leadership', 'Mentoring'],
-    };
+    return roleRequirements[targetRole] ??
+        {
+          'required': ['Programming', 'Problem Solving', 'Communication'],
+          'recommended': ['Teamwork', 'Project Management'],
+          'niceToHave': ['Leadership', 'Mentoring'],
+        };
   }
 
   /// Analyze skill gaps for a career goal
-  Future<List<SkillGap>> _analyzeSkillGaps(EnhancedCareerGoal goal, List<Skill> currentSkills) async {
+  Future<List<SkillGap>> _analyzeSkillGaps(
+    EnhancedCareerGoal goal,
+    List<Skill> currentSkills,
+  ) async {
     final gaps = <SkillGap>[];
 
     // Analyze required skills
     for (final requiredSkill in goal.requiredSkills) {
       final currentSkill = currentSkills.firstWhere(
         (skill) => skill.name.toLowerCase() == requiredSkill.toLowerCase(),
-        orElse: () => Skill(
-          id: '',
-          name: requiredSkill,
-          category: SkillCategory.programmingLanguages,
-          status: SkillStatus.notStarted,
-          description: '',
-          notes: '',
-          createdAt: DateTime.now(),
-        ),
+        orElse:
+            () => Skill(
+              id: '',
+              name: requiredSkill,
+              category: SkillCategory.programmingLanguages,
+              status: SkillStatus.notStarted,
+              description: '',
+              notes: '',
+              createdAt: DateTime.now(),
+            ),
       );
 
       final currentLevel = _mapSkillStatusToLevel(currentSkill.status);
       final targetLevel = 4; // High level for required skills
 
       if (currentLevel < targetLevel) {
-        gaps.add(SkillGap(
-          skillName: requiredSkill,
-          category: _getSkillCategory(requiredSkill),
-          importance: 'High',
-          currentLevel: currentLevel,
-          targetLevel: targetLevel,
-          estimatedHours: _estimateHoursToLevel(currentLevel, targetLevel),
-          resources: _getResourcesForSkill(requiredSkill),
-          isRequired: true,
-          priority: currentLevel == 0 ? 'Critical' : 'High',
-        ));
+        gaps.add(
+          SkillGap(
+            skillName: requiredSkill,
+            category: _getSkillCategory(requiredSkill),
+            importance: 'High',
+            currentLevel: currentLevel,
+            targetLevel: targetLevel,
+            estimatedHours: _estimateHoursToLevel(currentLevel, targetLevel),
+            resources: _getResourcesForSkill(requiredSkill),
+            isRequired: true,
+            priority: currentLevel == 0 ? 'Critical' : 'High',
+          ),
+        );
       }
     }
 
@@ -640,32 +761,35 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
     for (final recommendedSkill in goal.recommendedSkills) {
       final currentSkill = currentSkills.firstWhere(
         (skill) => skill.name.toLowerCase() == recommendedSkill.toLowerCase(),
-        orElse: () => Skill(
-          id: '',
-          name: recommendedSkill,
-          category: SkillCategory.programmingLanguages,
-          status: SkillStatus.notStarted,
-          description: '',
-          notes: '',
-          createdAt: DateTime.now(),
-        ),
+        orElse:
+            () => Skill(
+              id: '',
+              name: recommendedSkill,
+              category: SkillCategory.programmingLanguages,
+              status: SkillStatus.notStarted,
+              description: '',
+              notes: '',
+              createdAt: DateTime.now(),
+            ),
       );
 
       final currentLevel = _mapSkillStatusToLevel(currentSkill.status);
       final targetLevel = 3; // Medium level for recommended skills
 
       if (currentLevel < targetLevel) {
-        gaps.add(SkillGap(
-          skillName: recommendedSkill,
-          category: _getSkillCategory(recommendedSkill),
-          importance: 'Medium',
-          currentLevel: currentLevel,
-          targetLevel: targetLevel,
-          estimatedHours: _estimateHoursToLevel(currentLevel, targetLevel),
-          resources: _getResourcesForSkill(recommendedSkill),
-          isRequired: false,
-          priority: 'Medium',
-        ));
+        gaps.add(
+          SkillGap(
+            skillName: recommendedSkill,
+            category: _getSkillCategory(recommendedSkill),
+            importance: 'Medium',
+            currentLevel: currentLevel,
+            targetLevel: targetLevel,
+            estimatedHours: _estimateHoursToLevel(currentLevel, targetLevel),
+            resources: _getResourcesForSkill(recommendedSkill),
+            isRequired: false,
+            priority: 'Medium',
+          ),
+        );
       }
     }
 
@@ -673,7 +797,10 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
   }
 
   /// Calculate readiness percentage
-  double _calculateReadinessPercentage(EnhancedCareerGoal goal, List<Skill> currentSkills) {
+  double _calculateReadinessPercentage(
+    EnhancedCareerGoal goal,
+    List<Skill> currentSkills,
+  ) {
     if (goal.requiredSkills.isEmpty) return 0.0;
 
     int totalSkills = goal.requiredSkills.length;
@@ -682,19 +809,21 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
     for (final requiredSkill in goal.requiredSkills) {
       final currentSkill = currentSkills.firstWhere(
         (skill) => skill.name.toLowerCase() == requiredSkill.toLowerCase(),
-        orElse: () => Skill(
-          id: '',
-          name: requiredSkill,
-          category: SkillCategory.programmingLanguages,
-          status: SkillStatus.notStarted,
-          description: '',
-          notes: '',
-          createdAt: DateTime.now(),
-        ),
+        orElse:
+            () => Skill(
+              id: '',
+              name: requiredSkill,
+              category: SkillCategory.programmingLanguages,
+              status: SkillStatus.notStarted,
+              description: '',
+              notes: '',
+              createdAt: DateTime.now(),
+            ),
       );
 
       final currentLevel = _mapSkillStatusToLevel(currentSkill.status);
-      if (currentLevel >= 3) { // At least intermediate level
+      if (currentLevel >= 3) {
+        // At least intermediate level
         completedSkills++;
       }
     }
@@ -710,22 +839,29 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
     final recommendations = <AIRecommendation>[];
 
     // Sort gaps by priority
-    final sortedGaps = List<SkillGap>.from(skillGaps)
-      ..sort((a, b) => _getPriorityValue(a.priority).compareTo(_getPriorityValue(b.priority)));
+    final sortedGaps = List<SkillGap>.from(skillGaps)..sort(
+      (a, b) => _getPriorityValue(
+        a.priority,
+      ).compareTo(_getPriorityValue(b.priority)),
+    );
 
-    for (final gap in sortedGaps.take(5)) { // Top 5 gaps
-      recommendations.add(AIRecommendation(
-        id: 'rec_${gap.skillName}_${DateTime.now().millisecondsSinceEpoch}',
-        title: 'Master ${gap.skillName}',
-        description: 'Build proficiency in ${gap.skillName} to reach level ${gap.targetLevel}',
-        type: _getRecommendationType(gap.skillName),
-        estimatedHours: gap.estimatedHours,
-        difficulty: _getDifficultyLevel(gap.currentLevel, gap.targetLevel),
-        skills: [gap.skillName],
-        priority: gap.priority,
-        reason: 'Required for ${goal.targetRole} at ${goal.targetCompany}',
-        resources: gap.resources,
-      ));
+    for (final gap in sortedGaps.take(5)) {
+      // Top 5 gaps
+      recommendations.add(
+        AIRecommendation(
+          id: 'rec_${gap.skillName}_${DateTime.now().millisecondsSinceEpoch}',
+          title: 'Master ${gap.skillName}',
+          description:
+              'Build proficiency in ${gap.skillName} to reach level ${gap.targetLevel}',
+          type: _getRecommendationType(gap.skillName),
+          estimatedHours: gap.estimatedHours,
+          difficulty: _getDifficultyLevel(gap.currentLevel, gap.targetLevel),
+          skills: [gap.skillName],
+          priority: gap.priority,
+          reason: 'Required for ${goal.targetRole} at ${goal.targetCompany}',
+          resources: gap.resources,
+        ),
+      );
     }
 
     return recommendations;
@@ -773,10 +909,15 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
       'JavaScript': ['MDN Web Docs', 'JavaScript.info', 'Eloquent JavaScript'],
       'Python': ['Python.org', 'Real Python', 'Python Crash Course'],
       'React': ['React Docs', 'React Tutorial', 'React Router'],
-      'System Design': ['System Design Primer', 'High Scalability', 'Designing Data-Intensive Applications'],
+      'System Design': [
+        'System Design Primer',
+        'High Scalability',
+        'Designing Data-Intensive Applications',
+      ],
     };
 
-    return resources[skillName] ?? ['Online Tutorials', 'Documentation', 'Practice Projects'];
+    return resources[skillName] ??
+        ['Online Tutorials', 'Documentation', 'Practice Projects'];
   }
 
   /// Get priority value for sorting
@@ -826,7 +967,8 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
   Future<void> _saveCompanies() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final companiesJson = _companies.map((company) => company.toJson()).toList();
+      final companiesJson =
+          _companies.map((company) => company.toJson()).toList();
       await prefs.setString(_companiesKey, jsonEncode(companiesJson));
     } catch (e) {
       debugPrint('Error saving companies: $e');
@@ -860,7 +1002,14 @@ class EnhancedCareerGoalsService extends ChangeNotifier {
 
   /// Get available industries
   List<String> getAvailableIndustries() {
-    return ['Technology', 'Finance', 'Healthcare', 'E-commerce', 'Gaming', 'Education'];
+    return [
+      'Technology',
+      'Finance',
+      'Healthcare',
+      'E-commerce',
+      'Gaming',
+      'Education',
+    ];
   }
 
   /// Get available experience levels

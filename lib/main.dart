@@ -10,6 +10,7 @@ import 'services/ai_assistant_service.dart';
 import 'services/gamification_service.dart';
 import 'services/career_goals_service.dart';
 import 'services/enhanced_career_goals_service.dart';
+import 'services/analytics_service.dart';
 import 'screens/splash_screen.dart';
 import 'screens/main_screen.dart';
 
@@ -22,11 +23,14 @@ void main() async {
   // Initialize Repo Status Service
   await RepoStatusService.init();
 
-        // Initialize Reminder Service
-        await ReminderService.init();
+  // Initialize Reminder Service
+  await ReminderService.init();
 
         // Initialize Enhanced Career Goals Service
         await EnhancedCareerGoalsService().init();
+
+        // Initialize Analytics Service
+        await AnalyticsService().init();
 
         runApp(const DevPathApp());
 }
@@ -55,6 +59,9 @@ class DevPathApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<EnhancedCareerGoalsService>(
           create: (_) => EnhancedCareerGoalsService(),
+        ),
+        ChangeNotifierProvider<AnalyticsService>(
+          create: (_) => AnalyticsService(),
         ),
       ],
       child: MaterialApp(

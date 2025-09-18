@@ -8,7 +8,8 @@ class EnhancedCareerGoalsScreen extends StatefulWidget {
   const EnhancedCareerGoalsScreen({super.key});
 
   @override
-  State<EnhancedCareerGoalsScreen> createState() => _EnhancedCareerGoalsScreenState();
+  State<EnhancedCareerGoalsScreen> createState() =>
+      _EnhancedCareerGoalsScreenState();
 }
 
 class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
@@ -49,7 +50,10 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
 
               // Tab bar
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
@@ -61,7 +65,9 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
                     borderRadius: BorderRadius.circular(12),
                   ),
                   labelColor: Colors.white,
-                  unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                  unselectedLabelColor: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
                   tabs: const [
                     Tab(text: 'Goals'),
                     Tab(text: 'Gap Analysis'),
@@ -117,11 +123,7 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
                   color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(
-                  Icons.work,
-                  size: 32,
-                  color: AppColors.primary,
-                ),
+                child: Icon(Icons.work, size: 32, color: AppColors.primary),
               ),
             ],
           ),
@@ -303,14 +305,19 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
                     Text(
                       '${goal.targetRole}${goal.targetCompany.isNotEmpty ? ' at ${goal.targetCompany}' : ''}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.7),
                       ),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: _getReadinessColor(goal.readinessPercentage),
                   borderRadius: BorderRadius.circular(20),
@@ -331,8 +338,12 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
           // Progress bar
           LinearProgressIndicator(
             value: goal.readinessPercentage / 100,
-            backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-            valueColor: AlwaysStoppedAnimation<Color>(_getReadinessColor(goal.readinessPercentage)),
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.outline.withOpacity(0.2),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              _getReadinessColor(goal.readinessPercentage),
+            ),
           ),
 
           const SizedBox(height: 16),
@@ -340,11 +351,26 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
           // Details
           Row(
             children: [
-              _buildDetailItem(context, Icons.calendar_today, 'Target Date', _formatDate(goal.targetDate)),
+              _buildDetailItem(
+                context,
+                Icons.calendar_today,
+                'Target Date',
+                _formatDate(goal.targetDate),
+              ),
               const SizedBox(width: 16),
-              _buildDetailItem(context, Icons.attach_money, 'Salary', '\$${goal.targetSalary.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'),
+              _buildDetailItem(
+                context,
+                Icons.attach_money,
+                'Salary',
+                '\$${goal.targetSalary.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}',
+              ),
               const SizedBox(width: 16),
-              _buildDetailItem(context, Icons.trending_up, 'Experience', goal.experienceLevel),
+              _buildDetailItem(
+                context,
+                Icons.trending_up,
+                'Experience',
+                goal.experienceLevel,
+              ),
             ],
           ),
 
@@ -357,13 +383,17 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
                 Icon(
                   Icons.analytics,
                   size: 16,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
                 const SizedBox(width: 8),
                 Text(
                   '${goal.skillGaps.length} skill gaps identified',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.6),
                   ),
                 ),
               ],
@@ -397,11 +427,7 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
                   color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  Icons.business,
-                  color: AppColors.primary,
-                  size: 24,
-                ),
+                child: Icon(Icons.business, color: AppColors.primary, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -418,7 +444,9 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
                     Text(
                       company.industry,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.7),
                       ),
                     ),
                   ],
@@ -453,20 +481,31 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: company.roleRequirements.keys.take(3).map((role) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                role,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            )).toList(),
+            children:
+                company.roleRequirements.keys
+                    .take(3)
+                    .map(
+                      (role) => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          role,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
           ),
 
           const SizedBox(height: 16),
@@ -483,7 +522,9 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
               Text(
                 company.location,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
               const Spacer(),
@@ -498,11 +539,20 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
     );
   }
 
-  Widget _buildDetailItem(BuildContext context, IconData icon, String label, String value) {
+  Widget _buildDetailItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+        Icon(
+          icon,
+          size: 16,
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+        ),
         const SizedBox(width: 4),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -527,10 +577,7 @@ class _EnhancedCareerGoalsScreenState extends State<EnhancedCareerGoalsScreen>
   }
 
   void _showCreateGoalDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => CreateGoalDialog(),
-    );
+    showDialog(context: context, builder: (context) => CreateGoalDialog());
   }
 
   void _showGapAnalysisDetails(BuildContext context, EnhancedCareerGoal goal) {
@@ -601,7 +648,11 @@ class _CreateGoalDialogState extends State<CreateGoalDialog> {
                       hintText: 'e.g., Senior Engineer at Google',
                       border: OutlineInputBorder(),
                     ),
-                    validator: (value) => value?.isEmpty == true ? 'Please enter a title' : null,
+                    validator:
+                        (value) =>
+                            value?.isEmpty == true
+                                ? 'Please enter a title'
+                                : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -620,10 +671,15 @@ class _CreateGoalDialogState extends State<CreateGoalDialog> {
                       labelText: 'Target Company',
                       border: OutlineInputBorder(),
                     ),
-                    items: service.companies.map((company) => DropdownMenuItem(
-                      value: company.name,
-                      child: Text(company.name),
-                    )).toList(),
+                    items:
+                        service.companies
+                            .map(
+                              (company) => DropdownMenuItem(
+                                value: company.name,
+                                child: Text(company.name),
+                              ),
+                            )
+                            .toList(),
                     onChanged: (value) {
                       setState(() {
                         _selectedCompany = value ?? '';
@@ -638,10 +694,16 @@ class _CreateGoalDialogState extends State<CreateGoalDialog> {
                       labelText: 'Target Role',
                       border: OutlineInputBorder(),
                     ),
-                    items: service.getAvailableRolesForCompany(_selectedCompany).map((role) => DropdownMenuItem(
-                      value: role,
-                      child: Text(role),
-                    )).toList(),
+                    items:
+                        service
+                            .getAvailableRolesForCompany(_selectedCompany)
+                            .map(
+                              (role) => DropdownMenuItem(
+                                value: role,
+                                child: Text(role),
+                              ),
+                            )
+                            .toList(),
                     onChanged: (value) {
                       setState(() {
                         _selectedRole = value ?? '';
@@ -655,10 +717,16 @@ class _CreateGoalDialogState extends State<CreateGoalDialog> {
                       labelText: 'Industry',
                       border: OutlineInputBorder(),
                     ),
-                    items: service.getAvailableIndustries().map((industry) => DropdownMenuItem(
-                      value: industry,
-                      child: Text(industry),
-                    )).toList(),
+                    items:
+                        service
+                            .getAvailableIndustries()
+                            .map(
+                              (industry) => DropdownMenuItem(
+                                value: industry,
+                                child: Text(industry),
+                              ),
+                            )
+                            .toList(),
                     onChanged: (value) {
                       setState(() {
                         _selectedIndustry = value ?? '';
@@ -667,15 +735,24 @@ class _CreateGoalDialogState extends State<CreateGoalDialog> {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: _selectedExperienceLevel.isEmpty ? null : _selectedExperienceLevel,
+                    value:
+                        _selectedExperienceLevel.isEmpty
+                            ? null
+                            : _selectedExperienceLevel,
                     decoration: const InputDecoration(
                       labelText: 'Experience Level',
                       border: OutlineInputBorder(),
                     ),
-                    items: service.getAvailableExperienceLevels().map((level) => DropdownMenuItem(
-                      value: level,
-                      child: Text(level),
-                    )).toList(),
+                    items:
+                        service
+                            .getAvailableExperienceLevels()
+                            .map(
+                              (level) => DropdownMenuItem(
+                                value: level,
+                                child: Text(level),
+                              ),
+                            )
+                            .toList(),
                     onChanged: (value) {
                       setState(() {
                         _selectedExperienceLevel = value ?? '';
@@ -715,8 +792,11 @@ class _CreateGoalDialogState extends State<CreateGoalDialog> {
 
   void _createGoal() async {
     if (_formKey.currentState?.validate() == true) {
-      final service = Provider.of<EnhancedCareerGoalsService>(context, listen: false);
-      
+      final service = Provider.of<EnhancedCareerGoalsService>(
+        context,
+        listen: false,
+      );
+
       await service.createCareerGoal(
         title: _titleController.text,
         description: _descriptionController.text,
@@ -766,7 +846,8 @@ class GapAnalysisDetailsDialog extends StatelessWidget {
                     ),
                     AIRecommendationsList(
                       recommendations: goal.aiRecommendations,
-                      onRecommendationTap: (rec) => _showRecommendationDetails(context, rec),
+                      onRecommendationTap:
+                          (rec) => _showRecommendationDetails(context, rec),
                     ),
                   ],
                 ),
@@ -787,65 +868,72 @@ class GapAnalysisDetailsDialog extends StatelessWidget {
   void _showGapDetails(BuildContext context, SkillGap gap) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(gap.skillName),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Category: ${gap.category}'),
-            Text('Importance: ${gap.importance}'),
-            Text('Current Level: ${gap.currentLevel}'),
-            Text('Target Level: ${gap.targetLevel}'),
-            Text('Estimated Hours: ${gap.estimatedHours}h'),
-            Text('Priority: ${gap.priority}'),
-            if (gap.resources.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              const Text('Resources:'),
-              ...gap.resources.map((resource) => Text('• $resource')),
+      builder:
+          (context) => AlertDialog(
+            title: Text(gap.skillName),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Category: ${gap.category}'),
+                Text('Importance: ${gap.importance}'),
+                Text('Current Level: ${gap.currentLevel}'),
+                Text('Target Level: ${gap.targetLevel}'),
+                Text('Estimated Hours: ${gap.estimatedHours}h'),
+                Text('Priority: ${gap.priority}'),
+                if (gap.resources.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  const Text('Resources:'),
+                  ...gap.resources.map((resource) => Text('• $resource')),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
             ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
           ),
-        ],
-      ),
     );
   }
 
-  void _showRecommendationDetails(BuildContext context, AIRecommendation recommendation) {
+  void _showRecommendationDetails(
+    BuildContext context,
+    AIRecommendation recommendation,
+  ) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(recommendation.title),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(recommendation.description),
-            const SizedBox(height: 8),
-            Text('Type: ${recommendation.type}'),
-            Text('Difficulty: ${recommendation.difficulty}'),
-            Text('Estimated Hours: ${recommendation.estimatedHours}h'),
-            Text('Priority: ${recommendation.priority}'),
-            Text('Reason: ${recommendation.reason}'),
-            if (recommendation.resources.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              const Text('Resources:'),
-              ...recommendation.resources.map((resource) => Text('• $resource')),
+      builder:
+          (context) => AlertDialog(
+            title: Text(recommendation.title),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(recommendation.description),
+                const SizedBox(height: 8),
+                Text('Type: ${recommendation.type}'),
+                Text('Difficulty: ${recommendation.difficulty}'),
+                Text('Estimated Hours: ${recommendation.estimatedHours}h'),
+                Text('Priority: ${recommendation.priority}'),
+                Text('Reason: ${recommendation.reason}'),
+                if (recommendation.resources.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  const Text('Resources:'),
+                  ...recommendation.resources.map(
+                    (resource) => Text('• $resource'),
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
             ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
           ),
-        ],
-      ),
     );
   }
 }
@@ -869,10 +957,16 @@ class CompanyDetailsDialog extends StatelessWidget {
             const SizedBox(height: 8),
             Text(company.description),
             const SizedBox(height: 16),
-            const Text('Available Roles:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Available Roles:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             ...company.roleRequirements.keys.map((role) => Text('• $role')),
             const SizedBox(height: 16),
-            const Text('Benefits:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Benefits:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             ...company.benefits.map((benefit) => Text('• $benefit')),
           ],
         ),

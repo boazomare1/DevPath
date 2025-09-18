@@ -6,11 +6,7 @@ class GapAnalysisWidget extends StatelessWidget {
   final EnhancedCareerGoal goal;
   final VoidCallback? onTap;
 
-  const GapAnalysisWidget({
-    super.key,
-    required this.goal,
-    this.onTap,
-  });
+  const GapAnalysisWidget({super.key, required this.goal, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +25,9 @@ class GapAnalysisWidget extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: _getReadinessColor(goal.readinessPercentage).withOpacity(0.3),
+            color: _getReadinessColor(
+              goal.readinessPercentage,
+            ).withOpacity(0.3),
           ),
         ),
         child: Column(
@@ -44,7 +42,9 @@ class GapAnalysisWidget extends StatelessWidget {
                     children: [
                       Text(
                         'Readiness for ${goal.targetRole}',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
@@ -53,8 +53,12 @@ class GapAnalysisWidget extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           'at ${goal.targetCompany}',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.7),
                           ),
                         ),
                       ],
@@ -62,7 +66,10 @@ class GapAnalysisWidget extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: _getReadinessColor(goal.readinessPercentage),
                     borderRadius: BorderRadius.circular(20),
@@ -125,17 +132,24 @@ class GapAnalysisWidget extends StatelessWidget {
         const SizedBox(height: 8),
         LinearProgressIndicator(
           value: goal.readinessPercentage / 100,
-          backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-          valueColor: AlwaysStoppedAnimation<Color>(_getReadinessColor(goal.readinessPercentage)),
+          backgroundColor: Theme.of(
+            context,
+          ).colorScheme.outline.withOpacity(0.2),
+          valueColor: AlwaysStoppedAnimation<Color>(
+            _getReadinessColor(goal.readinessPercentage),
+          ),
         ),
       ],
     );
   }
 
   Widget _buildSkillGapsSummary(BuildContext context) {
-    final criticalGaps = goal.skillGaps.where((gap) => gap.priority == 'Critical').length;
-    final highGaps = goal.skillGaps.where((gap) => gap.priority == 'High').length;
-    final mediumGaps = goal.skillGaps.where((gap) => gap.priority == 'Medium').length;
+    final criticalGaps =
+        goal.skillGaps.where((gap) => gap.priority == 'Critical').length;
+    final highGaps =
+        goal.skillGaps.where((gap) => gap.priority == 'High').length;
+    final mediumGaps =
+        goal.skillGaps.where((gap) => gap.priority == 'Medium').length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,7 +197,12 @@ class GapAnalysisWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildGapChip(BuildContext context, String priority, int count, Color color) {
+  Widget _buildGapChip(
+    BuildContext context,
+    String priority,
+    int count,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -197,10 +216,7 @@ class GapAnalysisWidget extends StatelessWidget {
           Container(
             width: 8,
             height: 8,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 4),
           Text(
@@ -221,11 +237,7 @@ class GapAnalysisWidget extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(
-              Icons.auto_awesome,
-              color: AppColors.primary,
-              size: 16,
-            ),
+            Icon(Icons.auto_awesome, color: AppColors.primary, size: 16),
             const SizedBox(width: 4),
             Text(
               'AI Recommendations',
@@ -268,11 +280,7 @@ class SkillGapList extends StatelessWidget {
   final List<SkillGap> skillGaps;
   final Function(SkillGap)? onGapTap;
 
-  const SkillGapList({
-    super.key,
-    required this.skillGaps,
-    this.onGapTap,
-  });
+  const SkillGapList({super.key, required this.skillGaps, this.onGapTap});
 
   @override
   Widget build(BuildContext context) {
@@ -347,7 +355,10 @@ class SkillGapList extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _getPriorityColor(gap.priority).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -371,14 +382,18 @@ class SkillGapList extends StatelessWidget {
                 Text(
                   'Level ${gap.currentLevel} → ${gap.targetLevel}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${gap.estimatedHours}h estimated',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.6),
                   ),
                 ),
               ],
@@ -389,8 +404,12 @@ class SkillGapList extends StatelessWidget {
             // Progress bar
             LinearProgressIndicator(
               value: gap.currentLevel / gap.targetLevel,
-              backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-              valueColor: AlwaysStoppedAnimation<Color>(_getPriorityColor(gap.priority)),
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.outline.withOpacity(0.2),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                _getPriorityColor(gap.priority),
+              ),
             ),
 
             const SizedBox(height: 8),
@@ -399,7 +418,10 @@ class SkillGapList extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: _getCategoryColor(gap.category).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -414,7 +436,10 @@ class SkillGapList extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: _getImportanceColor(gap.importance).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -430,7 +455,10 @@ class SkillGapList extends StatelessWidget {
                 if (gap.isRequired) ...[
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.error.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -553,7 +581,10 @@ class AIRecommendationsList extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendationCard(BuildContext context, AIRecommendation recommendation) {
+  Widget _buildRecommendationCard(
+    BuildContext context,
+    AIRecommendation recommendation,
+  ) {
     return GestureDetector(
       onTap: () => onRecommendationTap?.call(recommendation),
       child: Container(
@@ -581,7 +612,10 @@ class AIRecommendationsList extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _getTypeColor(recommendation.type).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -642,20 +676,30 @@ class AIRecommendationsList extends StatelessWidget {
               Wrap(
                 spacing: 4,
                 runSpacing: 4,
-                children: recommendation.skills.map((skill) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    skill,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                )).toList(),
+                children:
+                    recommendation.skills
+                        .map(
+                          (skill) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              skill,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
               ),
             ],
           ],
@@ -664,7 +708,12 @@ class AIRecommendationsList extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailChip(BuildContext context, IconData icon, String text, Color color) {
+  Widget _buildDetailChip(
+    BuildContext context,
+    IconData icon,
+    String text,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
