@@ -57,15 +57,7 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
 
     try {
       final authService = context.read<GitHubAuthService>();
-      
-      // Add timeout to prevent infinite loading
-      final success = await authService.authenticate().timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          debugPrint('Authentication timed out after 10 seconds');
-          return false;
-        },
-      );
+      final success = await authService.authenticate();
 
       if (success) {
         // Show instructions to user
@@ -167,51 +159,6 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
     }
   }
 
-  Future<void> _getFreshAuthorizationCode() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    try {
-      final authService = context.read<GitHubAuthService>();
-      final authUrl = await authService.getFreshAuthorizationUrl();
-
-      if (authUrl != null) {
-        if (await canLaunchUrl(authUrl)) {
-          await launchUrl(authUrl, mode: LaunchMode.platformDefault);
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Fresh authorization URL opened! Complete authentication and copy the code.',
-                ),
-                backgroundColor: AppColors.primary,
-                duration: Duration(seconds: 5),
-              ),
-            );
-          }
-        } else {
-          setState(() {
-            _errorMessage = 'Failed to open browser. Please try again.';
-          });
-        }
-      } else {
-        setState(() {
-          _errorMessage =
-              'Failed to generate authorization URL. Please try again.';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Error getting fresh authorization code: $e';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
 
   Future<void> _handleClearCacheAndLogin() async {
     setState(() {
@@ -227,14 +174,8 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
       // Wait a moment for logout to complete
       await Future.delayed(const Duration(milliseconds: 500));
 
-      // Start fresh authentication with timeout
-      final success = await authService.authenticate().timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          debugPrint('Clear cache and login timed out after 10 seconds');
-          return false;
-        },
-      );
+      // Start fresh authentication
+      final success = await authService.authenticate();
 
       if (success) {
         if (mounted) {
@@ -492,22 +433,6 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-
-                  // Get Fresh Code Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _isLoading ? null : _getFreshAuthorizationCode,
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Get Fresh Authorization Code'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        side: BorderSide(color: AppColors.primary),
-                      ),
-                    ),
-                  ),
-
                   const SizedBox(height: 16),
                   TextField(
                     controller: _codeController,
