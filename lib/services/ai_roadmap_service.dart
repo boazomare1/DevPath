@@ -77,9 +77,10 @@ class LearningPath {
       title: json['title'],
       description: json['description'],
       targetRole: json['targetRole'],
-      steps: (json['steps'] as List)
-          .map((step) => LearningStep.fromJson(step))
-          .toList(),
+      steps:
+          (json['steps'] as List)
+              .map((step) => LearningStep.fromJson(step))
+              .toList(),
       estimatedDuration: json['estimatedDuration'],
       difficulty: json['difficulty'],
       createdAt: DateTime.parse(json['createdAt']),
@@ -171,16 +172,18 @@ class LearningStep {
       estimatedHours: json['estimatedHours'],
       difficulty: json['difficulty'],
       isCompleted: json['isCompleted'] ?? false,
-      completedAt: json['completedAt'] != null
-          ? DateTime.parse(json['completedAt'])
-          : null,
+      completedAt:
+          json['completedAt'] != null
+              ? DateTime.parse(json['completedAt'])
+              : null,
       notes: json['notes'],
     );
   }
 }
 
 class AIRoadmapService extends ChangeNotifier {
-  static const String _apiKey = 'your-openai-api-key'; // Replace with actual API key
+  static const String _apiKey =
+      'your-openai-api-key'; // Replace with actual API key
   static const String _apiUrl = 'https://api.openai.com/v1/chat/completions';
 
   List<LearningPath> _learningPaths = [];
@@ -245,7 +248,8 @@ class AIRoadmapService extends ChangeNotifier {
     return LearningPath(
       id: pathId,
       title: 'Become a $targetRole',
-      description: 'A personalized learning path to become a $targetRole based on your current skills and projects.',
+      description:
+          'A personalized learning path to become a $targetRole based on your current skills and projects.',
       targetRole: targetRole,
       steps: steps,
       estimatedDuration: _calculateEstimatedDuration(steps),
@@ -271,23 +275,28 @@ class AIRoadmapService extends ChangeNotifier {
       final step = roleSteps[i];
       final stepId = 'step_${now.millisecondsSinceEpoch}_$i';
 
-      steps.add(LearningStep(
-        id: stepId,
-        title: step['title'],
-        description: step['description'],
-        skillCategory: step['category'],
-        skills: List<String>.from(step['skills']),
-        resources: List<String>.from(step['resources']),
-        estimatedHours: step['hours'],
-        difficulty: step['difficulty'],
-      ));
+      steps.add(
+        LearningStep(
+          id: stepId,
+          title: step['title'],
+          description: step['description'],
+          skillCategory: step['category'],
+          skills: List<String>.from(step['skills']),
+          resources: List<String>.from(step['resources']),
+          estimatedHours: step['hours'],
+          difficulty: step['difficulty'],
+        ),
+      );
     }
 
     return steps;
   }
 
   /// Get role-based learning steps
-  List<Map<String, dynamic>> _getRoleBasedSteps(String targetRole, String experienceLevel) {
+  List<Map<String, dynamic>> _getRoleBasedSteps(
+    String targetRole,
+    String experienceLevel,
+  ) {
     final Map<String, List<Map<String, dynamic>>> roleSteps = {
       'Frontend Developer': [
         {
@@ -304,7 +313,11 @@ class AIRoadmapService extends ChangeNotifier {
           'description': 'Master modern JavaScript and ES6+ features',
           'category': 'Programming',
           'skills': ['JavaScript', 'ES6+', 'DOM Manipulation'],
-          'resources': ['JavaScript.info', 'Eloquent JavaScript', 'MDN JavaScript'],
+          'resources': [
+            'JavaScript.info',
+            'Eloquent JavaScript',
+            'MDN JavaScript',
+          ],
           'hours': 60,
           'difficulty': 'Intermediate',
         },
@@ -342,7 +355,11 @@ class AIRoadmapService extends ChangeNotifier {
           'description': 'Master database concepts and SQL',
           'category': 'Database',
           'skills': ['SQL', 'PostgreSQL', 'MongoDB', 'Database Design'],
-          'resources': ['SQL Tutorial', 'PostgreSQL Docs', 'MongoDB University'],
+          'resources': [
+            'SQL Tutorial',
+            'PostgreSQL Docs',
+            'MongoDB University',
+          ],
           'hours': 60,
           'difficulty': 'Intermediate',
         },
@@ -418,7 +435,9 @@ class AIRoadmapService extends ChangeNotifier {
   Future<void> updateProgress(String pathId, double progress) async {
     final index = _learningPaths.indexWhere((path) => path.id == pathId);
     if (index != -1) {
-      _learningPaths[index] = _learningPaths[index].copyWith(progress: progress);
+      _learningPaths[index] = _learningPaths[index].copyWith(
+        progress: progress,
+      );
       notifyListeners();
     }
   }
@@ -427,11 +446,13 @@ class AIRoadmapService extends ChangeNotifier {
   Future<void> completeStep(String pathId, String stepId) async {
     final pathIndex = _learningPaths.indexWhere((path) => path.id == pathId);
     if (pathIndex != -1) {
-      final stepIndex = _learningPaths[pathIndex]
-          .steps
-          .indexWhere((step) => step.id == stepId);
+      final stepIndex = _learningPaths[pathIndex].steps.indexWhere(
+        (step) => step.id == stepId,
+      );
       if (stepIndex != -1) {
-        final updatedSteps = List<LearningStep>.from(_learningPaths[pathIndex].steps);
+        final updatedSteps = List<LearningStep>.from(
+          _learningPaths[pathIndex].steps,
+        );
         updatedSteps[stepIndex] = updatedSteps[stepIndex].copyWith(
           isCompleted: true,
           completedAt: DateTime.now(),

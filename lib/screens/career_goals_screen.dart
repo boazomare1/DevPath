@@ -74,16 +74,13 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
                     }
 
                     return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final goal = careerGoalsService.activeGoals[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: _buildGoalCard(context, goal),
-                          );
-                        },
-                        childCount: careerGoalsService.activeGoals.length,
-                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final goal = careerGoalsService.activeGoals[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildGoalCard(context, goal),
+                        );
+                      }, childCount: careerGoalsService.activeGoals.length),
                     );
                   },
                 ),
@@ -114,7 +111,9 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
                 Icon(
                   Icons.work_outline,
                   size: 64,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.3),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -127,7 +126,9 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
                 Text(
                   'Set your career goals and track your progress towards your dream job!',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -139,7 +140,10 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ],
@@ -216,7 +220,9 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
               Text(
                 goal.industry,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
               const SizedBox(width: 16),
@@ -227,12 +233,11 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
               ),
               const SizedBox(width: 4),
               Text(
-                '\$${goal.targetSalary.toString().replaceAllMapped(
-                  RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                  (Match m) => '${m[1]},',
-                )}',
+                '\$${goal.targetSalary.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
             ],
@@ -240,7 +245,9 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
           const SizedBox(height: 16),
           LinearProgressIndicator(
             value: goal.progress,
-            backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.outline.withOpacity(0.2),
             valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
           const SizedBox(height: 8),
@@ -250,13 +257,17 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
               Text(
                 '${(goal.progress * 100).toInt()}% Complete',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
               Text(
                 'Target: ${goal.targetDate.day}/${goal.targetDate.month}/${goal.targetDate.year}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
             ],
@@ -306,133 +317,150 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: const Text('Create Career Goal'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Goal Title',
-                    hintText: 'e.g., Become a Senior Frontend Developer',
+      builder:
+          (context) => StatefulBuilder(
+            builder:
+                (context, setState) => AlertDialog(
+                  title: const Text('Create Career Goal'),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: titleController,
+                          decoration: const InputDecoration(
+                            labelText: 'Goal Title',
+                            hintText:
+                                'e.g., Become a Senior Frontend Developer',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: descriptionController,
+                          decoration: const InputDecoration(
+                            labelText: 'Description',
+                            hintText: 'Describe your career goal...',
+                          ),
+                          maxLines: 3,
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: selectedRole,
+                          decoration: const InputDecoration(
+                            labelText: 'Target Role',
+                          ),
+                          items:
+                              CareerGoalsService.getAvailableRoles()
+                                  .map(
+                                    (role) => DropdownMenuItem(
+                                      value: role,
+                                      child: Text(role),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedRole = value!;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: selectedIndustry,
+                          decoration: const InputDecoration(
+                            labelText: 'Industry',
+                          ),
+                          items:
+                              CareerGoalsService.getAvailableIndustries()
+                                  .map(
+                                    (industry) => DropdownMenuItem(
+                                      value: industry,
+                                      child: Text(industry),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedIndustry = value!;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: salaryController,
+                          decoration: const InputDecoration(
+                            labelText: 'Target Salary',
+                            hintText: 'e.g., 80000',
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: selectedExperienceLevel,
+                          decoration: const InputDecoration(
+                            labelText: 'Experience Level',
+                          ),
+                          items:
+                              CareerGoalsService.getAvailableExperienceLevels()
+                                  .map(
+                                    (level) => DropdownMenuItem(
+                                      value: level,
+                                      child: Text(level),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedExperienceLevel = value!;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        ListTile(
+                          title: Text(
+                            'Target Date: ${targetDate.day}/${targetDate.month}/${targetDate.year}',
+                          ),
+                          trailing: const Icon(Icons.calendar_today),
+                          onTap: () async {
+                            final date = await showDatePicker(
+                              context: context,
+                              initialDate: targetDate,
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime.now().add(
+                                const Duration(days: 3650),
+                              ),
+                            );
+                            if (date != null) {
+                              setState(() {
+                                targetDate = date;
+                              });
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed:
+                          () => _createGoal(
+                            titleController.text,
+                            descriptionController.text,
+                            selectedRole,
+                            selectedIndustry,
+                            int.tryParse(salaryController.text) ?? 0,
+                            selectedExperienceLevel,
+                            targetDate,
+                          ),
+                      child: const Text('Create'),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    hintText: 'Describe your career goal...',
-                  ),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: selectedRole,
-                  decoration: const InputDecoration(
-                    labelText: 'Target Role',
-                  ),
-                  items: CareerGoalsService.getAvailableRoles()
-                      .map((role) => DropdownMenuItem(
-                            value: role,
-                            child: Text(role),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedRole = value!;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: selectedIndustry,
-                  decoration: const InputDecoration(
-                    labelText: 'Industry',
-                  ),
-                  items: CareerGoalsService.getAvailableIndustries()
-                      .map((industry) => DropdownMenuItem(
-                            value: industry,
-                            child: Text(industry),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedIndustry = value!;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: salaryController,
-                  decoration: const InputDecoration(
-                    labelText: 'Target Salary',
-                    hintText: 'e.g., 80000',
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: selectedExperienceLevel,
-                  decoration: const InputDecoration(
-                    labelText: 'Experience Level',
-                  ),
-                  items: CareerGoalsService.getAvailableExperienceLevels()
-                      .map((level) => DropdownMenuItem(
-                            value: level,
-                            child: Text(level),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedExperienceLevel = value!;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                ListTile(
-                  title: Text('Target Date: ${targetDate.day}/${targetDate.month}/${targetDate.year}'),
-                  trailing: const Icon(Icons.calendar_today),
-                  onTap: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: targetDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 3650)),
-                    );
-                    if (date != null) {
-                      setState(() {
-                        targetDate = date;
-                      });
-                    }
-                  },
-                ),
-              ],
-            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () => _createGoal(
-                titleController.text,
-                descriptionController.text,
-                selectedRole,
-                selectedIndustry,
-                int.tryParse(salaryController.text) ?? 0,
-                selectedExperienceLevel,
-                targetDate,
-              ),
-              child: const Text('Create'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -491,48 +519,54 @@ class _CareerGoalsScreenState extends State<CareerGoalsScreen> {
   void _showSkillGaps(BuildContext context, CareerGoal goal) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Skill Gaps for ${goal.title}'),
-        content: const Text('Skill gap analysis would be shown here.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Skill Gaps for ${goal.title}'),
+            content: const Text('Skill gap analysis would be shown here.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _showGoalDetails(BuildContext context, CareerGoal goal) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(goal.title),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Description: ${goal.description}'),
-            const SizedBox(height: 8),
-            Text('Target Role: ${goal.targetRole}'),
-            Text('Industry: ${goal.industry}'),
-            Text('Target Salary: \$${goal.targetSalary}'),
-            Text('Experience Level: ${goal.experienceLevel}'),
-            Text('Target Date: ${goal.targetDate.day}/${goal.targetDate.month}/${goal.targetDate.year}'),
-            const SizedBox(height: 8),
-            Text('Required Skills: ${goal.requiredSkills.join(', ')}'),
-            const SizedBox(height: 4),
-            Text('Recommended Skills: ${goal.recommendedSkills.join(', ')}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+      builder:
+          (context) => AlertDialog(
+            title: Text(goal.title),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Description: ${goal.description}'),
+                const SizedBox(height: 8),
+                Text('Target Role: ${goal.targetRole}'),
+                Text('Industry: ${goal.industry}'),
+                Text('Target Salary: \$${goal.targetSalary}'),
+                Text('Experience Level: ${goal.experienceLevel}'),
+                Text(
+                  'Target Date: ${goal.targetDate.day}/${goal.targetDate.month}/${goal.targetDate.year}',
+                ),
+                const SizedBox(height: 8),
+                Text('Required Skills: ${goal.requiredSkills.join(', ')}'),
+                const SizedBox(height: 4),
+                Text(
+                  'Recommended Skills: ${goal.recommendedSkills.join(', ')}',
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

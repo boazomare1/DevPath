@@ -152,9 +152,10 @@ class Achievement {
       progress: json['progress'],
       target: json['target'],
       isCompleted: json['isCompleted'] ?? false,
-      completedAt: json['completedAt'] != null
-          ? DateTime.parse(json['completedAt'])
-          : null,
+      completedAt:
+          json['completedAt'] != null
+              ? DateTime.parse(json['completedAt'])
+              : null,
     );
   }
 }
@@ -194,9 +195,11 @@ class UserStats {
       totalXP: totalXP ?? this.totalXP,
       level: level ?? this.level,
       badgesEarned: badgesEarned ?? this.badgesEarned,
-      achievementsCompleted: achievementsCompleted ?? this.achievementsCompleted,
+      achievementsCompleted:
+          achievementsCompleted ?? this.achievementsCompleted,
       skillsLearned: skillsLearned ?? this.skillsLearned,
-      repositoriesContributed: repositoriesContributed ?? this.repositoriesContributed,
+      repositoriesContributed:
+          repositoriesContributed ?? this.repositoriesContributed,
       streakDays: streakDays ?? this.streakDays,
       lastActivity: lastActivity ?? this.lastActivity,
     );
@@ -252,8 +255,10 @@ class GamificationService extends ChangeNotifier {
   UserStats get userStats => _userStats;
   List<Badge> get badges => _badges;
   List<Achievement> get achievements => _achievements;
-  List<Badge> get earnedBadges => _badges.where((badge) => badge.isEarned).toList();
-  List<Achievement> get completedAchievements => _achievements.where((achievement) => achievement.isCompleted).toList();
+  List<Badge> get earnedBadges =>
+      _badges.where((badge) => badge.isEarned).toList();
+  List<Achievement> get completedAchievements =>
+      _achievements.where((achievement) => achievement.isCompleted).toList();
 
   /// Initialize the gamification service
   Future<void> init() async {
@@ -298,7 +303,10 @@ class GamificationService extends ChangeNotifier {
       final achievementsJson = prefs.getString(_achievementsKey);
       if (achievementsJson != null) {
         final achievementsData = jsonDecode(achievementsJson) as List;
-        _achievements = achievementsData.map((achievement) => Achievement.fromJson(achievement)).toList();
+        _achievements =
+            achievementsData
+                .map((achievement) => Achievement.fromJson(achievement))
+                .toList();
       }
     } catch (e) {
       debugPrint('Error loading achievements: $e');
@@ -378,7 +386,7 @@ class GamificationService extends ChangeNotifier {
   Future<void> addXP(int xp) async {
     final newTotalXP = _userStats.totalXP + xp;
     final newLevel = _calculateLevel(newTotalXP);
-    
+
     _userStats = _userStats.copyWith(
       totalXP: newTotalXP,
       level: newLevel,
@@ -428,11 +436,19 @@ class GamificationService extends ChangeNotifier {
   }
 
   /// Update achievement progress
-  Future<void> updateAchievementProgress(String achievementId, int progress) async {
-    final achievementIndex = _achievements.indexWhere((achievement) => achievement.id == achievementId);
+  Future<void> updateAchievementProgress(
+    String achievementId,
+    int progress,
+  ) async {
+    final achievementIndex = _achievements.indexWhere(
+      (achievement) => achievement.id == achievementId,
+    );
     if (achievementIndex != -1) {
       final achievement = _achievements[achievementIndex];
-      final newProgress = (achievement.progress + progress).clamp(0, achievement.target);
+      final newProgress = (achievement.progress + progress).clamp(
+        0,
+        achievement.target,
+      );
       final isCompleted = newProgress >= achievement.target;
 
       _achievements[achievementIndex] = achievement.copyWith(
@@ -471,7 +487,7 @@ class GamificationService extends ChangeNotifier {
   /// Check skill-related badges
   Future<void> _checkSkillBadges(List<Skill> skills) async {
     final skillsLearned = skills.length;
-    
+
     // First skill badge
     if (skillsLearned >= 1) {
       await awardBadge('first_skill');
@@ -488,9 +504,11 @@ class GamificationService extends ChangeNotifier {
   }
 
   /// Check repository-related badges
-  Future<void> _checkRepositoryBadges(List<GitHubRepository> repositories) async {
+  Future<void> _checkRepositoryBadges(
+    List<GitHubRepository> repositories,
+  ) async {
     final repoCount = repositories.length;
-    
+
     // GitHub hero badge
     if (repoCount > 0) {
       await awardBadge('github_hero');
@@ -531,7 +549,8 @@ class GamificationService extends ChangeNotifier {
   Future<void> _saveAchievements() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final achievementsJson = _achievements.map((achievement) => achievement.toJson()).toList();
+      final achievementsJson =
+          _achievements.map((achievement) => achievement.toJson()).toList();
       await prefs.setString(_achievementsKey, jsonEncode(achievementsJson));
     } catch (e) {
       debugPrint('Error saving achievements: $e');

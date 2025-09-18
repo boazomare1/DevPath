@@ -251,13 +251,13 @@ class ReminderService {
 
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-      'devpath_test',
-      'DevPath Test Notifications',
-      channelDescription: 'Test notifications for DevPath',
-      importance: Importance.high,
-      priority: Priority.high,
-      showWhen: true,
-    );
+          'devpath_test',
+          'DevPath Test Notifications',
+          channelDescription: 'Test notifications for DevPath',
+          importance: Importance.high,
+          priority: Priority.high,
+          showWhen: true,
+        );
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
       presentAlert: true,

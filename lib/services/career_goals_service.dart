@@ -166,7 +166,8 @@ class CareerGoalsService extends ChangeNotifier {
 
   // Getters
   List<CareerGoal> get careerGoals => _careerGoals;
-  List<CareerGoal> get activeGoals => _careerGoals.where((goal) => goal.isActive).toList();
+  List<CareerGoal> get activeGoals =>
+      _careerGoals.where((goal) => goal.isActive).toList();
   List<SkillGap> get skillGaps => _skillGaps;
 
   /// Initialize the career goals service
@@ -182,7 +183,8 @@ class CareerGoalsService extends ChangeNotifier {
       final goalsJson = prefs.getString(_careerGoalsKey);
       if (goalsJson != null) {
         final goalsData = jsonDecode(goalsJson) as List;
-        _careerGoals = goalsData.map((goal) => CareerGoal.fromJson(goal)).toList();
+        _careerGoals =
+            goalsData.map((goal) => CareerGoal.fromJson(goal)).toList();
       }
     } catch (e) {
       debugPrint('Error loading career goals: $e');
@@ -219,7 +221,7 @@ class CareerGoalsService extends ChangeNotifier {
 
     // Get role-specific skills
     final roleSkills = _getRoleSkills(targetRole);
-    
+
     final goal = CareerGoal(
       id: goalId,
       title: title,
@@ -263,22 +265,45 @@ class CareerGoalsService extends ChangeNotifier {
       },
       'DevOps Engineer': {
         'required': ['Docker', 'AWS', 'Linux', 'CI/CD', 'Git'],
-        'recommended': ['Kubernetes', 'Terraform', 'Python', 'Monitoring', 'Security'],
+        'recommended': [
+          'Kubernetes',
+          'Terraform',
+          'Python',
+          'Monitoring',
+          'Security',
+        ],
       },
       'Data Scientist': {
         'required': ['Python', 'SQL', 'Machine Learning', 'Statistics', 'Git'],
         'recommended': ['R', 'TensorFlow', 'Pandas', 'Jupyter', 'AWS'],
       },
       'UI/UX Designer': {
-        'required': ['Figma', 'Adobe XD', 'User Research', 'Prototyping', 'Design Systems'],
-        'recommended': ['Sketch', 'InVision', 'HTML/CSS', 'JavaScript', 'Accessibility'],
+        'required': [
+          'Figma',
+          'Adobe XD',
+          'User Research',
+          'Prototyping',
+          'Design Systems',
+        ],
+        'recommended': [
+          'Sketch',
+          'InVision',
+          'HTML/CSS',
+          'JavaScript',
+          'Accessibility',
+        ],
       },
     };
 
-    return roleSkills[targetRole] ?? {
-      'required': ['Git', 'Problem Solving', 'Communication'],
-      'recommended': ['Project Management', 'Teamwork', 'Continuous Learning'],
-    };
+    return roleSkills[targetRole] ??
+        {
+          'required': ['Git', 'Problem Solving', 'Communication'],
+          'recommended': [
+            'Project Management',
+            'Teamwork',
+            'Continuous Learning',
+          ],
+        };
   }
 
   /// Update career goal progress
@@ -301,63 +326,75 @@ class CareerGoalsService extends ChangeNotifier {
 
     // Analyze required skills
     for (final requiredSkill in goal.requiredSkills) {
-        final currentSkill = currentSkills.firstWhere(
-          (skill) => skill.name.toLowerCase() == requiredSkill.toLowerCase(),
-          orElse: () => Skill(
-            id: '',
-            name: requiredSkill,
-            category: SkillCategory.programmingLanguages,
-            status: SkillStatus.notStarted,
-            description: '',
-            notes: '',
-            createdAt: DateTime.now(),
-          ),
-        );
+      final currentSkill = currentSkills.firstWhere(
+        (skill) => skill.name.toLowerCase() == requiredSkill.toLowerCase(),
+        orElse:
+            () => Skill(
+              id: '',
+              name: requiredSkill,
+              category: SkillCategory.programmingLanguages,
+              status: SkillStatus.notStarted,
+              description: '',
+              notes: '',
+              createdAt: DateTime.now(),
+            ),
+      );
 
       final currentLevel = _mapSkillStatusToLevel(currentSkill.status);
-      final targetLevel = _getTargetLevelForRole(goal.targetRole, requiredSkill);
+      final targetLevel = _getTargetLevelForRole(
+        goal.targetRole,
+        requiredSkill,
+      );
 
       if (currentLevel != targetLevel) {
-        gaps.add(SkillGap(
-          skill: requiredSkill,
-          category: _getSkillCategory(requiredSkill),
-          importance: 'High',
-          currentLevel: currentLevel,
-          targetLevel: targetLevel,
-          estimatedHours: _estimateHoursToLevel(currentLevel, targetLevel),
-          resources: _getResourcesForSkill(requiredSkill),
-        ));
+        gaps.add(
+          SkillGap(
+            skill: requiredSkill,
+            category: _getSkillCategory(requiredSkill),
+            importance: 'High',
+            currentLevel: currentLevel,
+            targetLevel: targetLevel,
+            estimatedHours: _estimateHoursToLevel(currentLevel, targetLevel),
+            resources: _getResourcesForSkill(requiredSkill),
+          ),
+        );
       }
     }
 
     // Analyze recommended skills
     for (final recommendedSkill in goal.recommendedSkills) {
-        final currentSkill = currentSkills.firstWhere(
-          (skill) => skill.name.toLowerCase() == recommendedSkill.toLowerCase(),
-          orElse: () => Skill(
-            id: '',
-            name: recommendedSkill,
-            category: SkillCategory.programmingLanguages,
-            status: SkillStatus.notStarted,
-            description: '',
-            notes: '',
-            createdAt: DateTime.now(),
-          ),
-        );
+      final currentSkill = currentSkills.firstWhere(
+        (skill) => skill.name.toLowerCase() == recommendedSkill.toLowerCase(),
+        orElse:
+            () => Skill(
+              id: '',
+              name: recommendedSkill,
+              category: SkillCategory.programmingLanguages,
+              status: SkillStatus.notStarted,
+              description: '',
+              notes: '',
+              createdAt: DateTime.now(),
+            ),
+      );
 
       final currentLevel = _mapSkillStatusToLevel(currentSkill.status);
-      final targetLevel = _getTargetLevelForRole(goal.targetRole, recommendedSkill);
+      final targetLevel = _getTargetLevelForRole(
+        goal.targetRole,
+        recommendedSkill,
+      );
 
       if (currentLevel != targetLevel) {
-        gaps.add(SkillGap(
-          skill: recommendedSkill,
-          category: _getSkillCategory(recommendedSkill),
-          importance: 'Medium',
-          currentLevel: currentLevel,
-          targetLevel: targetLevel,
-          estimatedHours: _estimateHoursToLevel(currentLevel, targetLevel),
-          resources: _getResourcesForSkill(recommendedSkill),
-        ));
+        gaps.add(
+          SkillGap(
+            skill: recommendedSkill,
+            category: _getSkillCategory(recommendedSkill),
+            importance: 'Medium',
+            currentLevel: currentLevel,
+            targetLevel: targetLevel,
+            estimatedHours: _estimateHoursToLevel(currentLevel, targetLevel),
+            resources: _getResourcesForSkill(recommendedSkill),
+          ),
+        );
       }
     }
 
@@ -411,11 +448,7 @@ class CareerGoalsService extends ChangeNotifier {
 
   /// Estimate hours to reach target level
   int _estimateHoursToLevel(String currentLevel, String targetLevel) {
-    final levelHours = {
-      'Beginner': 0,
-      'Intermediate': 40,
-      'Advanced': 100,
-    };
+    final levelHours = {'Beginner': 0, 'Intermediate': 40, 'Advanced': 100};
 
     final currentHours = levelHours[currentLevel] ?? 0;
     final targetHours = levelHours[targetLevel] ?? 0;
@@ -428,7 +461,11 @@ class CareerGoalsService extends ChangeNotifier {
     final resources = {
       'HTML': ['MDN Web Docs', 'W3Schools HTML Tutorial', 'HTML5 Doctor'],
       'CSS': ['MDN CSS Guide', 'CSS-Tricks', 'Flexbox Froggy'],
-      'JavaScript': ['JavaScript.info', 'Eloquent JavaScript', 'MDN JavaScript'],
+      'JavaScript': [
+        'JavaScript.info',
+        'Eloquent JavaScript',
+        'MDN JavaScript',
+      ],
       'React': ['React Docs', 'React Tutorial', 'React Router'],
       'Node.js': ['Node.js Docs', 'Express.js Guide', 'Node.js Best Practices'],
       'Python': ['Python.org Tutorial', 'Real Python', 'Python Crash Course'],
@@ -436,7 +473,8 @@ class CareerGoalsService extends ChangeNotifier {
       'Git': ['Git Handbook', 'Atlassian Git Tutorial', 'GitHub Docs'],
     };
 
-    return resources[skill] ?? ['Online Tutorials', 'Documentation', 'Practice Projects'];
+    return resources[skill] ??
+        ['Online Tutorials', 'Documentation', 'Practice Projects'];
   }
 
   /// Delete a career goal

@@ -92,16 +92,13 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
                     }
 
                     return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final path = roadmapService.learningPaths[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: _buildRoadmapCard(context, path),
-                          );
-                        },
-                        childCount: roadmapService.learningPaths.length,
-                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final path = roadmapService.learningPaths[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildRoadmapCard(context, path),
+                        );
+                      }, childCount: roadmapService.learningPaths.length),
                     );
                   },
                 ),
@@ -132,7 +129,9 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
                 Icon(
                   Icons.route,
                   size: 64,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.3),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -145,7 +144,9 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
                 Text(
                   'Create your first AI-powered learning roadmap to start your journey!',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -157,7 +158,10 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ],
@@ -234,7 +238,9 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
               Text(
                 path.targetRole,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
               const SizedBox(width: 16),
@@ -247,7 +253,9 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
               Text(
                 '${path.estimatedDuration} weeks',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
             ],
@@ -255,7 +263,9 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
           const SizedBox(height: 16),
           LinearProgressIndicator(
             value: path.progress,
-            backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.outline.withOpacity(0.2),
             valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
           const SizedBox(height: 8),
@@ -265,13 +275,17 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
               Text(
                 '${(path.progress * 100).toInt()}% Complete',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
               Text(
                 '${path.steps.where((step) => step.isCompleted).length}/${path.steps.length} steps',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
             ],
@@ -297,55 +311,60 @@ class _RoadmapScreenState extends State<RoadmapScreen> {
   void _showCreateRoadmapDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Create Learning Roadmap'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _roleController,
-              decoration: const InputDecoration(
-                labelText: 'Target Role',
-                hintText: 'e.g., Frontend Developer',
-              ),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Create Learning Roadmap'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _roleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Target Role',
+                    hintText: 'e.g., Frontend Developer',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _selectedExperienceLevel,
+                  decoration: const InputDecoration(
+                    labelText: 'Experience Level',
+                  ),
+                  items:
+                      ['Beginner', 'Intermediate', 'Advanced']
+                          .map(
+                            (level) => DropdownMenuItem(
+                              value: level,
+                              child: Text(level),
+                            ),
+                          )
+                          .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedExperienceLevel = value!;
+                    });
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedExperienceLevel,
-              decoration: const InputDecoration(
-                labelText: 'Experience Level',
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
               ),
-              items: ['Beginner', 'Intermediate', 'Advanced']
-                  .map((level) => DropdownMenuItem(
-                        value: level,
-                        child: Text(level),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedExperienceLevel = value!;
-                });
-              },
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+              ElevatedButton(
+                onPressed: _generateRoadmap,
+                child:
+                    _isGenerating
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Text('Generate'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: _generateRoadmap,
-            child: _isGenerating
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Generate'),
-          ),
-        ],
-      ),
     );
   }
 

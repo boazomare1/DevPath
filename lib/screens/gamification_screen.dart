@@ -45,7 +45,7 @@ class _GamificationScreenState extends State<GamificationScreen>
             children: [
               // Header with user stats
               _buildHeader(context),
-              
+
               // Tab bar
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -60,7 +60,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                     color: AppColors.primary,
                   ),
                   labelColor: Colors.white,
-                  unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                  unselectedLabelColor: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
                   tabs: const [
                     Tab(text: 'Stats'),
                     Tab(text: 'Badges'),
@@ -68,7 +70,7 @@ class _GamificationScreenState extends State<GamificationScreen>
                   ],
                 ),
               ),
-              
+
               // Tab content
               Expanded(
                 child: TabBarView(
@@ -107,7 +109,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                     children: [
                       Text(
                         'Level ${stats.level}',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        style: Theme.of(
+                          context,
+                        ).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
@@ -115,7 +119,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                       Text(
                         '${stats.totalXP} XP',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -126,17 +132,13 @@ class _GamificationScreenState extends State<GamificationScreen>
                       color: AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Icon(
-                      Icons.star,
-                      size: 32,
-                      color: AppColors.primary,
-                    ),
+                    child: Icon(Icons.star, size: 32, color: AppColors.primary),
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Progress to next level
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,13 +149,17 @@ class _GamificationScreenState extends State<GamificationScreen>
                       Text(
                         'Progress to Level ${stats.level + 1}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.7),
                         ),
                       ),
                       Text(
                         '$nextLevelXP XP to go',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.5),
                         ),
                       ),
                     ],
@@ -161,8 +167,12 @@ class _GamificationScreenState extends State<GamificationScreen>
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: levelProgress,
-                    backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.outline.withOpacity(0.2),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
+                    ),
                   ),
                 ],
               ),
@@ -220,9 +230,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Recent activity
               Container(
                 padding: const EdgeInsets.all(20),
@@ -230,7 +240,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withOpacity(0.2),
                   ),
                 ),
                 child: Column(
@@ -288,7 +300,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                 Icon(
                   Icons.emoji_events_outlined,
                   size: 64,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.3),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -301,7 +315,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                 Text(
                   'Complete achievements to earn badges!',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
               ],
@@ -370,11 +386,7 @@ class _GamificationScreenState extends State<GamificationScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 32,
-            color: color,
-          ),
+          Icon(icon, size: 32, color: color),
           const SizedBox(height: 8),
           Text(
             value,
@@ -413,11 +425,7 @@ class _GamificationScreenState extends State<GamificationScreen>
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
-              icon,
-              size: 16,
-              color: color,
-            ),
+            child: Icon(icon, size: 16, color: color),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -434,7 +442,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                 Text(
                   subtitle,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
               ],
@@ -452,18 +462,16 @@ class _GamificationScreenState extends State<GamificationScreen>
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: badge.isEarned
-              ? AppColors.warning
-              : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color:
+              badge.isEarned
+                  ? AppColors.warning
+                  : Theme.of(context).colorScheme.outline.withOpacity(0.2),
         ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            badge.icon,
-            style: const TextStyle(fontSize: 32),
-          ),
+          Text(badge.icon, style: const TextStyle(fontSize: 32)),
           const SizedBox(height: 8),
           Text(
             badge.name,
@@ -503,7 +511,10 @@ class _GamificationScreenState extends State<GamificationScreen>
     );
   }
 
-  Widget _buildAchievementCard(BuildContext context, gamification.Achievement achievement) {
+  Widget _buildAchievementCard(
+    BuildContext context,
+    gamification.Achievement achievement,
+  ) {
     final progress = achievement.progress / achievement.target;
     final isCompleted = achievement.isCompleted;
 
@@ -513,9 +524,10 @@ class _GamificationScreenState extends State<GamificationScreen>
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isCompleted
-              ? AppColors.success
-              : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color:
+              isCompleted
+                  ? AppColors.success
+                  : Theme.of(context).colorScheme.outline.withOpacity(0.2),
         ),
       ),
       child: Row(
@@ -523,15 +535,13 @@ class _GamificationScreenState extends State<GamificationScreen>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isCompleted
-                  ? AppColors.success.withOpacity(0.1)
-                  : Theme.of(context).colorScheme.outline.withOpacity(0.1),
+              color:
+                  isCompleted
+                      ? AppColors.success.withOpacity(0.1)
+                      : Theme.of(context).colorScheme.outline.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(
-              achievement.icon,
-              style: const TextStyle(fontSize: 24),
-            ),
+            child: Text(achievement.icon, style: const TextStyle(fontSize: 24)),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -549,13 +559,17 @@ class _GamificationScreenState extends State<GamificationScreen>
                 Text(
                   achievement.description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
                 const SizedBox(height: 8),
                 LinearProgressIndicator(
                   value: progress,
-                  backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.outline.withOpacity(0.2),
                   valueColor: AlwaysStoppedAnimation<Color>(
                     isCompleted ? AppColors.success : AppColors.primary,
                   ),
@@ -567,7 +581,9 @@ class _GamificationScreenState extends State<GamificationScreen>
                     Text(
                       '${achievement.progress}/${achievement.target}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
                       ),
                     ),
                     if (isCompleted)

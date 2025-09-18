@@ -6,6 +6,7 @@ import 'services/github_auth_service.dart';
 import 'services/repo_status_service.dart';
 import 'services/reminder_service.dart';
 import 'services/ai_roadmap_service.dart';
+import 'services/ai_assistant_service.dart';
 import 'services/gamification_service.dart';
 import 'services/career_goals_service.dart';
 import 'screens/splash_screen.dart';
@@ -38,6 +39,9 @@ class DevPathApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<AIRoadmapService>(
           create: (_) => AIRoadmapService(),
+        ),
+        ChangeNotifierProvider<AIAssistantService>(
+          create: (_) => AIAssistantService(),
         ),
         ChangeNotifierProvider<GamificationService>(
           create: (_) => GamificationService(),
