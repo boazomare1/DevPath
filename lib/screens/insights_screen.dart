@@ -15,6 +15,7 @@ class InsightsScreen extends StatefulWidget {
 class _InsightsScreenState extends State<InsightsScreen> {
   RepositoryInsights? _insights;
   bool _isLoading = false;
+  bool _hasLoaded = false;
 
   @override
   void initState() {
@@ -25,16 +26,24 @@ class _InsightsScreenState extends State<InsightsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Listen for changes in GitHub repositories and refresh insights
+    // Only load if not already loading and not already loaded
     final authService = context.watch<GitHubAuthService>();
-    if (authService.isAuthenticated && authService.repositories.isNotEmpty) {
+    if (authService.isAuthenticated && 
+        authService.repositories.isNotEmpty && 
+        !_isLoading && 
+        !_hasLoaded) {
       _loadInsights();
     }
   }
 
-  Future<void> _loadInsights() async {
+  Future<void> _loadInsights({bool forceRefresh = false}) async {
     final authService = context.read<GitHubAuthService>();
     if (!authService.isAuthenticated || authService.repositories.isEmpty) {
+      return;
+    }
+
+    // Don't reload if already loaded and not forcing refresh
+    if (_hasLoaded && !forceRefresh) {
       return;
     }
 
@@ -46,15 +55,23 @@ class _InsightsScreenState extends State<InsightsScreen> {
       // Get access token from the auth service
       final accessToken = await authService.getAccessToken();
       if (accessToken != null) {
+        // Add timeout to prevent infinite loading
         final insights = await GitHubInsightsService.getRepositoryInsights(
           accessToken,
           authService.repositories,
+        ).timeout(
+          const Duration(seconds: 30),
+          onTimeout: () {
+            debugPrint('Insights loading timed out after 30 seconds');
+            return RepositoryInsights.empty();
+          },
         );
 
         if (mounted) {
           setState(() {
             _insights = insights;
             _isLoading = false;
+            _hasLoaded = true;
           });
         }
       }
@@ -63,6 +80,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _hasLoaded = true;
         });
       }
     }
@@ -91,6 +109,13 @@ class _InsightsScreenState extends State<InsightsScreen> {
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 pinned: true,
+                actions: [
+                  IconButton(
+                    onPressed: () => _loadInsights(forceRefresh: true),
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Refresh Insights',
+                  ),
+                ],
                 flexibleSpace: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
