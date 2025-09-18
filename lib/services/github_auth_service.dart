@@ -59,9 +59,12 @@ class GitHubAuthService extends ChangeNotifier {
         secret: _clientSecret,
       );
 
+      // Add cache-busting parameter to force fresh authentication
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
       final authUrl = _currentGrant!.getAuthorizationUrl(
         Uri.parse(_redirectUri),
         scopes: ['user:email', 'repo', 'read:user'],
+        state: 'devpath_$timestamp', // Add unique state parameter
       );
 
       debugPrint('Fresh authorization URL: $authUrl');
@@ -130,9 +133,12 @@ class GitHubAuthService extends ChangeNotifier {
         secret: _clientSecret,
       );
 
+      // Add cache-busting parameter to force fresh authentication
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
       final authUrl = _currentGrant!.getAuthorizationUrl(
         Uri.parse(_redirectUri),
         scopes: ['user:email', 'repo', 'read:user'],
+        state: 'devpath_$timestamp', // Add unique state parameter
       );
 
       // Launch browser for authentication

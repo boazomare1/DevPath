@@ -190,6 +190,51 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
     }
   }
 
+  Future<void> _handleClearCacheAndLogin() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      // Clear any existing authentication state
+      final authService = context.read<GitHubAuthService>();
+      await authService.logout();
+
+      // Wait a moment for logout to complete
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Start fresh authentication
+      final success = await authService.authenticate();
+
+      if (success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Cache cleared! Browser opened with fresh authentication. You should now see the GitHub login page.',
+              ),
+              backgroundColor: AppColors.success,
+              duration: Duration(seconds: 5),
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          _errorMessage = 'Failed to start fresh authentication. Please try again.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error clearing cache and starting login: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -332,11 +377,28 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
 
             const SizedBox(height: 32),
 
-            // Login Button
-            GitHubAuthButton(
-              onPressed: _isLoading ? null : _handleGitHubLogin,
-              isLoading: _isLoading,
-            ),
+                  // Login Button
+                  GitHubAuthButton(
+                    onPressed: _isLoading ? null : _handleGitHubLogin,
+                    isLoading: _isLoading,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Clear Cache & Login Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _isLoading ? null : _handleClearCacheAndLogin,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Clear Cache & Login'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.warning,
+                        side: BorderSide(color: AppColors.warning),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
 
             const SizedBox(height: 24),
 
