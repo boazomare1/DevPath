@@ -12,6 +12,7 @@ import 'gamification_screen.dart';
 import 'career_goals_screen.dart';
 import 'enhanced_career_goals_screen.dart';
 import 'advanced_analytics_screen.dart';
+import 'social_sharing_screen.dart';
 import 'ai_assistant_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -30,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
     const ReposScreen(),
     const InsightsScreen(),
     const AdvancedAnalyticsScreen(),
+    const SocialSharingScreen(),
     const AIAssistantScreen(),
     const RoadmapScreen(),
     const GamificationScreen(),
@@ -92,19 +94,24 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                   _buildNavItem(
                     index: 5,
+                    icon: Icons.share,
+                    label: 'Social',
+                  ),
+                  _buildNavItem(
+                    index: 6,
                     icon: Icons.auto_awesome,
                     label: 'AI Assistant',
                   ),
-                  _buildNavItem(index: 6, icon: Icons.route, label: 'Roadmap'),
+                  _buildNavItem(index: 7, icon: Icons.route, label: 'Roadmap'),
                   _buildNavItem(
-                    index: 7,
+                    index: 8,
                     icon: Icons.emoji_events,
                     label: 'Gamify',
                   ),
-                  _buildNavItem(index: 8, icon: Icons.work, label: 'Goals'),
-                  _buildNavItem(index: 9, icon: Icons.code, label: 'GitHub'),
+                  _buildNavItem(index: 9, icon: Icons.work, label: 'Goals'),
+                  _buildNavItem(index: 10, icon: Icons.code, label: 'GitHub'),
                   _buildNavItem(
-                    index: 10,
+                    index: 11,
                     icon: Icons.settings,
                     label: 'Settings',
                   ),

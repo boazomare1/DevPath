@@ -30,7 +30,9 @@ class PDFExportWidget extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () => _exportPDF(context, analyticsService, careerGoalsService),
+              onPressed:
+                  () =>
+                      _exportPDF(context, analyticsService, careerGoalsService),
               child: const Text('Export PDF'),
             ),
           ],
@@ -77,7 +79,7 @@ class PDFExportWidget extends StatelessWidget {
   ) async {
     try {
       final pdf = pw.Document();
-      
+
       // Generate PDF content
       pdf.addPage(
         pw.MultiPage(
@@ -101,7 +103,8 @@ class PDFExportWidget extends StatelessWidget {
       // Show print dialog
       await Printing.layoutPdf(
         onLayout: (PdfPageFormat format) async => pdf.save(),
-        name: 'DevPath_Analytics_Report_${DateTime.now().millisecondsSinceEpoch}.pdf',
+        name:
+            'DevPath_Analytics_Report_${DateTime.now().millisecondsSinceEpoch}.pdf',
       );
 
       if (context.mounted) {
@@ -146,10 +149,7 @@ class PDFExportWidget extends StatelessWidget {
           pw.SizedBox(height: 8),
           pw.Text(
             'Generated on ${DateTime.now().toString().split(' ')[0]}',
-            style: pw.TextStyle(
-              fontSize: 14,
-              color: PdfColors.blue700,
-            ),
+            style: pw.TextStyle(fontSize: 14, color: PdfColors.blue700),
           ),
         ],
       ),
@@ -158,7 +158,7 @@ class PDFExportWidget extends StatelessWidget {
 
   pw.Widget _buildSummarySection(AnalyticsService analyticsService) {
     final summary = analyticsService.getAnalyticsSummary();
-    
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(16),
       decoration: pw.BoxDecoration(
@@ -180,9 +180,18 @@ class PDFExportWidget extends StatelessWidget {
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
             children: [
-              _buildSummaryItem('Learning Time', '${summary['totalMinutesThisWeek']} min'),
-              _buildSummaryItem('Skills Completed', '${summary['totalSkillsCompletedThisWeek']}'),
-              _buildSummaryItem('Career Readiness', '${summary['averageReadinessPercentage'].toStringAsFixed(1)}%'),
+              _buildSummaryItem(
+                'Learning Time',
+                '${summary['totalMinutesThisWeek']} min',
+              ),
+              _buildSummaryItem(
+                'Skills Completed',
+                '${summary['totalSkillsCompletedThisWeek']}',
+              ),
+              _buildSummaryItem(
+                'Career Readiness',
+                '${summary['averageReadinessPercentage'].toStringAsFixed(1)}%',
+              ),
               _buildSummaryItem('Active Goals', '${summary['activeGoals']}'),
             ],
           ),
@@ -205,10 +214,7 @@ class PDFExportWidget extends StatelessWidget {
         pw.SizedBox(height: 4),
         pw.Text(
           label,
-          style: pw.TextStyle(
-            fontSize: 12,
-            color: PdfColors.grey700,
-          ),
+          style: pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
         ),
       ],
     );
@@ -216,7 +222,7 @@ class PDFExportWidget extends StatelessWidget {
 
   pw.Widget _buildLearningActivitySection(AnalyticsService analyticsService) {
     final weeklyData = analyticsService.getWeeklyLearningActivity();
-    
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(16),
       decoration: pw.BoxDecoration(
@@ -253,26 +259,28 @@ class PDFExportWidget extends StatelessWidget {
                   _buildTableHeader('Repos'),
                 ],
               ),
-              ...weeklyData.map((day) => pw.TableRow(
-                children: [
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text(day['dayName']),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${day['minutesSpent']}'),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${day['skillsCompleted']}'),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${day['repositoriesWorkedOn']}'),
-                  ),
-                ],
-              )),
+              ...weeklyData.map(
+                (day) => pw.TableRow(
+                  children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text(day['dayName']),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text('${day['minutesSpent']}'),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text('${day['skillsCompleted']}'),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text('${day['repositoriesWorkedOn']}'),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ],
@@ -285,7 +293,7 @@ class PDFExportWidget extends StatelessWidget {
     EnhancedCareerGoalsService careerGoalsService,
   ) {
     final progress = analyticsService.getCareerGoalsProgress();
-    
+
     if (progress.isEmpty) {
       return pw.Container(
         padding: const pw.EdgeInsets.all(16),
@@ -296,10 +304,7 @@ class PDFExportWidget extends StatelessWidget {
         child: pw.Center(
           child: pw.Text(
             'No career goals set',
-            style: pw.TextStyle(
-              fontSize: 14,
-              color: PdfColors.grey600,
-            ),
+            style: pw.TextStyle(fontSize: 14, color: PdfColors.grey600),
           ),
         ),
       );
@@ -341,29 +346,33 @@ class PDFExportWidget extends StatelessWidget {
                   _buildTableHeader('Completed'),
                 ],
               ),
-              ...progress.map((goal) => pw.TableRow(
-                children: [
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text(
-                      goal['goalTitle'],
-                      style: const pw.TextStyle(fontSize: 12),
+              ...progress.map(
+                (goal) => pw.TableRow(
+                  children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text(
+                        goal['goalTitle'],
+                        style: const pw.TextStyle(fontSize: 12),
+                      ),
                     ),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${(goal['readinessPercentage'] as double).toStringAsFixed(1)}%'),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${goal['skillGaps']}'),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${goal['completedRecommendations']}'),
-                  ),
-                ],
-              )),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text(
+                        '${(goal['readinessPercentage'] as double).toStringAsFixed(1)}%',
+                      ),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text('${goal['skillGaps']}'),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text('${goal['completedRecommendations']}'),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ],
@@ -373,7 +382,7 @@ class PDFExportWidget extends StatelessWidget {
 
   pw.Widget _buildSkillTrendsSection(AnalyticsService analyticsService) {
     final trendsData = analyticsService.getSkillCompletionTrends();
-    
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(16),
       decoration: pw.BoxDecoration(
@@ -395,10 +404,7 @@ class PDFExportWidget extends StatelessWidget {
           pw.Text(
             'This section shows your skill completion progress over the last 30 days. '
             'Track your learning momentum and identify patterns in your skill development.',
-            style: pw.TextStyle(
-              fontSize: 12,
-              color: PdfColors.grey700,
-            ),
+            style: pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
           ),
           pw.SizedBox(height: 12),
           pw.Table(
@@ -421,33 +427,39 @@ class PDFExportWidget extends StatelessWidget {
                   _buildTableHeader('Rate %'),
                 ],
               ),
-              ...trendsData.take(7).map((day) => pw.TableRow(
-                children: [
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text(
-                      _formatDate(day['date'] as DateTime),
-                      style: const pw.TextStyle(fontSize: 10),
+              ...trendsData
+                  .take(7)
+                  .map(
+                    (day) => pw.TableRow(
+                      children: [
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Text(
+                            _formatDate(day['date'] as DateTime),
+                            style: const pw.TextStyle(fontSize: 10),
+                          ),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Text('${day['totalSkills']}'),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Text('${day['completedSkills']}'),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Text('${day['inProgressSkills']}'),
+                        ),
+                        pw.Padding(
+                          padding: const pw.EdgeInsets.all(8),
+                          child: pw.Text(
+                            '${(day['completionRate'] as double).toStringAsFixed(1)}%',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${day['totalSkills']}'),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${day['completedSkills']}'),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${day['inProgressSkills']}'),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${(day['completionRate'] as double).toStringAsFixed(1)}%'),
-                  ),
-                ],
-              )),
             ],
           ),
         ],

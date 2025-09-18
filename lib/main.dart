@@ -11,6 +11,7 @@ import 'services/gamification_service.dart';
 import 'services/career_goals_service.dart';
 import 'services/enhanced_career_goals_service.dart';
 import 'services/analytics_service.dart';
+import 'services/social_sharing_service.dart';
 import 'screens/splash_screen.dart';
 import 'screens/main_screen.dart';
 
@@ -26,11 +27,14 @@ void main() async {
   // Initialize Reminder Service
   await ReminderService.init();
 
-        // Initialize Enhanced Career Goals Service
-        await EnhancedCareerGoalsService().init();
+  // Initialize Enhanced Career Goals Service
+  await EnhancedCareerGoalsService().init();
 
         // Initialize Analytics Service
         await AnalyticsService().init();
+
+        // Initialize Social Sharing Service
+        await SocialSharingService().init();
 
         runApp(const DevPathApp());
 }
@@ -62,6 +66,9 @@ class DevPathApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<AnalyticsService>(
           create: (_) => AnalyticsService(),
+        ),
+        ChangeNotifierProvider<SocialSharingService>(
+          create: (_) => SocialSharingService(),
         ),
       ],
       child: MaterialApp(

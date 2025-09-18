@@ -4,10 +4,7 @@ import '../theme/app_colors.dart';
 class ContributionHeatmap extends StatelessWidget {
   final Map<String, List<Map<String, dynamic>>> data;
 
-  const ContributionHeatmap({
-    super.key,
-    required this.data,
-  });
+  const ContributionHeatmap({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -36,20 +33,24 @@ class ContributionHeatmap extends StatelessWidget {
               Text(
                 'Last 52 weeks',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Legend
           Row(
             children: [
               Text(
                 'Less',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
               const SizedBox(width: 8),
@@ -69,14 +70,16 @@ class ContributionHeatmap extends StatelessWidget {
               Text(
                 'More',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Heatmap grid
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -87,21 +90,27 @@ class ContributionHeatmap extends StatelessWidget {
                 Row(
                   children: [
                     const SizedBox(width: 20), // Space for day labels
-                    ..._getMonthLabels().map((month) => Container(
-                      width: 13 * 7, // 7 days per week
-                      child: Text(
-                        month,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    ..._getMonthLabels().map(
+                      (month) => Container(
+                        width: 13 * 7, // 7 days per week
+                        child: Text(
+                          month,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.6),
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                    )),
+                    ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // Day labels and heatmap
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,53 +119,72 @@ class ContributionHeatmap extends StatelessWidget {
                     Column(
                       children: [
                         const SizedBox(height: 6),
-                        ...['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day) => Container(
-                          height: 12,
-                          width: 20,
-                          margin: const EdgeInsets.only(bottom: 2),
-                          child: Text(
-                            day,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                              fontSize: 10,
+                        ...['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(
+                          (day) => Container(
+                            height: 12,
+                            width: 20,
+                            margin: const EdgeInsets.only(bottom: 2),
+                            child: Text(
+                              day,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacity(0.6),
+                                fontSize: 10,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                        )),
+                        ),
                       ],
                     ),
-                    
+
                     const SizedBox(width: 8),
-                    
+
                     // Heatmap grid
                     Column(
-                      children: data.entries.map((weekEntry) {
-                        return Row(
-                          children: weekEntry.value.map((dayData) {
-                            final contributions = dayData['contributions'] as int;
-                            final intensity = _getContributionIntensity(contributions);
-                            
-                            return Container(
-                              width: 12,
-                              height: 12,
-                              margin: const EdgeInsets.all(1),
-                              decoration: BoxDecoration(
-                                color: _getContributionColor(intensity),
-                                borderRadius: BorderRadius.circular(2),
-                                border: _isToday(dayData['date'] as DateTime)
-                                    ? Border.all(color: AppColors.primary, width: 1)
-                                    : null,
-                              ),
-                              child: contributions > 0
-                                  ? Tooltip(
-                                      message: '${contributions} contributions on ${_formatDate(dayData['date'] as DateTime)}',
-                                      child: Container(),
-                                    )
-                                  : null,
+                      children:
+                          data.entries.map((weekEntry) {
+                            return Row(
+                              children:
+                                  weekEntry.value.map((dayData) {
+                                    final contributions =
+                                        dayData['contributions'] as int;
+                                    final intensity = _getContributionIntensity(
+                                      contributions,
+                                    );
+
+                                    return Container(
+                                      width: 12,
+                                      height: 12,
+                                      margin: const EdgeInsets.all(1),
+                                      decoration: BoxDecoration(
+                                        color: _getContributionColor(intensity),
+                                        borderRadius: BorderRadius.circular(2),
+                                        border:
+                                            _isToday(
+                                                  dayData['date'] as DateTime,
+                                                )
+                                                ? Border.all(
+                                                  color: AppColors.primary,
+                                                  width: 1,
+                                                )
+                                                : null,
+                                      ),
+                                      child:
+                                          contributions > 0
+                                              ? Tooltip(
+                                                message:
+                                                    '${contributions} contributions on ${_formatDate(dayData['date'] as DateTime)}',
+                                                child: Container(),
+                                              )
+                                              : null,
+                                    );
+                                  }).toList(),
                             );
                           }).toList(),
-                        );
-                      }).toList(),
                     ),
                   ],
                 ),
@@ -171,19 +199,29 @@ class ContributionHeatmap extends StatelessWidget {
   List<String> _getMonthLabels() {
     final months = <String>[];
     final now = DateTime.now();
-    
+
     for (int i = 11; i >= 0; i--) {
       final date = now.subtract(Duration(days: i * 30));
       months.add(_getMonthName(date.month));
     }
-    
+
     return months;
   }
 
   String _getMonthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }
@@ -201,7 +239,7 @@ class ContributionHeatmap extends StatelessWidget {
     if (intensity == 0.0) {
       return AppColors.primary.withOpacity(0.1);
     }
-    
+
     // GitHub-style green gradient
     final baseColor = AppColors.success;
     return Color.fromRGBO(
@@ -214,7 +252,9 @@ class ContributionHeatmap extends StatelessWidget {
 
   bool _isToday(DateTime date) {
     final now = DateTime.now();
-    return date.year == now.year && date.month == now.month && date.day == now.day;
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
   }
 
   String _formatDate(DateTime date) {

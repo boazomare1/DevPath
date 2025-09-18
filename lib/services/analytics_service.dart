@@ -183,9 +183,10 @@ class AnalyticsService extends ChangeNotifier {
       final activitiesJson = prefs.getString(_learningActivityKey);
       if (activitiesJson != null) {
         final activitiesData = jsonDecode(activitiesJson) as List;
-        _learningActivities = activitiesData
-            .map((activity) => LearningActivity.fromJson(activity))
-            .toList();
+        _learningActivities =
+            activitiesData
+                .map((activity) => LearningActivity.fromJson(activity))
+                .toList();
       }
     } catch (e) {
       debugPrint('Error loading learning activities: $e');
@@ -199,7 +200,8 @@ class AnalyticsService extends ChangeNotifier {
       final trendsJson = prefs.getString(_skillTrendsKey);
       if (trendsJson != null) {
         final trendsData = jsonDecode(trendsJson) as List;
-        _skillTrends = trendsData.map((trend) => SkillTrend.fromJson(trend)).toList();
+        _skillTrends =
+            trendsData.map((trend) => SkillTrend.fromJson(trend)).toList();
       }
     } catch (e) {
       debugPrint('Error loading skill trends: $e');
@@ -213,9 +215,10 @@ class AnalyticsService extends ChangeNotifier {
       final contributionsJson = prefs.getString(_contributionDataKey);
       if (contributionsJson != null) {
         final contributionsData = jsonDecode(contributionsJson) as List;
-        _contributionData = contributionsData
-            .map((data) => ContributionData.fromJson(data))
-            .toList();
+        _contributionData =
+            contributionsData
+                .map((data) => ContributionData.fromJson(data))
+                .toList();
       }
     } catch (e) {
       debugPrint('Error loading contribution data: $e');
@@ -229,9 +232,10 @@ class AnalyticsService extends ChangeNotifier {
       final progressJson = prefs.getString(_careerProgressKey);
       if (progressJson != null) {
         final progressData = jsonDecode(progressJson) as List;
-        _careerProgress = progressData
-            .map((progress) => CareerProgress.fromJson(progress))
-            .toList();
+        _careerProgress =
+            progressData
+                .map((progress) => CareerProgress.fromJson(progress))
+                .toList();
       }
     } catch (e) {
       debugPrint('Error loading career progress: $e');
@@ -275,9 +279,12 @@ class AnalyticsService extends ChangeNotifier {
       (trend) => _isSameDay(trend.date, today),
     );
 
-    final completedSkills = skills.where((s) => s.status == SkillStatus.completed).length;
-    final inProgressSkills = skills.where((s) => s.status == SkillStatus.inProgress).length;
-    final notStartedSkills = skills.where((s) => s.status == SkillStatus.notStarted).length;
+    final completedSkills =
+        skills.where((s) => s.status == SkillStatus.completed).length;
+    final inProgressSkills =
+        skills.where((s) => s.status == SkillStatus.inProgress).length;
+    final notStartedSkills =
+        skills.where((s) => s.status == SkillStatus.notStarted).length;
 
     final categoryBreakdown = <String, int>{};
     for (final skill in skills) {
@@ -305,7 +312,9 @@ class AnalyticsService extends ChangeNotifier {
   }
 
   /// Update contribution data
-  Future<void> updateContributionData(List<GitHubRepository> repositories) async {
+  Future<void> updateContributionData(
+    List<GitHubRepository> repositories,
+  ) async {
     final contributionMap = <DateTime, List<String>>{};
 
     for (final repo in repositories) {
@@ -317,7 +326,9 @@ class AnalyticsService extends ChangeNotifier {
         // Generate random contribution data for the past year
         for (int i = 0; i < min(30, daysSinceUpdate); i++) {
           final date = lastActivity.add(Duration(days: i));
-          final contributions = Random().nextInt(5); // 0-4 contributions per day
+          final contributions = Random().nextInt(
+            5,
+          ); // 0-4 contributions per day
 
           if (contributions > 0) {
             if (contributionMap[date] == null) {
@@ -329,13 +340,16 @@ class AnalyticsService extends ChangeNotifier {
       }
     }
 
-    _contributionData = contributionMap.entries
-        .map((entry) => ContributionData(
-              date: entry.key,
-              contributions: entry.value.length,
-              repositories: entry.value,
-            ))
-        .toList();
+    _contributionData =
+        contributionMap.entries
+            .map(
+              (entry) => ContributionData(
+                date: entry.key,
+                contributions: entry.value.length,
+                repositories: entry.value,
+              ),
+            )
+            .toList();
 
     await _saveContributionData();
     notifyListeners();
@@ -343,16 +357,22 @@ class AnalyticsService extends ChangeNotifier {
 
   /// Update career progress
   Future<void> updateCareerProgress(List<EnhancedCareerGoal> goals) async {
-    _careerProgress = goals.map((goal) => CareerProgress(
-          goalId: goal.id,
-          goalTitle: goal.title,
-          readinessPercentage: goal.readinessPercentage,
-          skillGaps: goal.skillGaps.length,
-          completedRecommendations: goal.aiRecommendations
-              .where((rec) => rec.isCompleted)
-              .length,
-          lastUpdated: DateTime.now(),
-        )).toList();
+    _careerProgress =
+        goals
+            .map(
+              (goal) => CareerProgress(
+                goalId: goal.id,
+                goalTitle: goal.title,
+                readinessPercentage: goal.readinessPercentage,
+                skillGaps: goal.skillGaps.length,
+                completedRecommendations:
+                    goal.aiRecommendations
+                        .where((rec) => rec.isCompleted)
+                        .length,
+                lastUpdated: DateTime.now(),
+              ),
+            )
+            .toList();
 
     await _saveCareerProgress();
     notifyListeners();
@@ -362,10 +382,11 @@ class AnalyticsService extends ChangeNotifier {
   List<Map<String, dynamic>> getWeeklyLearningActivity() {
     final now = DateTime.now();
     final weekAgo = now.subtract(const Duration(days: 7));
-    
-    final weeklyData = _learningActivities
-        .where((activity) => activity.date.isAfter(weekAgo))
-        .toList();
+
+    final weeklyData =
+        _learningActivities
+            .where((activity) => activity.date.isAfter(weekAgo))
+            .toList();
 
     // Fill in missing days with zero data
     final result = <Map<String, dynamic>>[];
@@ -373,13 +394,14 @@ class AnalyticsService extends ChangeNotifier {
       final date = now.subtract(Duration(days: i));
       final activity = weeklyData.firstWhere(
         (a) => _isSameDay(a.date, date),
-        orElse: () => LearningActivity(
-          date: date,
-          minutesSpent: 0,
-          skillsCompleted: 0,
-          repositoriesWorkedOn: 0,
-          activities: [],
-        ),
+        orElse:
+            () => LearningActivity(
+              date: date,
+              minutesSpent: 0,
+              skillsCompleted: 0,
+              repositoriesWorkedOn: 0,
+              activities: [],
+            ),
       );
 
       result.add({
@@ -398,10 +420,9 @@ class AnalyticsService extends ChangeNotifier {
   List<Map<String, dynamic>> getSkillCompletionTrends() {
     final now = DateTime.now();
     final monthAgo = now.subtract(const Duration(days: 30));
-    
-    final monthlyData = _skillTrends
-        .where((trend) => trend.date.isAfter(monthAgo))
-        .toList();
+
+    final monthlyData =
+        _skillTrends.where((trend) => trend.date.isAfter(monthAgo)).toList();
 
     // Fill in missing days with zero data
     final result = <Map<String, dynamic>>[];
@@ -409,14 +430,15 @@ class AnalyticsService extends ChangeNotifier {
       final date = now.subtract(Duration(days: i));
       final trend = monthlyData.firstWhere(
         (t) => _isSameDay(t.date, date),
-        orElse: () => SkillTrend(
-          date: date,
-          totalSkills: 0,
-          completedSkills: 0,
-          inProgressSkills: 0,
-          notStartedSkills: 0,
-          categoryBreakdown: {},
-        ),
+        orElse:
+            () => SkillTrend(
+              date: date,
+              totalSkills: 0,
+              completedSkills: 0,
+              inProgressSkills: 0,
+              notStartedSkills: 0,
+              categoryBreakdown: {},
+            ),
       );
 
       result.add({
@@ -425,7 +447,10 @@ class AnalyticsService extends ChangeNotifier {
         'completedSkills': trend.completedSkills,
         'inProgressSkills': trend.inProgressSkills,
         'notStartedSkills': trend.notStartedSkills,
-        'completionRate': trend.totalSkills > 0 ? (trend.completedSkills / trend.totalSkills) * 100 : 0.0,
+        'completionRate':
+            trend.totalSkills > 0
+                ? (trend.completedSkills / trend.totalSkills) * 100
+                : 0.0,
       });
     }
 
@@ -436,32 +461,32 @@ class AnalyticsService extends ChangeNotifier {
   Map<String, List<Map<String, dynamic>>> getContributionHeatmap() {
     final now = DateTime.now();
     final yearAgo = now.subtract(const Duration(days: 365));
-    
-    final yearlyData = _contributionData
-        .where((data) => data.date.isAfter(yearAgo))
-        .toList();
+
+    final yearlyData =
+        _contributionData.where((data) => data.date.isAfter(yearAgo)).toList();
 
     // Group by weeks
     final weeklyData = <String, List<Map<String, dynamic>>>{};
-    
+
     for (int i = 0; i < 52; i++) {
       final weekStart = now.subtract(Duration(days: (i + 1) * 7));
       final weekEnd = now.subtract(Duration(days: i * 7));
-      
+
       final weekKey = 'Week ${52 - i}';
       final weekContributions = <Map<String, dynamic>>[];
-      
+
       for (int day = 0; day < 7; day++) {
         final date = weekStart.add(Duration(days: day));
         final contribution = yearlyData.firstWhere(
           (data) => _isSameDay(data.date, date),
-          orElse: () => ContributionData(
-            date: date,
-            contributions: 0,
-            repositories: [],
-          ),
+          orElse:
+              () => ContributionData(
+                date: date,
+                contributions: 0,
+                repositories: [],
+              ),
         );
-        
+
         weekContributions.add({
           'date': date,
           'contributions': contribution.contributions,
@@ -469,7 +494,7 @@ class AnalyticsService extends ChangeNotifier {
           'dayName': _getDayName(date.weekday),
         });
       }
-      
+
       weeklyData[weekKey] = weekContributions;
     }
 
@@ -478,15 +503,19 @@ class AnalyticsService extends ChangeNotifier {
 
   /// Get career goals progress comparison
   List<Map<String, dynamic>> getCareerGoalsProgress() {
-    return _careerProgress.map((progress) => {
-      'goalId': progress.goalId,
-      'goalTitle': progress.goalTitle,
-      'readinessPercentage': progress.readinessPercentage,
-      'skillGaps': progress.skillGaps,
-      'completedRecommendations': progress.completedRecommendations,
-      'lastUpdated': progress.lastUpdated,
-      'progressLevel': _getProgressLevel(progress.readinessPercentage),
-    }).toList();
+    return _careerProgress
+        .map(
+          (progress) => {
+            'goalId': progress.goalId,
+            'goalTitle': progress.goalTitle,
+            'readinessPercentage': progress.readinessPercentage,
+            'skillGaps': progress.skillGaps,
+            'completedRecommendations': progress.completedRecommendations,
+            'lastUpdated': progress.lastUpdated,
+            'progressLevel': _getProgressLevel(progress.readinessPercentage),
+          },
+        )
+        .toList();
   }
 
   /// Get analytics summary
@@ -495,21 +524,41 @@ class AnalyticsService extends ChangeNotifier {
     final skillTrends = getSkillCompletionTrends();
     final careerProgress = getCareerGoalsProgress();
 
-    final totalMinutes = weeklyActivity.fold(0, (sum, day) => sum + (day['minutesSpent'] as int));
-    final totalSkillsCompleted = weeklyActivity.fold(0, (sum, day) => sum + (day['skillsCompleted'] as int));
-    final averageReadiness = careerProgress.isNotEmpty 
-        ? careerProgress.fold(0.0, (sum, goal) => sum + (goal['readinessPercentage'] as double)) / careerProgress.length
-        : 0.0;
+    final totalMinutes = weeklyActivity.fold(
+      0,
+      (sum, day) => sum + (day['minutesSpent'] as int),
+    );
+    final totalSkillsCompleted = weeklyActivity.fold(
+      0,
+      (sum, day) => sum + (day['skillsCompleted'] as int),
+    );
+    final averageReadiness =
+        careerProgress.isNotEmpty
+            ? careerProgress.fold(
+                  0.0,
+                  (sum, goal) => sum + (goal['readinessPercentage'] as double),
+                ) /
+                careerProgress.length
+            : 0.0;
 
     final currentWeekTrend = skillTrends.take(7).toList();
     final previousWeekTrend = skillTrends.skip(7).take(7).toList();
-    
-    final currentWeekCompletion = currentWeekTrend.fold(0, (sum, day) => sum + (day['completedSkills'] as int));
-    final previousWeekCompletion = previousWeekTrend.fold(0, (sum, day) => sum + (day['completedSkills'] as int));
-    
-    final completionTrend = previousWeekCompletion > 0 
-        ? ((currentWeekCompletion - previousWeekCompletion) / previousWeekCompletion) * 100
-        : 0.0;
+
+    final currentWeekCompletion = currentWeekTrend.fold(
+      0,
+      (sum, day) => sum + (day['completedSkills'] as int),
+    );
+    final previousWeekCompletion = previousWeekTrend.fold(
+      0,
+      (sum, day) => sum + (day['completedSkills'] as int),
+    );
+
+    final completionTrend =
+        previousWeekCompletion > 0
+            ? ((currentWeekCompletion - previousWeekCompletion) /
+                    previousWeekCompletion) *
+                100
+            : 0.0;
 
     return {
       'totalMinutesThisWeek': totalMinutes,
@@ -517,8 +566,14 @@ class AnalyticsService extends ChangeNotifier {
       'averageReadinessPercentage': averageReadiness,
       'completionTrendPercentage': completionTrend,
       'activeGoals': careerProgress.length,
-      'totalSkillGaps': careerProgress.fold(0, (sum, goal) => sum + (goal['skillGaps'] as int)),
-      'completedRecommendations': careerProgress.fold(0, (sum, goal) => sum + (goal['completedRecommendations'] as int)),
+      'totalSkillGaps': careerProgress.fold(
+        0,
+        (sum, goal) => sum + (goal['skillGaps'] as int),
+      ),
+      'completedRecommendations': careerProgress.fold(
+        0,
+        (sum, goal) => sum + (goal['completedRecommendations'] as int),
+      ),
     };
   }
 
@@ -526,7 +581,8 @@ class AnalyticsService extends ChangeNotifier {
   Future<void> _saveLearningActivities() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final activitiesJson = _learningActivities.map((activity) => activity.toJson()).toList();
+      final activitiesJson =
+          _learningActivities.map((activity) => activity.toJson()).toList();
       await prefs.setString(_learningActivityKey, jsonEncode(activitiesJson));
     } catch (e) {
       debugPrint('Error saving learning activities: $e');
@@ -548,8 +604,12 @@ class AnalyticsService extends ChangeNotifier {
   Future<void> _saveContributionData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final contributionsJson = _contributionData.map((data) => data.toJson()).toList();
-      await prefs.setString(_contributionDataKey, jsonEncode(contributionsJson));
+      final contributionsJson =
+          _contributionData.map((data) => data.toJson()).toList();
+      await prefs.setString(
+        _contributionDataKey,
+        jsonEncode(contributionsJson),
+      );
     } catch (e) {
       debugPrint('Error saving contribution data: $e');
     }
@@ -559,7 +619,8 @@ class AnalyticsService extends ChangeNotifier {
   Future<void> _saveCareerProgress() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final progressJson = _careerProgress.map((progress) => progress.toJson()).toList();
+      final progressJson =
+          _careerProgress.map((progress) => progress.toJson()).toList();
       await prefs.setString(_careerProgressKey, jsonEncode(progressJson));
     } catch (e) {
       debugPrint('Error saving career progress: $e');
@@ -568,7 +629,9 @@ class AnalyticsService extends ChangeNotifier {
 
   /// Helper methods
   bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   String _getDayName(int weekday) {
