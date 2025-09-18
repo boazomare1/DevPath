@@ -153,7 +153,7 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
     try {
       final authService = context.read<GitHubAuthService>();
       final authUrl = await authService.getFreshAuthorizationUrl();
-      
+
       if (authUrl != null) {
         if (await canLaunchUrl(authUrl)) {
           await launchUrl(authUrl, mode: LaunchMode.platformDefault);
@@ -175,7 +175,8 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
         }
       } else {
         setState(() {
-          _errorMessage = 'Failed to generate authorization URL. Please try again.';
+          _errorMessage =
+              'Failed to generate authorization URL. Please try again.';
         });
       }
     } catch (e) {
@@ -398,7 +399,7 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Get Fresh Code Button
                   SizedBox(
                     width: double.infinity,
@@ -412,7 +413,7 @@ class _GitHubAuthScreenState extends State<GitHubAuthScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
                   TextField(
                     controller: _codeController,

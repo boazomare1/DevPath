@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:oauth2/oauth2.dart' as oauth2;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 import '../models/github_user.dart';
 import '../models/github_repository.dart';
 import '../config/github_oauth_config.dart';
@@ -49,7 +50,7 @@ class GitHubAuthService extends ChangeNotifier {
     try {
       // Clear any existing grant first
       _currentGrant = null;
-      
+
       // Create new OAuth client and store it
       _currentGrant = oauth2.AuthorizationCodeGrant(
         _clientId,
@@ -120,7 +121,7 @@ class GitHubAuthService extends ChangeNotifier {
     try {
       // Clear any existing grant first
       _currentGrant = null;
-      
+
       // Create new OAuth client and store it
       _currentGrant = oauth2.AuthorizationCodeGrant(
         _clientId,
@@ -156,15 +157,13 @@ class GitHubAuthService extends ChangeNotifier {
   /// Handle the OAuth callback with authorization code
   Future<bool> handleCallback(String authorizationCode) async {
     try {
-      final grant = oauth2.AuthorizationCodeGrant(
-        _clientId,
-        Uri.parse(_authorizationEndpoint),
-        Uri.parse(_tokenEndpoint),
-        secret: _clientSecret,
-      );
+      if (_currentGrant == null) {
+        debugPrint('No current grant found for callback');
+        return false;
+      }
 
-      // Exchange authorization code for access token
-      _client = await grant.handleAuthorizationResponse({
+      // Exchange authorization code for access token using the stored grant
+      _client = await _currentGrant!.handleAuthorizationResponse({
         'code': authorizationCode,
         'redirect_uri': _redirectUri,
       });
@@ -182,6 +181,9 @@ class GitHubAuthService extends ChangeNotifier {
 
         _authStateController.add(true);
         notifyListeners();
+        
+        // Clear the grant after successful authentication
+        _currentGrant = null;
         return true;
       }
 
@@ -216,25 +218,19 @@ class GitHubAuthService extends ChangeNotifier {
       debugPrint('Client ID: $_clientId');
       debugPrint('Redirect URI: $_redirectUri');
 
-      // Check if we have a current grant, if not create one
-      if (_currentGrant == null) {
-        debugPrint('No current grant found, creating new one...');
-        _currentGrant = oauth2.AuthorizationCodeGrant(
-          _clientId,
-          Uri.parse(_authorizationEndpoint),
-          Uri.parse(_tokenEndpoint),
+      // Use custom token exchange for GitHub
+      final token = await _exchangeCodeForToken(authorizationCode);
+      
+      if (token != null) {
+        debugPrint('Successfully obtained access token');
+        
+        // Create OAuth client with the token
+        _client = oauth2.Client(
+          oauth2.Credentials(token),
+          identifier: _clientId,
           secret: _clientSecret,
         );
-      }
 
-      debugPrint('Using existing grant for token exchange...');
-      _client = await _currentGrant!.handleAuthorizationResponse({
-        'code': authorizationCode,
-        'redirect_uri': _redirectUri,
-      });
-
-      if (_client != null) {
-        debugPrint('Successfully obtained access token');
         // Store credentials securely
         await _secureStorage.write(
           key: _tokenKey,
@@ -265,6 +261,48 @@ class GitHubAuthService extends ChangeNotifier {
         debugPrint('Try getting a fresh authorization code from the browser');
       }
       return false;
+    }
+  }
+
+  /// Custom token exchange for GitHub (handles form-encoded response)
+  Future<String?> _exchangeCodeForToken(String authorizationCode) async {
+    try {
+      final response = await http.post(
+        Uri.parse(_tokenEndpoint),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'client_id': _clientId,
+          'client_secret': _clientSecret,
+          'code': authorizationCode,
+          'redirect_uri': _redirectUri,
+        },
+      );
+
+      debugPrint('Token exchange response status: ${response.statusCode}');
+      debugPrint('Token exchange response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseBody = response.body;
+        
+        // Try to parse as JSON first
+        try {
+          final jsonResponse = jsonDecode(responseBody);
+          return jsonResponse['access_token'];
+        } catch (e) {
+          // If JSON parsing fails, try form-encoded parsing
+          final params = Uri.splitQueryString(responseBody);
+          return params['access_token'];
+        }
+      } else {
+        debugPrint('Token exchange failed with status: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error in token exchange: $e');
+      return null;
     }
   }
 
