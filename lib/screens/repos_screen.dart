@@ -247,11 +247,12 @@ class _ReposScreenState extends State<ReposScreen> {
 
         return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          physics: const BouncingScrollPhysics(),
           itemCount: filteredRepos.length,
           itemBuilder: (context, index) {
             final repo = filteredRepos[index];
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 8),
               child: RepoCard(
                 repository: repo,
                 onTap: () => _showRepoDetails(context, repo),

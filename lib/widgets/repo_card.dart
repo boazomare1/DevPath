@@ -20,7 +20,7 @@ class RepoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -67,12 +67,12 @@ class RepoCard extends StatelessWidget {
 
             // Status and highlights row
             if (repoStatus != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               _buildStatusAndHighlights(context, repoStatus),
             ],
 
             if (repository.description.isNotEmpty) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Text(
                 repository.description,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -85,7 +85,7 @@ class RepoCard extends StatelessWidget {
               ),
             ],
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
             // Stats row
             Row(
@@ -124,7 +124,7 @@ class RepoCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
             // Footer with last commit date
             Row(
